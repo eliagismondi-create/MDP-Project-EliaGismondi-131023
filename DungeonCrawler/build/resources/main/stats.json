@@ -1,0 +1,14 @@
+{
+  "hero": {
+    "health": 100,
+    "damage": 15
+  },
+  "goblin": {
+    "health": 50,
+    "damage": 10
+  },
+  "orc": {
+    "health": 100,
+    "damage": 25
+  }
+}
