@@ -5,12 +5,12 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 
+import it.unicam.cs.mpgc.rpg131023.EnemyType;
 import it.unicam.cs.mpgc.rpg131023.model.ResourceType;
-import it.unicam.cs.mpgc.rpg131023.model.enemy.AbstractEnemy;
 
 public abstract class AbstractDungeon {
     private final Map<ResourceType, Integer> treasure;
-    private final Map<String, Integer> enemySpawns;
+    private final Map<EnemyType, Integer> enemySpawns;
 
     public AbstractDungeon() {
         this.treasure = new EnumMap<>(ResourceType.class);
@@ -39,14 +39,14 @@ public abstract class AbstractDungeon {
      * @param enemyId  L'identificatore testuale del nemico (es. "goblin", "orc").
      * @param quantity Il numero di nemici di quel tipo.
      */
-    public void addEnemySpawn(final String enemyId, final int quantity) {
-        if (enemyId == null || enemyId.trim().isEmpty()) {
-            throw new IllegalArgumentException("L'ID del nemico non puo' essere nullo o vuoto.");
+    public void addEnemySpawn(final EnemyType enemyType, final int quantity) {
+        if (enemyType == null) {
+            throw new NullPointerException("Il tipo di nemico non puo' essere null.");
         }
         if (quantity <= 0) {
             throw new IllegalArgumentException("La quantita' deve essere maggiore di zero.");
         }
-        this.enemySpawns.put(enemyId, this.enemySpawns.getOrDefault(enemyId, 0) + quantity);
+        this.enemySpawns.put(enemyType, this.enemySpawns.getOrDefault(enemyType, 0) + quantity);
     }
 
     /**
@@ -59,7 +59,7 @@ public abstract class AbstractDungeon {
     /**
      * @return Mappa immutabile degli spawn dei nemici.
      */
-    public Map<String, Integer> getEnemySpawns() {
+    public Map<EnemyType, Integer> getEnemySpawns() {
         return Collections.unmodifiableMap(this.enemySpawns);
     }
 }

@@ -57,7 +57,7 @@ public final class StatsLoader {
             if (statsCache == null || statsCache.isEmpty()) {
                 throw new IllegalStateException("Il file delle statistiche e' vuoto o malformato.");
             }
-        } catch (Exception e) {
+        } catch (java.io.IOException | com.google.gson.JsonSyntaxException e) {
             throw new IllegalStateException("Errore critico durante il caricamento delle statistiche da " + STATS_FILE,
                     e);
         }
