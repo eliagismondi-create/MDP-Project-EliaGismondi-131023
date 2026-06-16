@@ -1,7 +1,8 @@
-package it.unicam.cs.mpgc.rpg131023.model;
+package it.unicam.cs.mpgc.rpg131023.model.combat;
 
 /**
- * Superclasse astratta che centralizza la logica di base per le entita' combattenti,
+ * Superclasse astratta che centralizza la logica di base per le entita'
+ * combattenti,
  * risolvendo la violazione del principio DRY (Don't Repeat Yourself).
  * Implementa le interfacce {@link Damageable} e {@link Attacker}.
  */

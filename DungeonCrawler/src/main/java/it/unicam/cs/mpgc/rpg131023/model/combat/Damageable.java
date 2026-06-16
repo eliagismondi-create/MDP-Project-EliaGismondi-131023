@@ -1,4 +1,4 @@
-package it.unicam.cs.mpgc.rpg131023.model;
+package it.unicam.cs.mpgc.rpg131023.model.combat;
 
 public interface Damageable {
 

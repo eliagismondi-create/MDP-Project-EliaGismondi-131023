@@ -1,8 +1,12 @@
-package it.unicam.cs.mpgc.rpg131023.model;
+package it.unicam.cs.mpgc.rpg131023.model.player;
 
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.Map;
+
+import it.unicam.cs.mpgc.rpg131023.model.combat.AbstractCombatant;
+import it.unicam.cs.mpgc.rpg131023.model.combat.CombatStats;
+import it.unicam.cs.mpgc.rpg131023.model.resource.ResourceType;
 
 public class Hero extends AbstractCombatant {
     private int xp;
@@ -17,7 +21,7 @@ public class Hero extends AbstractCombatant {
     /**
      * Aggiunge una determinata quantita' di una risorsa all'inventario.
      * 
-     * @param type Il tipo di risorsa.
+     * @param type   Il tipo di risorsa.
      * @param amount La quantita' da aggiungere (deve essere strettamente positiva).
      */
     public void addResource(final ResourceType type, final int amount) {
@@ -33,7 +37,7 @@ public class Hero extends AbstractCombatant {
     /**
      * Consuma una risorsa se presente in quantita' sufficiente.
      * 
-     * @param type Il tipo di risorsa.
+     * @param type   Il tipo di risorsa.
      * @param amount La quantita' da consumare (deve essere strettamente positiva).
      * @return true se consumata con successo, false se non c'e' abbastanza risorsa.
      */
@@ -44,19 +48,20 @@ public class Hero extends AbstractCombatant {
         if (amount <= 0) {
             throw new IllegalArgumentException("La quantita' da consumare deve essere maggiore di zero.");
         }
-        
+
         final int currentAmount = this.resources.getOrDefault(type, 0);
         if (currentAmount < amount) {
             return false;
         }
-        
+
         this.resources.put(type, currentAmount - amount);
         return true;
     }
 
     /**
      * Restituisce una copia in sola lettura dell'inventario.
-     * Rispetta l'incapsulamento impedendo modifiche non autorizzate (Immutabilita').
+     * Rispetta l'incapsulamento impedendo modifiche non autorizzate
+     * (Immutabilita').
      * 
      * @return Mappa immutabile delle risorse.
      */

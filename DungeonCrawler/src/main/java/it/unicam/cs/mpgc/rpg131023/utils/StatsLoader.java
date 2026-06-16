@@ -3,7 +3,7 @@ package it.unicam.cs.mpgc.rpg131023.utils;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-import it.unicam.cs.mpgc.rpg131023.model.CombatStats;
+import it.unicam.cs.mpgc.rpg131023.model.combat.CombatStats;
 
 import java.io.InputStreamReader;
 import java.io.Reader;

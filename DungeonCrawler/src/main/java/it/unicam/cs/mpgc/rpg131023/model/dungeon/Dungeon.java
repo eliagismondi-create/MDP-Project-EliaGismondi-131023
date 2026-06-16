@@ -4,8 +4,8 @@ import java.util.Collections;
 import java.util.EnumMap;
 import java.util.Map;
 
-import it.unicam.cs.mpgc.rpg131023.EnemyType;
-import it.unicam.cs.mpgc.rpg131023.model.ResourceType;
+import it.unicam.cs.mpgc.rpg131023.model.enemy.EnemyType;
+import it.unicam.cs.mpgc.rpg131023.model.resource.ResourceType;
 
 /**
  * Rappresenta un Dungeon nel gioco, le cui istanze vengono popolate a runtime
@@ -14,18 +14,23 @@ import it.unicam.cs.mpgc.rpg131023.model.ResourceType;
 public class Dungeon {
     private final String id;
     private final String name;
+    private final String description;
     private final Map<ResourceType, Integer> treasure;
     private final Map<EnemyType, Integer> enemySpawns;
 
-    public Dungeon(final String id, final String name) {
+    public Dungeon(final String id, final String name, final String description) {
         if (id == null || id.trim().isEmpty()) {
             throw new IllegalArgumentException("L'ID del dungeon non puo' essere nullo o vuoto.");
         }
         if (name == null || name.trim().isEmpty()) {
             throw new IllegalArgumentException("Il nome del dungeon non puo' essere nullo o vuoto.");
         }
+        if (description == null || description.trim().isEmpty()) {
+            throw new IllegalArgumentException("La descrizione del dungeon non puo' essere nulla o vuota.");
+        }
         this.id = id;
         this.name = name;
+        this.description = description;
         this.treasure = new EnumMap<>(ResourceType.class);
         this.enemySpawns = new EnumMap<>(EnemyType.class);
     }
@@ -50,7 +55,7 @@ public class Dungeon {
      * Configura la quantita' di nemici previsti per questo dungeon.
      * 
      * @param enemyType Il tipo di nemico (es. GOBLIN, ORC).
-     * @param quantity Il numero di nemici di quel tipo.
+     * @param quantity  Il numero di nemici di quel tipo.
      */
     public void addEnemySpawn(final EnemyType enemyType, final int quantity) {
         if (enemyType == null) {
@@ -68,6 +73,10 @@ public class Dungeon {
 
     public String getName() {
         return this.name;
+    }
+
+    public String getDescription() {
+        return this.description;
     }
 
     /**

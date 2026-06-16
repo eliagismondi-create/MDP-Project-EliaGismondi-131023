@@ -1,4 +1,4 @@
-package it.unicam.cs.mpgc.rpg131023.model;
+package it.unicam.cs.mpgc.rpg131023.model.resource;
 
 /**
  * Definisce i tipi di risorse collezionabili all'interno del gioco.

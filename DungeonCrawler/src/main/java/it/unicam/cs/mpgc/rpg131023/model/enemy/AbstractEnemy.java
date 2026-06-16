@@ -1,7 +1,7 @@
 package it.unicam.cs.mpgc.rpg131023.model.enemy;
 
-import it.unicam.cs.mpgc.rpg131023.model.AbstractCombatant;
-import it.unicam.cs.mpgc.rpg131023.model.CombatStats;
+import it.unicam.cs.mpgc.rpg131023.model.combat.AbstractCombatant;
+import it.unicam.cs.mpgc.rpg131023.model.combat.CombatStats;
 
 public abstract class AbstractEnemy extends AbstractCombatant {
 
