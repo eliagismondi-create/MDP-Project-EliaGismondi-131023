@@ -10,4 +10,5 @@ public enum ResourceType {
     HEALTH_POTION,
     SWORD,
     ARMOR,
+    FOOD,
 }
