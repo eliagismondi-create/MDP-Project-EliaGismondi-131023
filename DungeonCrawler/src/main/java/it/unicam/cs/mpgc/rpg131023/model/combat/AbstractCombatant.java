@@ -62,6 +62,15 @@ public abstract class AbstractCombatant implements Damageable, Attacker {
         return this.health;
     }
 
+    /**
+     * Permette alle sottoclassi di modificare la salute (es. per la cura).
+     *
+     * @param health Il nuovo valore di salute.
+     */
+    protected void setHealth(final int health) {
+        this.health = health;
+    }
+
     public int getDamage() {
         return this.damage;
     }
