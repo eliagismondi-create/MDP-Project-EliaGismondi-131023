@@ -35,7 +35,7 @@ public abstract class AbstractCombatant implements Damageable, Attacker {
             throw new IllegalArgumentException("Il bersaglio e' gia' morto.");
         }
 
-        target.takeDamage(this.damage);
+        target.takeDamage(getDamage());
     }
 
     @Override

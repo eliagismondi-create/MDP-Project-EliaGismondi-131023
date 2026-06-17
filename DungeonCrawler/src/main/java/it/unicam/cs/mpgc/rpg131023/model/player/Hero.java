@@ -11,6 +11,8 @@ import it.unicam.cs.mpgc.rpg131023.model.resource.ResourceType;
 public class Hero extends AbstractCombatant {
     private int hunger;
     private int xp;
+    private int shield = 0;
+    private boolean swordEquipped = false;
     private final Map<ResourceType, Integer> resources;
 
     public Hero(final CombatStats stats) {
@@ -109,5 +111,43 @@ public class Hero extends AbstractCombatant {
 
     public int getXp() {
         return this.xp;
+    }
+
+    public void equipArmor() {
+        if (!consumeResource(ResourceType.ARMOR, 1)) {
+            throw new IllegalStateException("Nessuna armatura nell'inventario.");
+        }
+        this.shield += 50;
+    }
+
+    public void equipSword() {
+        if (!consumeResource(ResourceType.SWORD, 1)) {
+            throw new IllegalStateException("Nessuna spada nell'inventario.");
+        }
+        this.swordEquipped = true;
+    }
+
+    @Override
+    public int getDamage() {
+        return this.swordEquipped ? super.getDamage() + 25 : super.getDamage();
+    }
+
+    @Override
+    public void takeDamage(int amount) {
+        if (amount <= 0) {
+            throw new IllegalArgumentException("La quantita' di danni deve essere maggiore di zero.");
+        }
+        
+        if (this.shield > 0) {
+            if (this.shield >= amount) {
+                this.shield -= amount;
+            } else {
+                int remainingDamage = amount - this.shield;
+                this.shield = 0;
+                super.takeDamage(remainingDamage);
+            }
+        } else {
+            super.takeDamage(amount);
+        }
     }
 }

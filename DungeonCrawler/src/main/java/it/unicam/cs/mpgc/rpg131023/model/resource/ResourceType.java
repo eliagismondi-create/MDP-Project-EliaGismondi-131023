@@ -6,7 +6,6 @@ package it.unicam.cs.mpgc.rpg131023.model.resource;
  * (OCP).
  */
 public enum ResourceType {
-    GOLD,
     HEALTH_POTION,
     SWORD,
     ARMOR,
