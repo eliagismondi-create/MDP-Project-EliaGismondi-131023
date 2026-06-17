@@ -1,0 +1,34 @@
+{
+  "bandit_hideout": {
+    "name": "Bandit Hideout",
+    "description": "A secret refuge hidden in the woods, where thieves and scoundrels hoard food stolen from travelers under the guidance of dangerous goblins.",
+    "loot": {
+      "FOOD": 5
+    },
+    "enemySpawns": {
+      "GOBLIN": 1
+    }
+  },
+  "abandoned_keep": {
+    "name": "Abandoned Keep",
+    "description": "An ancient military stronghold now in ruins, occupied by ruthless orcs who still guard the equipment of old soldiers.",
+    "loot": {
+      "ARMOR": 1,
+      "SWORD": 1
+    },
+    "enemySpawns": {
+      "ORC": 1
+    }
+  },
+  "blackstone_catacombs": {
+    "name": "Blackstone Catacombs",
+    "description": "A grim underground labyrinth full of ransacked tombs. Reanimated skeletons wander among forgotten potions and dusty gold coins.",
+    "loot": {
+      "GOLD": 10,
+      "HEALTH_POTION": 2
+    },
+    "enemySpawns": {
+      "SKELETON": 1
+    }
+  }
+}
