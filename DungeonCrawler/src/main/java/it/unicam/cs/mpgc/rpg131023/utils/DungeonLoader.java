@@ -71,6 +71,21 @@ public final class DungeonLoader {
         return dungeon;
     }
 
+    /**
+     * Carica tutti i dungeon e li restituisce in una mappa.
+     * @return Mappa di tutti i dungeon caricati, indicizzati per ID.
+     */
+    public static Map<String, Dungeon> getAllDungeons() {
+        if (dungeonsCache == null) {
+            loadAllDungeons();
+        }
+        final Map<String, Dungeon> worldMap = new java.util.HashMap<>();
+        for (String id : dungeonsCache.keySet()) {
+            worldMap.put(id, loadDungeon(id));
+        }
+        return worldMap;
+    }
+
     private static void loadAllDungeons() {
         try (Reader reader = new InputStreamReader(
                 Objects.requireNonNull(DungeonLoader.class.getResourceAsStream(DUNGEONS_FILE),

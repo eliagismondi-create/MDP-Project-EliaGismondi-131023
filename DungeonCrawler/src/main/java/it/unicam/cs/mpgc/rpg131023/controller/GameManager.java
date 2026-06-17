@@ -78,4 +78,8 @@ public class GameManager {
     public Dungeon getCurrentDungeon() {
         return this.currentDungeon;
     }
+
+    public Hero getHero() {
+        return this.hero;
+    }
 }

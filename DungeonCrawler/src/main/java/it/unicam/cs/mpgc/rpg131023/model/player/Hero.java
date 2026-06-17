@@ -113,6 +113,14 @@ public class Hero extends AbstractCombatant {
         return this.xp;
     }
 
+    public int getShield() {
+        return this.shield;
+    }
+
+    public boolean isSwordEquipped() {
+        return this.swordEquipped;
+    }
+
     public void equipArmor() {
         if (!consumeResource(ResourceType.ARMOR, 1)) {
             throw new IllegalStateException("Nessuna armatura nell'inventario.");

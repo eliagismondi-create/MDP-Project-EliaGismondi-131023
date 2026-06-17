@@ -37,4 +37,12 @@ public class CombatManager {
     public boolean isHeroVictorious() {
         return isCombatOver() && this.hero.isAlive();
     }
+
+    public Hero getHero() {
+        return this.hero;
+    }
+
+    public AbstractEnemy getEnemy() {
+        return this.enemy;
+    }
 }
