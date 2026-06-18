@@ -1,6 +1,11 @@
 plugins {
     id("java")
     id("org.openjfx.javafxplugin") version "0.0.13"
+    application
+}
+
+application {
+    mainClass.set("it.unicam.cs.mpgc.rpg131023.view.Launcher")
 }
 
 group = "org.example"

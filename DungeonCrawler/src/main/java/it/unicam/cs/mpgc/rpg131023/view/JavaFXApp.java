@@ -16,15 +16,14 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.TilePane;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 
 import java.util.Map;
@@ -41,30 +40,33 @@ public class JavaFXApp extends Application implements GameView {
 
     @Override
     public void start(Stage primaryStage) {
-        // Inizializzazione del dominio tramite le utility
         CombatStats heroStats = StatsLoader.getStatsFor("hero");
         Hero hero = new Hero(heroStats);
         
-        // Simulo equipaggiamento iniziale per dare un po' di risorse all'eroe
         hero.addResource(ResourceType.HEALTH_POTION, 3);
         hero.addResource(ResourceType.FOOD, 2);
 
         Map<String, Dungeon> worldMap = DungeonLoader.getAllDungeons();
-
         this.gameManager = new GameManager(hero, worldMap);
 
-        // Inizializzazione della UI (BorderPane)
         this.rootPane = new BorderPane();
-        this.rootPane.setPadding(new Insets(10));
+        this.rootPane.setPadding(new Insets(20));
         
         this.eventLog = new TextArea();
         this.eventLog.setEditable(false);
-        this.eventLog.setPrefHeight(150);
-        this.eventLog.setFont(Font.font("Monospaced", 14));
+        this.eventLog.setPrefHeight(100);
+        this.eventLog.getStyleClass().add("ink-log");
+        this.eventLog.setWrapText(true);
         this.rootPane.setBottom(this.eventLog);
 
-        Scene scene = new Scene(this.rootPane, 1000, 700);
-        primaryStage.setTitle("Dungeon Crawler RPG");
+        Scene scene = new Scene(this.rootPane, 1050, 750);
+        try {
+            scene.getStylesheets().add(getClass().getResource("/styles.css").toExternalForm());
+        } catch (Exception e) {
+            System.err.println("Impossibile caricare styles.css");
+        }
+
+        primaryStage.setTitle("Dungeon Crawler - Rune & Ink");
         primaryStage.setScene(scene);
         primaryStage.show();
 
@@ -72,9 +74,6 @@ public class JavaFXApp extends Application implements GameView {
         refreshCurrentState();
     }
 
-    /**
-     * Aggiorna completamente la UI in base allo stato attuale del GameManager.
-     */
     private void refreshCurrentState() {
         switch (this.gameManager.getCurrentState()) {
             case HUB:
@@ -89,135 +88,154 @@ public class JavaFXApp extends Application implements GameView {
         }
     }
 
-    /**
-     * Crea un pannello riutilizzabile per mostrare le statistiche dell'eroe.
-     */
+    private HBox createStatRow(String key, String value) {
+        HBox row = new HBox(5);
+        Label keyLabel = new Label(key);
+        keyLabel.getStyleClass().add("ink-stat-key");
+        Label valLabel = new Label(value);
+        valLabel.getStyleClass().add("ink-stat-val");
+        row.getChildren().addAll(keyLabel, valLabel);
+        return row;
+    }
+
     private VBox createHeroStatsPanel(Hero hero) {
-        VBox panel = new VBox(10);
-        panel.setPadding(new Insets(10));
-        panel.setStyle("-fx-border-color: black; -fx-border-width: 1; -fx-background-color: #f0f0f0;");
-        panel.setPrefWidth(250);
+        VBox panel = new VBox(15);
+        panel.getStyleClass().add("ink-panel");
+        panel.setPrefWidth(220);
 
-        Label title = new Label("Eroe");
-        title.setFont(Font.font("Arial", FontWeight.BOLD, 18));
+        Label title = new Label("SCHEDA EROE");
+        title.getStyleClass().add("ink-title");
 
-        Label hp = new Label("Salute: " + hero.getHealth() + "/100");
-        Label shield = new Label("Scudo: " + hero.getShield());
-        Label hunger = new Label("Fame: " + hero.getHunger());
-        Label sword = new Label("Spada Equipaggiata: " + (hero.isSwordEquipped() ? "Si" : "No"));
-        Label dmg = new Label("Danno Base: " + hero.getDamage());
+        Region separator1 = new Region();
+        separator1.getStyleClass().add("ink-separator");
+        separator1.setMinHeight(2);
 
-        Label invTitle = new Label("Inventario:");
-        invTitle.setFont(Font.font("Arial", FontWeight.BOLD, 14));
+        VBox statsBox = new VBox(8);
+        statsBox.getChildren().addAll(
+            createStatRow("Salute:", hero.getHealth() + "/100"),
+            createStatRow("Scudo:", String.valueOf(hero.getShield())),
+            createStatRow("Fame:", String.valueOf(hero.getHunger())),
+            createStatRow("Spada:", hero.isSwordEquipped() ? "SI" : "NO"),
+            createStatRow("Danno Base:", String.valueOf(hero.getDamage()))
+        );
+
+        Region separator2 = new Region();
+        separator2.getStyleClass().add("ink-separator");
+        separator2.setMinHeight(2);
+
+        VBox invBox = new VBox(5);
+        Label invTitle = new Label("INVENTARIO");
+        invTitle.getStyleClass().add("ink-stat-key");
+        invBox.getChildren().add(invTitle);
         
-        VBox invList = new VBox(5);
         for (Map.Entry<ResourceType, Integer> entry : hero.getResources().entrySet()) {
-            invList.getChildren().add(new Label("- " + entry.getKey() + ": " + entry.getValue()));
+            Label item = new Label("⬡ " + entry.getKey() + ": " + entry.getValue());
+            item.getStyleClass().add("ink-stat-val");
+            invBox.getChildren().add(item);
         }
 
-        // Pulsanti di azione rapida
-        Button healBtn = new Button("Usa Pozione");
-        healBtn.setMaxWidth(Double.MAX_VALUE);
+        Region separator3 = new Region();
+        separator3.getStyleClass().add("ink-separator");
+        separator3.setMinHeight(2);
+
+        GridPane actionGrid = new GridPane();
+        actionGrid.setHgap(10);
+        actionGrid.setVgap(10);
+        actionGrid.setAlignment(Pos.CENTER);
+
+        Button healBtn = createInkButton("POZIONE");
         healBtn.setOnAction(e -> {
-            try {
-                hero.heal();
-                showMessage("Hai usato una pozione di cura.");
-                refreshCurrentState();
-            } catch (Exception ex) {
-                showMessage("Errore: " + ex.getMessage());
-            }
+            try { hero.heal(); showMessage("Bevuta una pozione curativa."); refreshCurrentState(); }
+            catch (Exception ex) { showMessage("Errore: " + ex.getMessage()); }
         });
 
-        Button eatBtn = new Button("Mangia Cibo");
-        eatBtn.setMaxWidth(Double.MAX_VALUE);
+        Button eatBtn = createInkButton("CIBO");
         eatBtn.setOnAction(e -> {
-            try {
-                hero.eat();
-                showMessage("Hai mangiato del cibo. Fame azzerata.");
-                refreshCurrentState();
-            } catch (Exception ex) {
-                showMessage("Errore: " + ex.getMessage());
-            }
+            try { hero.eat(); showMessage("Mangiata razione di cibo."); refreshCurrentState(); }
+            catch (Exception ex) { showMessage("Errore: " + ex.getMessage()); }
         });
 
-        Button equipSwordBtn = new Button("Equipaggia Spada");
-        equipSwordBtn.setMaxWidth(Double.MAX_VALUE);
-        equipSwordBtn.setOnAction(e -> {
-            try {
-                hero.equipSword();
-                showMessage("Hai equipaggiato la spada!");
-                refreshCurrentState();
-            } catch (Exception ex) {
-                showMessage("Errore: " + ex.getMessage());
-            }
+        Button swordBtn = createInkButton("SPADA");
+        swordBtn.setOnAction(e -> {
+            try { hero.equipSword(); showMessage("Spada equipaggiata."); refreshCurrentState(); }
+            catch (Exception ex) { showMessage("Errore: " + ex.getMessage()); }
         });
 
-        Button equipArmorBtn = new Button("Equipaggia Armatura");
-        equipArmorBtn.setMaxWidth(Double.MAX_VALUE);
-        equipArmorBtn.setOnAction(e -> {
-            try {
-                hero.equipArmor();
-                showMessage("Hai equipaggiato l'armatura (+50 Scudo)!");
-                refreshCurrentState();
-            } catch (Exception ex) {
-                showMessage("Errore: " + ex.getMessage());
-            }
+        Button armorBtn = createInkButton("SCUDO");
+        armorBtn.setOnAction(e -> {
+            try { hero.equipArmor(); showMessage("Armatura indossata."); refreshCurrentState(); }
+            catch (Exception ex) { showMessage("Errore: " + ex.getMessage()); }
         });
 
-        panel.getChildren().addAll(
-            title, hp, shield, hunger, sword, dmg, 
-            invTitle, invList, 
-            healBtn, eatBtn, equipSwordBtn, equipArmorBtn
-        );
+        actionGrid.add(healBtn, 0, 0);
+        actionGrid.add(eatBtn, 1, 0);
+        actionGrid.add(swordBtn, 0, 1);
+        actionGrid.add(armorBtn, 1, 1);
+
+        panel.getChildren().addAll(title, separator1, statsBox, separator2, invBox, separator3, actionGrid);
         return panel;
+    }
+
+    private Button createInkButton(String text) {
+        Button btn = new Button(text);
+        btn.getStyleClass().add("ink-button");
+        btn.setMaxWidth(Double.MAX_VALUE);
+        return btn;
     }
 
     @Override
     public void showWelcomeMessage() {
-        showMessage("Benvenuto nell'HUB! Scegli un dungeon e preparati per l'esplorazione.");
+        showMessage("Benvenuto nell'HUB! Scegli la tua prossima spedizione.");
     }
 
     @Override
     public void displayHub(Hero hero, Map<String, Dungeon> worldMap) {
         this.rootPane.setLeft(createHeroStatsPanel(hero));
-        this.rootPane.setRight(null); // Pulisce il lato destro
+        this.rootPane.setRight(null);
 
-        VBox center = new VBox(20);
+        VBox center = new VBox(30);
         center.setAlignment(Pos.CENTER);
-        Label title = new Label("Seleziona un Dungeon da esplorare:");
-        title.setFont(Font.font("Arial", FontWeight.BOLD, 24));
         
-        TilePane tilePane = new TilePane();
-        tilePane.setPadding(new Insets(10));
-        tilePane.setHgap(20);
-        tilePane.setVgap(20);
-        tilePane.setAlignment(Pos.CENTER);
+        Label title = new Label("SELEZIONA UN DUNGEON DA ESPLORARE");
+        title.getStyleClass().add("ink-title");
+        title.setStyle("-fx-font-size: 24px;");
+        
+        HBox dungeonRow = new HBox(20);
+        dungeonRow.setAlignment(Pos.CENTER);
 
         for (Dungeon dungeon : worldMap.values()) {
-            VBox dungeonCard = new VBox(10);
-            dungeonCard.setAlignment(Pos.CENTER);
-            dungeonCard.setStyle("-fx-border-color: gray; -fx-padding: 10; -fx-background-color: white; -fx-border-radius: 5;");
+            VBox card = new VBox(15);
+            card.setAlignment(Pos.CENTER);
+            card.getStyleClass().add("ink-dungeon-card");
+            card.setPrefWidth(240);
             
-            // Carica l'immagine generata
-            String imagePath = "/assets/" + dungeon.getId() + ".png";
             try {
-                Image img = new Image(getClass().getResourceAsStream(imagePath));
+                String imgName = dungeon.getId() + ".png";
+                Image img = new Image(getClass().getResourceAsStream("/assets/" + imgName));
                 ImageView iv = new ImageView(img);
-                iv.setFitWidth(250);
+                iv.setFitWidth(220);
                 iv.setPreserveRatio(true);
-                dungeonCard.getChildren().add(iv);
+                
+                VBox imageBox = new VBox(iv);
+                imageBox.setStyle("-fx-background-color: #f0ebe0; -fx-border-color: transparent transparent #2c2418 transparent; -fx-border-width: 0 0 1.5px 0;");
+                card.getChildren().add(imageBox);
             } catch (Exception e) {
-                // Immagine non trovata, ignoriamo
+                // Ignore missing images
             }
 
-            Label dName = new Label(dungeon.getName());
-            dName.setFont(Font.font("Arial", FontWeight.BOLD, 18));
+            Label dName = new Label(dungeon.getName().toUpperCase());
+            dName.getStyleClass().add("ink-title");
+            dName.setStyle("-fx-font-size: 16px; -fx-padding: 0;");
             
-            Button enterBtn = new Button("Esplora");
-            enterBtn.setStyle("-fx-font-size: 14px; -fx-font-weight: bold;");
+            // Hardcoded generic diff test
+            String diff = dungeon.getId().contains("bandit") ? "DIFFICOLTÀ: NORMALE" : "DIFFICOLTÀ: ARDUA";
+            Label dSub = new Label(diff);
+            dSub.getStyleClass().add("ink-stat-key");
+
+            Button enterBtn = createInkButton("ESPLORA");
             enterBtn.setOnAction(e -> {
                 try {
-                    showMessage("Entri nel dungeon: " + dungeon.getName());
+                    showMessage("Ti avventuri nel dungeon: " + dungeon.getName());
                     this.gameManager.enterDungeon(dungeon.getId());
                     refreshCurrentState();
                 } catch (Exception ex) {
@@ -225,15 +243,11 @@ public class JavaFXApp extends Application implements GameView {
                 }
             });
             
-            dungeonCard.getChildren().addAll(dName, enterBtn);
-            tilePane.getChildren().add(dungeonCard);
+            card.getChildren().addAll(dName, dSub, enterBtn);
+            dungeonRow.getChildren().add(card);
         }
 
-        ScrollPane scrollPane = new ScrollPane(tilePane);
-        scrollPane.setFitToWidth(true);
-        scrollPane.setStyle("-fx-background-color: transparent;");
-
-        center.getChildren().addAll(title, scrollPane);
+        center.getChildren().addAll(title, dungeonRow);
         this.rootPane.setCenter(center);
     }
 
@@ -244,69 +258,66 @@ public class JavaFXApp extends Application implements GameView {
 
         this.rootPane.setLeft(createHeroStatsPanel(hero));
 
-        VBox center = new VBox(20);
+        VBox center = new VBox(30);
         center.setAlignment(Pos.CENTER);
         
-        Label title = new Label("Combattimento in corso!");
-        title.setFont(Font.font("Arial", FontWeight.BOLD, 28));
-        title.setStyle("-fx-text-fill: darkred;");
+        Label title = new Label("COMBATTIMENTO");
+        title.getStyleClass().add("ink-title");
+        title.setStyle("-fx-font-size: 32px;");
 
-        Button attackBtn = new Button("ATTACCA (Spada Incrociata)");
-        attackBtn.setFont(Font.font("Arial", FontWeight.BOLD, 24));
-        attackBtn.setStyle("-fx-background-color: #ff4444; -fx-text-fill: white; -fx-padding: 15 30; -fx-border-radius: 10; -fx-background-radius: 10;");
+        Button attackBtn = createInkButton("ATTACCA IL NEMICO");
+        attackBtn.setStyle("-fx-font-size: 20px; -fx-padding: 15px 30px;");
         
-        // Logica di attacco alternato istantaneo
         attackBtn.setOnAction(e -> {
             try {
-                // Attacco dell'Eroe
-                int heroHpBefore = hero.getHealth();
                 int enemyHpBefore = enemy.getHealth();
-                
                 combatManager.executeNextTurn();
-                int damageToEnemy = enemyHpBefore - enemy.getHealth();
-                showMessage("Hai attaccato il nemico! Inflitti " + damageToEnemy + " danni.");
+                int dmg = enemyHpBefore - enemy.getHealth();
+                showMessage("Assesti un colpo! Inflitti " + dmg + " danni.");
                 
-                // Se il nemico è ancora vivo, contrattacca
                 if (!combatManager.isCombatOver()) {
+                    int heroHpBefore = hero.getHealth();
                     combatManager.executeNextTurn();
-                    int damageToHero = heroHpBefore - hero.getHealth();
-                    showMessage("Il nemico contrattacca! Inflitti " + damageToHero + " danni.");
+                    int dmgHero = heroHpBefore - hero.getHealth();
+                    showMessage("Il nemico contrattacca. Subiti " + dmgHero + " danni.");
                 }
                 
-                // Verifica fine combattimento
                 if (combatManager.isCombatOver()) {
                     if (combatManager.isHeroVictorious()) {
-                        showMessage("VITTORIA! Hai sconfitto il nemico e ottenuto il bottino.");
+                        showMessage("VITTORIA! Nemico sconfitto.");
                     } else {
-                        showMessage("SEI MORTO. Hai fallito.");
+                        showMessage("SCONFITTA! Sei caduto in battaglia.");
                     }
                     this.gameManager.resolveCombatEnd();
                 }
-                
                 refreshCurrentState();
             } catch (Exception ex) {
-                showMessage("Errore durante il combattimento: " + ex.getMessage());
+                showMessage("Errore combattimento: " + ex.getMessage());
             }
         });
 
         center.getChildren().addAll(title, attackBtn);
         this.rootPane.setCenter(center);
 
-        // Pannello destro per il Nemico
-        VBox right = new VBox(10);
-        right.setPadding(new Insets(10));
-        right.setStyle("-fx-border-color: darkred; -fx-border-width: 2; -fx-background-color: #ffe6e6;");
-        right.setPrefWidth(250);
+        VBox right = new VBox(15);
+        right.getStyleClass().add("ink-panel");
+        right.setPrefWidth(200);
 
-        Label eTitle = new Label("Nemico: " + enemy.getClass().getSimpleName());
-        eTitle.setFont(Font.font("Arial", FontWeight.BOLD, 18));
-        eTitle.setStyle("-fx-text-fill: darkred;");
-        
-        Label eHp = new Label("Salute: " + enemy.getHealth());
-        eHp.setFont(Font.font("Arial", 16));
-        Label eDmg = new Label("Danno base: " + enemy.getDamage());
+        Label eTitle = new Label("NEMICO");
+        eTitle.getStyleClass().add("ink-title");
 
-        right.getChildren().addAll(eTitle, eHp, eDmg);
+        Region sep = new Region();
+        sep.getStyleClass().add("ink-separator");
+        sep.setMinHeight(2);
+
+        VBox statsBox = new VBox(10);
+        statsBox.getChildren().addAll(
+            createStatRow("Tipo:", enemy.getClass().getSimpleName()),
+            createStatRow("Salute:", String.valueOf(enemy.getHealth())),
+            createStatRow("Danno:", String.valueOf(enemy.getDamage()))
+        );
+
+        right.getChildren().addAll(eTitle, sep, statsBox);
         this.rootPane.setRight(right);
     }
 
@@ -318,20 +329,21 @@ public class JavaFXApp extends Application implements GameView {
         VBox center = new VBox(30);
         center.setAlignment(Pos.CENTER);
         
-        Label title = new Label("GAME OVER");
-        title.setFont(Font.font("Arial", FontWeight.BOLD, 64));
-        title.setStyle("-fx-text-fill: darkred;");
+        Label title = new Label("IL TUO VIAGGIO TERMINA QUI");
+        title.getStyleClass().add("ink-title");
+        title.setStyle("-fx-font-size: 42px;");
         
-        Label sub = new Label("Sei caduto in battaglia...");
-        sub.setFont(Font.font("Arial", 24));
+        Label sub = new Label("L'eroe e' caduto. Game Over.");
+        sub.getStyleClass().add("ink-stat-key");
+        sub.setStyle("-fx-font-size: 24px;");
 
         center.getChildren().addAll(title, sub);
         this.rootPane.setCenter(center);
-        showMessage("--- GIOCO TERMINATO ---");
+        showMessage("L'avventura volge al termine.");
     }
 
     @Override
     public void showMessage(String message) {
-        this.eventLog.appendText(message + "\n");
+        this.eventLog.appendText("· " + message + "\n");
     }
 }

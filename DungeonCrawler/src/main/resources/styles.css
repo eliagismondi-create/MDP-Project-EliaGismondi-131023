@@ -1,0 +1,79 @@
+.root {
+    -fx-background-color: #faf9f6;
+    -fx-font-family: 'Times New Roman', serif;
+}
+
+.ink-panel {
+    -fx-background-color: #faf9f6;
+    -fx-border-color: #2c2418;
+    -fx-border-width: 1.5px;
+    -fx-border-radius: 5px;
+    -fx-background-radius: 5px;
+    -fx-padding: 15px;
+}
+
+.ink-button {
+    -fx-background-color: transparent;
+    -fx-border-color: #2c2418;
+    -fx-border-width: 1.5px;
+    -fx-border-radius: 4px;
+    -fx-text-fill: #2c2418;
+    -fx-font-family: 'Times New Roman', serif;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+    -fx-cursor: hand;
+    -fx-padding: 8px 15px;
+}
+
+.ink-button:hover {
+    -fx-background-color: #2c2418;
+    -fx-text-fill: #faf9f6;
+}
+
+.ink-title {
+    -fx-text-fill: #2c2418;
+    -fx-font-family: 'Times New Roman', serif;
+    -fx-font-weight: bold;
+    -fx-font-size: 20px;
+    -fx-padding: 0 0 10px 0;
+}
+
+.ink-stat-key {
+    -fx-text-fill: #8a7050;
+    -fx-font-family: 'Times New Roman', serif;
+    -fx-font-size: 14px;
+}
+
+.ink-stat-val {
+    -fx-text-fill: #2c2418;
+    -fx-font-family: 'Times New Roman', serif;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+}
+
+.ink-dungeon-card {
+    -fx-background-color: #faf9f6;
+    -fx-border-color: #2c2418;
+    -fx-border-width: 1.5px;
+    -fx-border-radius: 6px;
+    -fx-background-radius: 6px;
+    -fx-padding: 10px;
+}
+
+.ink-log {
+    -fx-background-color: #f0ebe0;
+    -fx-control-inner-background: #f0ebe0;
+    -fx-text-fill: #6a5a3a;
+    -fx-font-family: 'Times New Roman', serif;
+    -fx-font-style: italic;
+    -fx-font-size: 14px;
+    -fx-border-color: #2c2418;
+    -fx-border-width: 1.5px 0 0 0; /* Solo sopra per staccare dal body */
+}
+
+/* Linea tratteggiata per separatori */
+.ink-separator {
+    -fx-border-color: #2c2418 transparent transparent transparent;
+    -fx-border-width: 1.5px 0 0 0;
+    -fx-border-style: dashed;
+}

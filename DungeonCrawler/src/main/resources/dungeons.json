@@ -24,7 +24,6 @@
     "name": "Blackstone Catacombs",
     "description": "A grim underground labyrinth full of ransacked tombs. Reanimated skeletons wander among forgotten potions and dusty gold coins.",
     "loot": {
-      "GOLD": 10,
       "HEALTH_POTION": 2
     },
     "enemySpawns": {
