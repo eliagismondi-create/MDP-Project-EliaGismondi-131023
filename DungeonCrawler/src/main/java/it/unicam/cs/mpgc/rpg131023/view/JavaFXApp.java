@@ -40,15 +40,6 @@ public class JavaFXApp extends Application implements GameView {
 
     @Override
     public void start(Stage primaryStage) {
-        CombatStats heroStats = StatsLoader.getStatsFor("hero");
-        Hero hero = new Hero(heroStats);
-        
-        hero.addResource(ResourceType.HEALTH_POTION, 3);
-        hero.addResource(ResourceType.FOOD, 2);
-
-        Map<String, Dungeon> worldMap = DungeonLoader.getAllDungeons();
-        this.gameManager = new GameManager(hero, worldMap);
-
         this.rootPane = new BorderPane();
         this.rootPane.setPadding(new Insets(20));
         
@@ -63,13 +54,27 @@ public class JavaFXApp extends Application implements GameView {
         try {
             scene.getStylesheets().add(getClass().getResource("/styles.css").toExternalForm());
         } catch (Exception e) {
-            System.err.println("Impossibile caricare styles.css");
+            System.err.println("Unable to load styles.css");
         }
 
         primaryStage.setTitle("Dungeon Crawler - Rune & Ink");
         primaryStage.setScene(scene);
         primaryStage.show();
 
+        restartGame();
+    }
+
+    private void restartGame() {
+        CombatStats heroStats = StatsLoader.getStatsFor("hero");
+        Hero hero = new Hero(heroStats);
+        
+        hero.addResource(ResourceType.HEALTH_POTION, 3);
+        hero.addResource(ResourceType.FOOD, 2);
+
+        Map<String, Dungeon> worldMap = DungeonLoader.getAllDungeons();
+        this.gameManager = new GameManager(hero, worldMap);
+
+        this.eventLog.clear();
         showWelcomeMessage();
         refreshCurrentState();
     }
@@ -103,7 +108,7 @@ public class JavaFXApp extends Application implements GameView {
         panel.getStyleClass().add("ink-panel");
         panel.setPrefWidth(220);
 
-        Label title = new Label("SCHEDA EROE");
+        Label title = new Label("HERO STATS");
         title.getStyleClass().add("ink-title");
 
         Region separator1 = new Region();
@@ -112,11 +117,11 @@ public class JavaFXApp extends Application implements GameView {
 
         VBox statsBox = new VBox(8);
         statsBox.getChildren().addAll(
-            createStatRow("Salute:", hero.getHealth() + "/100"),
-            createStatRow("Scudo:", String.valueOf(hero.getShield())),
-            createStatRow("Fame:", String.valueOf(hero.getHunger())),
-            createStatRow("Spada:", hero.isSwordEquipped() ? "SI" : "NO"),
-            createStatRow("Danno Base:", String.valueOf(hero.getDamage()))
+            createStatRow("Health:", hero.getHealth() + "/100"),
+            createStatRow("Shield:", String.valueOf(hero.getShield())),
+            createStatRow("Hunger:", String.valueOf(hero.getHunger())),
+            createStatRow("Sword:", hero.isSwordEquipped() ? "YES" : "NO"),
+            createStatRow("Base Damage:", String.valueOf(hero.getDamage()))
         );
 
         Region separator2 = new Region();
@@ -124,7 +129,7 @@ public class JavaFXApp extends Application implements GameView {
         separator2.setMinHeight(2);
 
         VBox invBox = new VBox(5);
-        Label invTitle = new Label("INVENTARIO");
+        Label invTitle = new Label("INVENTORY");
         invTitle.getStyleClass().add("ink-stat-key");
         invBox.getChildren().add(invTitle);
         
@@ -143,28 +148,28 @@ public class JavaFXApp extends Application implements GameView {
         actionGrid.setVgap(10);
         actionGrid.setAlignment(Pos.CENTER);
 
-        Button healBtn = createInkButton("POZIONE");
+        Button healBtn = createInkButton("POTION");
         healBtn.setOnAction(e -> {
-            try { hero.heal(); showMessage("Bevuta una pozione curativa."); refreshCurrentState(); }
-            catch (Exception ex) { showMessage("Errore: " + ex.getMessage()); }
+            try { hero.heal(); showMessage("Drank a healing potion."); refreshCurrentState(); }
+            catch (Exception ex) { showMessage("Error: " + ex.getMessage()); }
         });
 
-        Button eatBtn = createInkButton("CIBO");
+        Button eatBtn = createInkButton("FOOD");
         eatBtn.setOnAction(e -> {
-            try { hero.eat(); showMessage("Mangiata razione di cibo."); refreshCurrentState(); }
-            catch (Exception ex) { showMessage("Errore: " + ex.getMessage()); }
+            try { hero.eat(); showMessage("Ate a food ration."); refreshCurrentState(); }
+            catch (Exception ex) { showMessage("Error: " + ex.getMessage()); }
         });
 
-        Button swordBtn = createInkButton("SPADA");
+        Button swordBtn = createInkButton("SWORD");
         swordBtn.setOnAction(e -> {
-            try { hero.equipSword(); showMessage("Spada equipaggiata."); refreshCurrentState(); }
-            catch (Exception ex) { showMessage("Errore: " + ex.getMessage()); }
+            try { hero.equipSword(); showMessage("Sword equipped."); refreshCurrentState(); }
+            catch (Exception ex) { showMessage("Error: " + ex.getMessage()); }
         });
 
-        Button armorBtn = createInkButton("SCUDO");
+        Button armorBtn = createInkButton("SHIELD");
         armorBtn.setOnAction(e -> {
-            try { hero.equipArmor(); showMessage("Armatura indossata."); refreshCurrentState(); }
-            catch (Exception ex) { showMessage("Errore: " + ex.getMessage()); }
+            try { hero.equipArmor(); showMessage("Armor equipped."); refreshCurrentState(); }
+            catch (Exception ex) { showMessage("Error: " + ex.getMessage()); }
         });
 
         actionGrid.add(healBtn, 0, 0);
@@ -185,7 +190,7 @@ public class JavaFXApp extends Application implements GameView {
 
     @Override
     public void showWelcomeMessage() {
-        showMessage("Benvenuto nell'HUB! Scegli la tua prossima spedizione.");
+        showMessage("Welcome to the HUB! Choose your next expedition.");
     }
 
     @Override
@@ -196,7 +201,7 @@ public class JavaFXApp extends Application implements GameView {
         VBox center = new VBox(30);
         center.setAlignment(Pos.CENTER);
         
-        Label title = new Label("SELEZIONA UN DUNGEON DA ESPLORARE");
+        Label title = new Label("SELECT A DUNGEON TO EXPLORE");
         title.getStyleClass().add("ink-title");
         title.setStyle("-fx-font-size: 24px;");
         
@@ -228,18 +233,18 @@ public class JavaFXApp extends Application implements GameView {
             dName.setStyle("-fx-font-size: 16px; -fx-padding: 0;");
             
             // Hardcoded generic diff test
-            String diff = dungeon.getId().contains("bandit") ? "DIFFICOLTÀ: NORMALE" : "DIFFICOLTÀ: ARDUA";
+            String diff = dungeon.getId().contains("bandit") ? "DIFFICULTY: NORMAL" : "DIFFICULTY: HARD";
             Label dSub = new Label(diff);
             dSub.getStyleClass().add("ink-stat-key");
 
-            Button enterBtn = createInkButton("ESPLORA");
+            Button enterBtn = createInkButton("EXPLORE");
             enterBtn.setOnAction(e -> {
                 try {
-                    showMessage("Ti avventuri nel dungeon: " + dungeon.getName());
+                    showMessage("You venture into the dungeon: " + dungeon.getName());
                     this.gameManager.enterDungeon(dungeon.getId());
                     refreshCurrentState();
                 } catch (Exception ex) {
-                    showMessage("Errore: " + ex.getMessage());
+                    showMessage("Error: " + ex.getMessage());
                 }
             });
             
@@ -261,11 +266,11 @@ public class JavaFXApp extends Application implements GameView {
         VBox center = new VBox(30);
         center.setAlignment(Pos.CENTER);
         
-        Label title = new Label("COMBATTIMENTO");
+        Label title = new Label("COMBAT");
         title.getStyleClass().add("ink-title");
         title.setStyle("-fx-font-size: 32px;");
 
-        Button attackBtn = createInkButton("ATTACCA IL NEMICO");
+        Button attackBtn = createInkButton("ATTACK ENEMY");
         attackBtn.setStyle("-fx-font-size: 20px; -fx-padding: 15px 30px;");
         
         attackBtn.setOnAction(e -> {
@@ -273,26 +278,26 @@ public class JavaFXApp extends Application implements GameView {
                 int enemyHpBefore = enemy.getHealth();
                 combatManager.executeNextTurn();
                 int dmg = enemyHpBefore - enemy.getHealth();
-                showMessage("Assesti un colpo! Inflitti " + dmg + " danni.");
+                showMessage("You land a hit! Dealt " + dmg + " damage.");
                 
                 if (!combatManager.isCombatOver()) {
                     int heroHpBefore = hero.getHealth();
                     combatManager.executeNextTurn();
                     int dmgHero = heroHpBefore - hero.getHealth();
-                    showMessage("Il nemico contrattacca. Subiti " + dmgHero + " danni.");
+                    showMessage("The enemy counterattacks. Received " + dmgHero + " damage.");
                 }
                 
                 if (combatManager.isCombatOver()) {
                     if (combatManager.isHeroVictorious()) {
-                        showMessage("VITTORIA! Nemico sconfitto.");
+                        showMessage("VICTORY! Enemy defeated.");
                     } else {
-                        showMessage("SCONFITTA! Sei caduto in battaglia.");
+                        showMessage("DEFEAT! You have fallen in battle.");
                     }
                     this.gameManager.resolveCombatEnd();
                 }
                 refreshCurrentState();
             } catch (Exception ex) {
-                showMessage("Errore combattimento: " + ex.getMessage());
+                showMessage("Combat error: " + ex.getMessage());
             }
         });
 
@@ -303,7 +308,7 @@ public class JavaFXApp extends Application implements GameView {
         right.getStyleClass().add("ink-panel");
         right.setPrefWidth(200);
 
-        Label eTitle = new Label("NEMICO");
+        Label eTitle = new Label("ENEMY");
         eTitle.getStyleClass().add("ink-title");
 
         Region sep = new Region();
@@ -312,9 +317,9 @@ public class JavaFXApp extends Application implements GameView {
 
         VBox statsBox = new VBox(10);
         statsBox.getChildren().addAll(
-            createStatRow("Tipo:", enemy.getClass().getSimpleName()),
-            createStatRow("Salute:", String.valueOf(enemy.getHealth())),
-            createStatRow("Danno:", String.valueOf(enemy.getDamage()))
+            createStatRow("Type:", enemy.getClass().getSimpleName()),
+            createStatRow("Health:", String.valueOf(enemy.getHealth())),
+            createStatRow("Damage:", String.valueOf(enemy.getDamage()))
         );
 
         right.getChildren().addAll(eTitle, sep, statsBox);
@@ -329,17 +334,21 @@ public class JavaFXApp extends Application implements GameView {
         VBox center = new VBox(30);
         center.setAlignment(Pos.CENTER);
         
-        Label title = new Label("IL TUO VIAGGIO TERMINA QUI");
+        Label title = new Label("YOUR JOURNEY ENDS HERE");
         title.getStyleClass().add("ink-title");
         title.setStyle("-fx-font-size: 42px;");
         
-        Label sub = new Label("L'eroe e' caduto. Game Over.");
+        Label sub = new Label("The hero has fallen. Game Over.");
         sub.getStyleClass().add("ink-stat-key");
         sub.setStyle("-fx-font-size: 24px;");
 
-        center.getChildren().addAll(title, sub);
+        Button restartBtn = createInkButton("RESTART");
+        restartBtn.setMaxWidth(200);
+        restartBtn.setOnAction(e -> restartGame());
+
+        center.getChildren().addAll(title, sub, restartBtn);
         this.rootPane.setCenter(center);
-        showMessage("L'avventura volge al termine.");
+        showMessage("The adventure comes to an end.");
     }
 
     @Override
