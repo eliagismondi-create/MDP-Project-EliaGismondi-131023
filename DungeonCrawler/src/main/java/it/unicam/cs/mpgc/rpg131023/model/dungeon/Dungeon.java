@@ -1,11 +1,12 @@
 package it.unicam.cs.mpgc.rpg131023.model.dungeon;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumMap;
+import java.util.List;
 import java.util.Map;
 
 import it.unicam.cs.mpgc.rpg131023.model.enemy.EnemyType;
-import it.unicam.cs.mpgc.rpg131023.model.resource.ResourceType;
 
 /**
  * Rappresenta un Dungeon nel gioco, le cui istanze vengono popolate a runtime
@@ -15,7 +16,7 @@ public class Dungeon {
     private final String id;
     private final String name;
     private final String description;
-    private final Map<ResourceType, Integer> treasure;
+    private final List<Loot> treasures;
     private final Map<EnemyType, Integer> enemySpawns;
 
     public Dungeon(final String id, final String name, final String description) {
@@ -31,24 +32,20 @@ public class Dungeon {
         this.id = id;
         this.name = name;
         this.description = description;
-        this.treasure = new EnumMap<>(ResourceType.class);
+        this.treasures = new ArrayList<>();
         this.enemySpawns = new EnumMap<>(EnemyType.class);
     }
 
     /**
-     * Aggiunge risorse al bottino (loot) del dungeon in modo sicuro (Fail-Fast).
+     * Aggiunge un bottino al dungeon in modo sicuro (Fail-Fast).
      * 
-     * @param type   Il tipo di risorsa.
-     * @param amount La quantita' da aggiungere.
+     * @param loot L'oggetto Loot da aggiungere.
      */
-    public void addLoot(final ResourceType type, final int amount) {
-        if (type == null) {
-            throw new NullPointerException("Il tipo di risorsa non puo' essere null.");
+    public void addLoot(final Loot loot) {
+        if (loot == null) {
+            throw new NullPointerException("Il loot non puo' essere null.");
         }
-        if (amount <= 0) {
-            throw new IllegalArgumentException("La quantita' deve essere maggiore di zero.");
-        }
-        this.treasure.put(type, this.treasure.getOrDefault(type, 0) + amount);
+        this.treasures.add(loot);
     }
 
     /**
@@ -80,10 +77,10 @@ public class Dungeon {
     }
 
     /**
-     * @return Mappa immutabile del tesoro.
+     * @return Lista immutabile dei tesori.
      */
-    public Map<ResourceType, Integer> getTreasure() {
-        return Collections.unmodifiableMap(this.treasure);
+    public List<Loot> getTreasures() {
+        return Collections.unmodifiableList(this.treasures);
     }
 
     /**

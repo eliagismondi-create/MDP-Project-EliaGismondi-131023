@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import it.unicam.cs.mpgc.rpg131023.model.dungeon.Dungeon;
+import it.unicam.cs.mpgc.rpg131023.model.dungeon.ResourceLoot;
 import it.unicam.cs.mpgc.rpg131023.model.enemy.EnemyType;
 import it.unicam.cs.mpgc.rpg131023.model.resource.ResourceType;
 
@@ -58,7 +59,7 @@ public final class DungeonLoader {
 
         if (dto.loot != null) {
             for (Map.Entry<ResourceType, Integer> entry : dto.loot.entrySet()) {
-                dungeon.addLoot(entry.getKey(), entry.getValue());
+                dungeon.addLoot(new ResourceLoot(entry.getKey(), entry.getValue()));
             }
         }
 

@@ -134,7 +134,8 @@ public class JavaFXApp extends Application implements GameView {
         invBox.getChildren().add(invTitle);
         
         for (Map.Entry<ResourceType, Integer> entry : hero.getResources().entrySet()) {
-            Label item = new Label("⬡ " + entry.getKey() + ": " + entry.getValue());
+            String resourceName = entry.getKey().toString().replace("_", " ");
+            Label item = new Label("⬡ " + resourceName + ": " + entry.getValue());
             item.getStyleClass().add("ink-stat-val");
             invBox.getChildren().add(item);
         }
@@ -222,7 +223,8 @@ public class JavaFXApp extends Application implements GameView {
                 iv.setPreserveRatio(true);
                 
                 VBox imageBox = new VBox(iv);
-                imageBox.setStyle("-fx-background-color: #f0ebe0; -fx-border-color: transparent transparent #2c2418 transparent; -fx-border-width: 0 0 1.5px 0;");
+                imageBox.setOnMouseClicked(event -> displayDungeonInfo(dungeon));
+                imageBox.setStyle("-fx-background-color: #f0ebe0; -fx-border-color: transparent transparent #2c2418 transparent; -fx-border-width: 0 0 1.5px 0; -fx-cursor: hand;");
                 card.getChildren().add(imageBox);
             } catch (Exception e) {
                 // Ignore missing images
@@ -253,6 +255,60 @@ public class JavaFXApp extends Application implements GameView {
         }
 
         center.getChildren().addAll(title, dungeonRow);
+        this.rootPane.setCenter(center);
+    }
+
+    private void displayDungeonInfo(Dungeon dungeon) {
+        this.rootPane.setLeft(null);
+        this.rootPane.setRight(null);
+
+        VBox center = new VBox(20);
+        center.setAlignment(Pos.CENTER);
+
+        Label title = new Label("DUNGEON INFO: " + dungeon.getName().toUpperCase());
+        title.getStyleClass().add("ink-title");
+        title.setStyle("-fx-font-size: 28px;");
+
+        Label desc = new Label(dungeon.getDescription());
+        desc.getStyleClass().add("ink-stat-key");
+        desc.setWrapText(true);
+        desc.setMaxWidth(400);
+
+        VBox lootBox = new VBox(10);
+        lootBox.setAlignment(Pos.CENTER);
+        lootBox.getStyleClass().add("ink-panel");
+        lootBox.setMaxWidth(300);
+        
+        Label lootTitle = new Label("AVAILABLE LOOT");
+        lootTitle.getStyleClass().add("ink-title");
+        lootBox.getChildren().add(lootTitle);
+
+        UILootRendererVisitor visitor = new UILootRendererVisitor();
+        for (it.unicam.cs.mpgc.rpg131023.model.dungeon.Loot loot : dungeon.getTreasures()) {
+            loot.accept(visitor);
+        }
+        lootBox.getChildren().add(visitor.getGraphic());
+
+        HBox buttons = new HBox(20);
+        buttons.setAlignment(Pos.CENTER);
+
+        Button backBtn = createInkButton("BACK");
+        backBtn.setOnAction(e -> refreshCurrentState());
+
+        Button enterBtn = createInkButton("EXPLORE");
+        enterBtn.setOnAction(e -> {
+            try {
+                showMessage("You venture into the dungeon: " + dungeon.getName());
+                this.gameManager.enterDungeon(dungeon.getId());
+                refreshCurrentState();
+            } catch (Exception ex) {
+                showMessage("Error: " + ex.getMessage());
+            }
+        });
+
+        buttons.getChildren().addAll(backBtn, enterBtn);
+
+        center.getChildren().addAll(title, desc, lootBox, buttons);
         this.rootPane.setCenter(center);
     }
 

@@ -5,7 +5,7 @@ import it.unicam.cs.mpgc.rpg131023.model.enemy.AbstractEnemy;
 import it.unicam.cs.mpgc.rpg131023.model.enemy.EnemyFactory;
 import it.unicam.cs.mpgc.rpg131023.model.enemy.EnemyType;
 import it.unicam.cs.mpgc.rpg131023.model.player.Hero;
-import it.unicam.cs.mpgc.rpg131023.model.resource.ResourceType;
+import it.unicam.cs.mpgc.rpg131023.model.dungeon.Loot;
 
 import java.util.Map;
 import java.util.Objects;
@@ -58,12 +58,18 @@ public class GameManager {
         }
 
         if (this.activeCombat.isHeroVictorious()) {
-            for (Map.Entry<ResourceType, Integer> entry : this.currentDungeon.getTreasure().entrySet()) {
-                this.hero.addResource(entry.getKey(), entry.getValue());
-            }
+            distributeLoot();
             this.currentState = GameState.HUB;
         } else {
             this.currentState = GameState.GAME_OVER;
+        }
+    }
+
+    private void distributeLoot() {
+        if (this.currentDungeon != null) {
+            for (Loot loot : this.currentDungeon.getTreasures()) {
+                loot.applyTo(this.hero);
+            }
         }
     }
 
