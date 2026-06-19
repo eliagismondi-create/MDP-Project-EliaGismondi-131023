@@ -72,7 +72,7 @@ public class GameController {
         Hero hero = gameManager.getHero();
         
         // Hero Stats
-        lblHeroHealth.textProperty().bind(Bindings.concat(hero.healthProperty(), "/100"));
+        lblHeroHealth.textProperty().bind(Bindings.concat(hero.healthProperty(), "/", Hero.MAX_HEALTH));
         lblHeroArmor.textProperty().bind(hero.shieldProperty().asString());
         lblHeroHunger.textProperty().bind(hero.hungerProperty().asString());
         lblHeroSword.textProperty().bind(Bindings.when(hero.swordEquippedProperty()).then("YES").otherwise("NO"));

@@ -76,6 +76,12 @@
                 <children>
                     <Label style="-fx-font-size: 24px;" styleClass="ink-title" text="SELECT A DUNGEON TO EXPLORE" />
                     <HBox fx:id="dungeonRow" alignment="CENTER" spacing="20.0" />
+                    <HBox alignment="CENTER" spacing="20.0">
+                        <children>
+                            <Button mnemonicParsing="false" onAction="#handleSave" styleClass="ink-button" text="SAVE GAME" />
+                            <Button mnemonicParsing="false" onAction="#handleLoad" styleClass="ink-button" text="LOAD GAME" />
+                        </children>
+                    </HBox>
                 </children>
             </VBox>
 

@@ -18,6 +18,10 @@ import javafx.collections.ObservableMap;
 public class Hero extends AbstractCombatant {
     public static final int MAX_SWORD_DURABILITY = 3;
     public static final int EXPLORATION_FATIGUE = 25;
+    public static final int MAX_HEALTH = 100;
+    public static final int MAX_HUNGER = 100;
+    public static final int ARMOR_SHIELD_VALUE = 50;
+    public static final int SWORD_DAMAGE_BONUS = 25;
 
     private final IntegerProperty hunger = new SimpleIntegerProperty(0);
     private final IntegerProperty xp = new SimpleIntegerProperty(0);
@@ -78,13 +82,13 @@ public class Hero extends AbstractCombatant {
      *                               o non possiede pozioni curative.
      */
     public void heal() {
-        if (getHealth() == 100) {
+        if (getHealth() == MAX_HEALTH) {
             throw new IllegalStateException("Hero is not wounded.");
         }
         if (!consumeResource(ResourceType.HEALTH_POTION, 1)) {
             throw new IllegalStateException("No health potion in the inventory.");
         }
-        setHealth(100);
+        setHealth(MAX_HEALTH);
     }
 
     /**
@@ -120,7 +124,7 @@ public class Hero extends AbstractCombatant {
             throw new IllegalArgumentException("L'aumento di fame non puo' essere negativo.");
         }
         this.hunger.set(this.hunger.get() + amount);
-        if (this.hunger.get() >= 100) {
+        if (this.hunger.get() >= MAX_HUNGER) {
             this.setHealth(0); // Morte per inedia
         }
     }
@@ -184,7 +188,7 @@ public class Hero extends AbstractCombatant {
         if (!consumeResource(ResourceType.ARMOR, 1)) {
             throw new IllegalStateException("Nessuna armatura nell'inventario.");
         }
-        this.shield.set(this.shield.get() + 50);
+        this.shield.set(this.shield.get() + ARMOR_SHIELD_VALUE);
     }
 
     public void equipSword() {
@@ -197,7 +201,7 @@ public class Hero extends AbstractCombatant {
 
     @Override
     public int getDamage() {
-        return this.swordEquipped.get() ? super.getDamage() + 25 : super.getDamage();
+        return this.swordEquipped.get() ? super.getDamage() + SWORD_DAMAGE_BONUS : super.getDamage();
     }
 
     @Override
