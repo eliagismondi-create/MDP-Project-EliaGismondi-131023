@@ -9,10 +9,13 @@ import it.unicam.cs.mpgc.rpg131023.model.combat.CombatStats;
 import it.unicam.cs.mpgc.rpg131023.model.resource.ResourceType;
 
 public class Hero extends AbstractCombatant {
+    public static final int MAX_SWORD_DURABILITY = 3;
+
     private int hunger;
     private int xp;
     private int shield = 0;
     private boolean swordEquipped = false;
+    private int swordDurability = 0;
     private final Map<ResourceType, Integer> resources;
 
     public Hero(final CombatStats stats) {
@@ -95,6 +98,21 @@ public class Hero extends AbstractCombatant {
     }
 
     /**
+     * Aumenta la fame dell'eroe. Se raggiunge 100, l'eroe muore di inedia.
+     *
+     * @param amount Quantita' di fame da aggiungere (positiva).
+     */
+    public void addHunger(int amount) {
+        if (amount < 0) {
+            throw new IllegalArgumentException("L'aumento di fame non puo' essere negativo.");
+        }
+        this.hunger += amount;
+        if (this.hunger >= 100) {
+            this.setHealth(0); // Morte per inedia
+        }
+    }
+
+    /**
      * Restituisce una copia in sola lettura dell'inventario.
      * Rispetta l'incapsulamento impedendo modifiche non autorizzate
      * (Immutabilita').
@@ -121,6 +139,10 @@ public class Hero extends AbstractCombatant {
         return this.swordEquipped;
     }
 
+    public int getSwordDurability() {
+        return this.swordDurability;
+    }
+
     public void equipArmor() {
         if (!consumeResource(ResourceType.ARMOR, 1)) {
             throw new IllegalStateException("Nessuna armatura nell'inventario.");
@@ -133,11 +155,24 @@ public class Hero extends AbstractCombatant {
             throw new IllegalStateException("Nessuna spada nell'inventario.");
         }
         this.swordEquipped = true;
+        this.swordDurability = MAX_SWORD_DURABILITY;
     }
 
     @Override
     public int getDamage() {
         return this.swordEquipped ? super.getDamage() + 25 : super.getDamage();
+    }
+
+    @Override
+    public void attack(it.unicam.cs.mpgc.rpg131023.model.combat.Damageable target) {
+        super.attack(target);
+        if (this.swordEquipped) {
+            this.swordDurability--;
+            if (this.swordDurability <= 0) {
+                this.swordEquipped = false;
+                this.swordDurability = 0;
+            }
+        }
     }
 
     @Override

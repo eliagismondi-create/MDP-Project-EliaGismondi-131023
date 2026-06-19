@@ -57,11 +57,35 @@ public class GameManager {
             return;
         }
 
+        this.hero.addHunger(25);
+        if (!this.hero.isAlive()) {
+            this.currentState = GameState.GAME_OVER;
+            return;
+        }
+
         if (this.activeCombat.isHeroVictorious()) {
             distributeLoot();
             this.currentState = GameState.HUB;
         } else {
             this.currentState = GameState.GAME_OVER;
+        }
+    }
+
+    public void retreatFromDungeon() {
+        if (this.currentState != GameState.IN_COMBAT) {
+            throw new IllegalStateException("Non sei in un dungeon.");
+        }
+        if (this.activeCombat != null && this.activeCombat.hasCombatStarted()) {
+            throw new IllegalStateException("Il combattimento e' gia' iniziato, non puoi fuggire.");
+        }
+        
+        this.hero.addHunger(25);
+        if (!this.hero.isAlive()) {
+            this.currentState = GameState.GAME_OVER;
+        } else {
+            this.currentState = GameState.HUB;
+            this.activeCombat = null;
+            this.currentDungeon = null;
         }
     }
 

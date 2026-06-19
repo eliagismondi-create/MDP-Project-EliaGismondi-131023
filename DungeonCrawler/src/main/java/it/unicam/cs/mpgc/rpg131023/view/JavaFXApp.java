@@ -42,7 +42,7 @@ public class JavaFXApp extends Application implements GameView {
     public void start(Stage primaryStage) {
         this.rootPane = new BorderPane();
         this.rootPane.setPadding(new Insets(20));
-        
+
         this.eventLog = new TextArea();
         this.eventLog.setEditable(false);
         this.eventLog.setPrefHeight(100);
@@ -67,7 +67,7 @@ public class JavaFXApp extends Application implements GameView {
     private void restartGame() {
         CombatStats heroStats = StatsLoader.getStatsFor("hero");
         Hero hero = new Hero(heroStats);
-        
+
         hero.addResource(ResourceType.HEALTH_POTION, 3);
         hero.addResource(ResourceType.FOOD, 2);
 
@@ -106,7 +106,7 @@ public class JavaFXApp extends Application implements GameView {
     private VBox createHeroStatsPanel(Hero hero) {
         VBox panel = new VBox(15);
         panel.getStyleClass().add("ink-panel");
-        panel.setPrefWidth(220);
+        panel.setPrefWidth(280);
 
         Label title = new Label("HERO STATS");
         title.getStyleClass().add("ink-title");
@@ -115,14 +115,27 @@ public class JavaFXApp extends Application implements GameView {
         separator1.getStyleClass().add("ink-separator");
         separator1.setMinHeight(2);
 
+        HBox swordRow = new HBox(5);
+        Label sKey = new Label("Sword:");
+        sKey.getStyleClass().add("ink-stat-key");
+        Label sVal = new Label(hero.isSwordEquipped() ? "YES" : "NO");
+        sVal.getStyleClass().add("ink-stat-val");
+        swordRow.getChildren().addAll(sKey, sVal);
+        if (hero.isSwordEquipped()) {
+            javafx.scene.control.ProgressBar pBar = new javafx.scene.control.ProgressBar(
+                    (double) hero.getSwordDurability() / Hero.MAX_SWORD_DURABILITY);
+            pBar.setPrefWidth(50);
+            pBar.setPrefHeight(10);
+            swordRow.getChildren().add(pBar);
+        }
+
         VBox statsBox = new VBox(8);
         statsBox.getChildren().addAll(
-            createStatRow("Health:", hero.getHealth() + "/100"),
-            createStatRow("Shield:", String.valueOf(hero.getShield())),
-            createStatRow("Hunger:", String.valueOf(hero.getHunger())),
-            createStatRow("Sword:", hero.isSwordEquipped() ? "YES" : "NO"),
-            createStatRow("Base Damage:", String.valueOf(hero.getDamage()))
-        );
+                createStatRow("Health:", hero.getHealth() + "/100"),
+                createStatRow("Armor:", String.valueOf(hero.getShield())),
+                createStatRow("Hunger:", String.valueOf(hero.getHunger())),
+                swordRow,
+                createStatRow("Base Damage:", String.valueOf(hero.getDamage())));
 
         Region separator2 = new Region();
         separator2.getStyleClass().add("ink-separator");
@@ -132,7 +145,7 @@ public class JavaFXApp extends Application implements GameView {
         Label invTitle = new Label("INVENTORY");
         invTitle.getStyleClass().add("ink-stat-key");
         invBox.getChildren().add(invTitle);
-        
+
         for (Map.Entry<ResourceType, Integer> entry : hero.getResources().entrySet()) {
             String resourceName = entry.getKey().toString().replace("_", " ");
             Label item = new Label("⬡ " + resourceName + ": " + entry.getValue());
@@ -151,26 +164,46 @@ public class JavaFXApp extends Application implements GameView {
 
         Button healBtn = createInkButton("POTION");
         healBtn.setOnAction(e -> {
-            try { hero.heal(); showMessage("Drank a healing potion."); refreshCurrentState(); }
-            catch (Exception ex) { showMessage("Error: " + ex.getMessage()); }
+            try {
+                hero.heal();
+                showMessage("Drank a healing potion.");
+                refreshCurrentState();
+            } catch (Exception ex) {
+                showMessage("Error: " + ex.getMessage());
+            }
         });
 
         Button eatBtn = createInkButton("FOOD");
         eatBtn.setOnAction(e -> {
-            try { hero.eat(); showMessage("Ate a food ration."); refreshCurrentState(); }
-            catch (Exception ex) { showMessage("Error: " + ex.getMessage()); }
+            try {
+                hero.eat();
+                showMessage("Ate a food ration.");
+                refreshCurrentState();
+            } catch (Exception ex) {
+                showMessage("Error: " + ex.getMessage());
+            }
         });
 
         Button swordBtn = createInkButton("SWORD");
         swordBtn.setOnAction(e -> {
-            try { hero.equipSword(); showMessage("Sword equipped."); refreshCurrentState(); }
-            catch (Exception ex) { showMessage("Error: " + ex.getMessage()); }
+            try {
+                hero.equipSword();
+                showMessage("Sword equipped.");
+                refreshCurrentState();
+            } catch (Exception ex) {
+                showMessage("Error: " + ex.getMessage());
+            }
         });
 
-        Button armorBtn = createInkButton("SHIELD");
+        Button armorBtn = createInkButton("ARMOR");
         armorBtn.setOnAction(e -> {
-            try { hero.equipArmor(); showMessage("Armor equipped."); refreshCurrentState(); }
-            catch (Exception ex) { showMessage("Error: " + ex.getMessage()); }
+            try {
+                hero.equipArmor();
+                showMessage("Armor equipped.");
+                refreshCurrentState();
+            } catch (Exception ex) {
+                showMessage("Error: " + ex.getMessage());
+            }
         });
 
         actionGrid.add(healBtn, 0, 0);
@@ -191,7 +224,7 @@ public class JavaFXApp extends Application implements GameView {
 
     @Override
     public void showWelcomeMessage() {
-        showMessage("Welcome to the HUB! Choose your next expedition.");
+        showMessage("Welcome! Choose your next expedition.");
     }
 
     @Override
@@ -201,11 +234,11 @@ public class JavaFXApp extends Application implements GameView {
 
         VBox center = new VBox(30);
         center.setAlignment(Pos.CENTER);
-        
+
         Label title = new Label("SELECT A DUNGEON TO EXPLORE");
         title.getStyleClass().add("ink-title");
         title.setStyle("-fx-font-size: 24px;");
-        
+
         HBox dungeonRow = new HBox(20);
         dungeonRow.setAlignment(Pos.CENTER);
 
@@ -214,17 +247,17 @@ public class JavaFXApp extends Application implements GameView {
             card.setAlignment(Pos.CENTER);
             card.getStyleClass().add("ink-dungeon-card");
             card.setPrefWidth(240);
-            
+
             try {
                 String imgName = dungeon.getId() + ".png";
                 Image img = new Image(getClass().getResourceAsStream("/assets/" + imgName));
                 ImageView iv = new ImageView(img);
                 iv.setFitWidth(220);
                 iv.setPreserveRatio(true);
-                
+
                 VBox imageBox = new VBox(iv);
-                imageBox.setOnMouseClicked(event -> displayDungeonInfo(dungeon));
-                imageBox.setStyle("-fx-background-color: #f0ebe0; -fx-border-color: transparent transparent #2c2418 transparent; -fx-border-width: 0 0 1.5px 0; -fx-cursor: hand;");
+                imageBox.setStyle(
+                        "-fx-background-color: #f0ebe0; -fx-border-color: transparent transparent #2c2418 transparent; -fx-border-width: 0 0 1.5px 0;");
                 card.getChildren().add(imageBox);
             } catch (Exception e) {
                 // Ignore missing images
@@ -233,7 +266,7 @@ public class JavaFXApp extends Application implements GameView {
             Label dName = new Label(dungeon.getName().toUpperCase());
             dName.getStyleClass().add("ink-title");
             dName.setStyle("-fx-font-size: 16px; -fx-padding: 0;");
-            
+
             // Hardcoded generic diff test
             String diff = dungeon.getId().contains("bandit") ? "DIFFICULTY: NORMAL" : "DIFFICULTY: HARD";
             Label dSub = new Label(diff);
@@ -249,7 +282,7 @@ public class JavaFXApp extends Application implements GameView {
                     showMessage("Error: " + ex.getMessage());
                 }
             });
-            
+
             card.getChildren().addAll(dName, dSub, enterBtn);
             dungeonRow.getChildren().add(card);
         }
@@ -258,59 +291,7 @@ public class JavaFXApp extends Application implements GameView {
         this.rootPane.setCenter(center);
     }
 
-    private void displayDungeonInfo(Dungeon dungeon) {
-        this.rootPane.setLeft(null);
-        this.rootPane.setRight(null);
 
-        VBox center = new VBox(20);
-        center.setAlignment(Pos.CENTER);
-
-        Label title = new Label("DUNGEON INFO: " + dungeon.getName().toUpperCase());
-        title.getStyleClass().add("ink-title");
-        title.setStyle("-fx-font-size: 28px;");
-
-        Label desc = new Label(dungeon.getDescription());
-        desc.getStyleClass().add("ink-stat-key");
-        desc.setWrapText(true);
-        desc.setMaxWidth(400);
-
-        VBox lootBox = new VBox(10);
-        lootBox.setAlignment(Pos.CENTER);
-        lootBox.getStyleClass().add("ink-panel");
-        lootBox.setMaxWidth(300);
-        
-        Label lootTitle = new Label("AVAILABLE LOOT");
-        lootTitle.getStyleClass().add("ink-title");
-        lootBox.getChildren().add(lootTitle);
-
-        UILootRendererVisitor visitor = new UILootRendererVisitor();
-        for (it.unicam.cs.mpgc.rpg131023.model.dungeon.Loot loot : dungeon.getTreasures()) {
-            loot.accept(visitor);
-        }
-        lootBox.getChildren().add(visitor.getGraphic());
-
-        HBox buttons = new HBox(20);
-        buttons.setAlignment(Pos.CENTER);
-
-        Button backBtn = createInkButton("BACK");
-        backBtn.setOnAction(e -> refreshCurrentState());
-
-        Button enterBtn = createInkButton("EXPLORE");
-        enterBtn.setOnAction(e -> {
-            try {
-                showMessage("You venture into the dungeon: " + dungeon.getName());
-                this.gameManager.enterDungeon(dungeon.getId());
-                refreshCurrentState();
-            } catch (Exception ex) {
-                showMessage("Error: " + ex.getMessage());
-            }
-        });
-
-        buttons.getChildren().addAll(backBtn, enterBtn);
-
-        center.getChildren().addAll(title, desc, lootBox, buttons);
-        this.rootPane.setCenter(center);
-    }
 
     @Override
     public void displayCombat(CombatManager combatManager) {
@@ -321,28 +302,48 @@ public class JavaFXApp extends Application implements GameView {
 
         VBox center = new VBox(30);
         center.setAlignment(Pos.CENTER);
-        
-        Label title = new Label("COMBAT");
+
+        Dungeon currentDungeon = this.gameManager.getCurrentDungeon();
+        String titleText = currentDungeon != null ? currentDungeon.getName().toUpperCase() : "COMBAT";
+        Label title = new Label(titleText);
         title.getStyleClass().add("ink-title");
         title.setStyle("-fx-font-size: 32px;");
 
+        VBox lootBox = new VBox(5);
+        lootBox.setAlignment(Pos.CENTER);
+        lootBox.getStyleClass().add("ink-panel");
+        lootBox.setMaxWidth(300);
+        Label lootTitle = new Label("AVAILABLE LOOT");
+        lootTitle.getStyleClass().add("ink-title");
+        lootBox.getChildren().add(lootTitle);
+
+        UILootRendererVisitor visitor = new UILootRendererVisitor();
+        Dungeon currentDungeon = this.gameManager.getCurrentDungeon();
+        if (currentDungeon != null) {
+            for (it.unicam.cs.mpgc.rpg131023.model.dungeon.Loot loot : currentDungeon.getTreasures()) {
+                loot.accept(visitor);
+            }
+        }
+        lootBox.getChildren().add(visitor.getGraphic());
+
         Button attackBtn = createInkButton("ATTACK ENEMY");
-        attackBtn.setStyle("-fx-font-size: 20px; -fx-padding: 15px 30px;");
-        
+        attackBtn.setStyle("-fx-font-size: 14px; -fx-padding: 8px 15px;");
+        attackBtn.setMaxWidth(150);
+
         attackBtn.setOnAction(e -> {
             try {
                 int enemyHpBefore = enemy.getHealth();
                 combatManager.executeNextTurn();
                 int dmg = enemyHpBefore - enemy.getHealth();
                 showMessage("You land a hit! Dealt " + dmg + " damage.");
-                
+
                 if (!combatManager.isCombatOver()) {
                     int heroHpBefore = hero.getHealth();
                     combatManager.executeNextTurn();
                     int dmgHero = heroHpBefore - hero.getHealth();
                     showMessage("The enemy counterattacks. Received " + dmgHero + " damage.");
                 }
-                
+
                 if (combatManager.isCombatOver()) {
                     if (combatManager.isHeroVictorious()) {
                         showMessage("VICTORY! Enemy defeated.");
@@ -357,7 +358,24 @@ public class JavaFXApp extends Application implements GameView {
             }
         });
 
-        center.getChildren().addAll(title, attackBtn);
+        HBox actionBox = new HBox(15);
+        actionBox.setAlignment(Pos.CENTER);
+        
+        if (!combatManager.hasCombatStarted()) {
+            Button backBtn = createInkButton("BACK");
+            backBtn.setStyle("-fx-font-size: 14px; -fx-padding: 8px 15px;");
+            backBtn.setMaxWidth(150);
+            backBtn.setOnAction(e -> {
+                this.gameManager.retreatFromDungeon();
+                showMessage("You fled the dungeon, but hunger still strikes.");
+                refreshCurrentState();
+            });
+            actionBox.getChildren().add(backBtn);
+        }
+        
+        actionBox.getChildren().add(attackBtn);
+
+        center.getChildren().addAll(title, lootBox, actionBox);
         this.rootPane.setCenter(center);
 
         VBox right = new VBox(15);
@@ -373,10 +391,9 @@ public class JavaFXApp extends Application implements GameView {
 
         VBox statsBox = new VBox(10);
         statsBox.getChildren().addAll(
-            createStatRow("Type:", enemy.getClass().getSimpleName()),
-            createStatRow("Health:", String.valueOf(enemy.getHealth())),
-            createStatRow("Damage:", String.valueOf(enemy.getDamage()))
-        );
+                createStatRow("Type:", enemy.getClass().getSimpleName()),
+                createStatRow("Health:", String.valueOf(enemy.getHealth())),
+                createStatRow("Damage:", String.valueOf(enemy.getDamage())));
 
         right.getChildren().addAll(eTitle, sep, statsBox);
         this.rootPane.setRight(right);
@@ -389,11 +406,11 @@ public class JavaFXApp extends Application implements GameView {
 
         VBox center = new VBox(30);
         center.setAlignment(Pos.CENTER);
-        
+
         Label title = new Label("YOUR JOURNEY ENDS HERE");
         title.getStyleClass().add("ink-title");
         title.setStyle("-fx-font-size: 42px;");
-        
+
         Label sub = new Label("The hero has fallen. Game Over.");
         sub.getStyleClass().add("ink-stat-key");
         sub.setStyle("-fx-font-size: 24px;");

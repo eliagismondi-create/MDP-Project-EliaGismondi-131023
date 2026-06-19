@@ -9,14 +9,17 @@ public class CombatManager {
     private final Hero hero;
     private final AbstractEnemy enemy;
     private boolean heroTurn;
+    private boolean combatStarted;
 
     public CombatManager(final Hero hero, final AbstractEnemy enemy) {
         this.hero = Objects.requireNonNull(hero, "L'eroe non puo' essere null");
         this.enemy = Objects.requireNonNull(enemy, "Il nemico non puo' essere null");
         this.heroTurn = true;
+        this.combatStarted = false;
     }
 
     public void executeNextTurn() {
+        this.combatStarted = true;
         if (isCombatOver()) {
             return;
         }
@@ -36,6 +39,10 @@ public class CombatManager {
 
     public boolean isHeroVictorious() {
         return isCombatOver() && this.hero.isAlive();
+    }
+
+    public boolean hasCombatStarted() {
+        return this.combatStarted;
     }
 
     public Hero getHero() {
