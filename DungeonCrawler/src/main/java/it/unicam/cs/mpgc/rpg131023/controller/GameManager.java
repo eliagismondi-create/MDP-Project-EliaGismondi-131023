@@ -5,14 +5,14 @@ import it.unicam.cs.mpgc.rpg131023.model.enemy.AbstractEnemy;
 import it.unicam.cs.mpgc.rpg131023.model.enemy.EnemyFactory;
 import it.unicam.cs.mpgc.rpg131023.model.enemy.EnemyType;
 import it.unicam.cs.mpgc.rpg131023.model.player.Hero;
-import it.unicam.cs.mpgc.rpg131023.model.dungeon.Loot;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 
 public class GameManager {
 
@@ -22,21 +22,48 @@ public class GameManager {
         GAME_OVER
     }
 
+    private final PropertyChangeSupport support = new PropertyChangeSupport(this);
+
     private final Hero hero;
     private final Map<String, Dungeon> worldMap;
-    private final ObjectProperty<GameState> currentState = new SimpleObjectProperty<>(GameState.HUB);
-    private final ObjectProperty<Dungeon> currentDungeon = new SimpleObjectProperty<>();
-    private final ObjectProperty<CombatManager> activeCombat = new SimpleObjectProperty<>();
-    private final ObservableList<String> eventLog = FXCollections.observableArrayList();
+    private GameState currentState = GameState.HUB;
+    private Dungeon currentDungeon;
+    private CombatManager activeCombat;
+    private final List<String> eventLog = new ArrayList<>();
 
     public GameManager(final Hero hero, final Map<String, Dungeon> worldMap) {
         this.hero = Objects.requireNonNull(hero, "L'eroe non puo' essere null");
         this.worldMap = Objects.requireNonNull(worldMap, "La worldMap non puo' essere null");
-        this.currentState.set(GameState.HUB);
+    }
+
+    public void addPropertyChangeListener(PropertyChangeListener listener) {
+        support.addPropertyChangeListener(listener);
+    }
+
+    public void removePropertyChangeListener(PropertyChangeListener listener) {
+        support.removePropertyChangeListener(listener);
+    }
+
+    private void setCurrentState(GameState newState) {
+        GameState oldState = this.currentState;
+        this.currentState = newState;
+        support.firePropertyChange("currentState", oldState, this.currentState);
+    }
+
+    private void setCurrentDungeon(Dungeon dungeon) {
+        Dungeon oldDungeon = this.currentDungeon;
+        this.currentDungeon = dungeon;
+        support.firePropertyChange("currentDungeon", oldDungeon, this.currentDungeon);
+    }
+
+    private void setActiveCombat(CombatManager combatManager) {
+        CombatManager oldCombat = this.activeCombat;
+        this.activeCombat = combatManager;
+        support.firePropertyChange("activeCombat", oldCombat, this.activeCombat);
     }
 
     public void enterDungeon(final String dungeonId) {
-        if (this.currentState.get() != GameState.HUB) {
+        if (this.currentState != GameState.HUB) {
             throw new IllegalStateException("Lo stato attuale non e' HUB.");
         }
 
@@ -45,80 +72,66 @@ public class GameManager {
             throw new IllegalArgumentException("Dungeon inesistente: " + dungeonId);
         }
 
-        this.currentDungeon.set(dungeon);
+        setCurrentDungeon(dungeon);
         startEncounter();
     }
 
     private void startEncounter() {
-        final EnemyType enemyType = this.currentDungeon.get().getEnemySpawns().keySet().iterator().next();
+        final EnemyType enemyType = this.currentDungeon.getEnemySpawns().keySet().iterator().next();
         final AbstractEnemy enemy = EnemyFactory.create(enemyType.name());
 
-        this.activeCombat.set(new CombatManager(this.hero, enemy));
-        this.currentState.set(GameState.IN_COMBAT);
+        setActiveCombat(new CombatManager(this.hero, enemy));
+        setCurrentState(GameState.IN_COMBAT);
     }
 
     public void resolveCombatEnd() {
-        if (this.activeCombat.get() == null || !this.activeCombat.get().isCombatOver()) {
+        if (this.activeCombat == null || !this.activeCombat.isCombatOver()) {
             return;
         }
 
         this.hero.sufferFatigue();
         if (!this.hero.isAlive()) {
-            this.currentState.set(GameState.GAME_OVER);
+            setCurrentState(GameState.GAME_OVER);
             return;
         }
 
-        if (this.activeCombat.get().isHeroVictorious()) {
-            if (this.currentDungeon.get() != null) {
-                this.currentDungeon.get().claimLoot(this.hero);
+        if (this.activeCombat.isHeroVictorious()) {
+            if (this.currentDungeon != null) {
+                this.currentDungeon.claimLoot(this.hero);
             }
-            this.currentState.set(GameState.HUB);
+            setCurrentState(GameState.HUB);
         } else {
-            this.currentState.set(GameState.GAME_OVER);
+            setCurrentState(GameState.GAME_OVER);
         }
     }
 
     public void retreatFromDungeon() {
-        if (this.currentState.get() != GameState.IN_COMBAT) {
+        if (this.currentState != GameState.IN_COMBAT) {
             throw new IllegalStateException("Non sei in un dungeon.");
         }
-        if (this.activeCombat.get() != null && this.activeCombat.get().hasCombatStarted()) {
+        if (this.activeCombat != null && this.activeCombat.hasCombatStarted()) {
             throw new IllegalStateException("Il combattimento e' gia' iniziato, non puoi fuggire.");
         }
         
         this.hero.sufferFatigue();
         if (!this.hero.isAlive()) {
-            this.currentState.set(GameState.GAME_OVER);
+            setCurrentState(GameState.GAME_OVER);
         } else {
-            this.currentState.set(GameState.HUB);
-            this.activeCombat.set(null);
-            this.currentDungeon.set(null);
+            setCurrentState(GameState.HUB);
+            setActiveCombat(null);
+            setCurrentDungeon(null);
         }
     }
 
-
-
     public GameState getCurrentState() {
-        return this.currentState.get();
-    }
-
-    public ObjectProperty<GameState> currentStateProperty() {
         return this.currentState;
     }
 
     public CombatManager getActiveCombat() {
-        return this.activeCombat.get();
-    }
-
-    public ObjectProperty<CombatManager> activeCombatProperty() {
         return this.activeCombat;
     }
 
     public Dungeon getCurrentDungeon() {
-        return this.currentDungeon.get();
-    }
-
-    public ObjectProperty<Dungeon> currentDungeonProperty() {
         return this.currentDungeon;
     }
 
@@ -126,11 +139,13 @@ public class GameManager {
         return this.hero;
     }
 
-    public ObservableList<String> getEventLog() {
-        return this.eventLog;
+    public List<String> getEventLog() {
+        return Collections.unmodifiableList(this.eventLog);
     }
 
     public void logEvent(String message) {
-        this.eventLog.add("· " + message);
+        String log = "· " + message;
+        this.eventLog.add(log);
+        support.firePropertyChange("eventLogAdded", null, log);
     }
 }

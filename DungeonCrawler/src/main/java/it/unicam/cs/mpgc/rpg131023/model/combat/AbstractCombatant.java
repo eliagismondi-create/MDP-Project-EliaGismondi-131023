@@ -1,14 +1,15 @@
 package it.unicam.cs.mpgc.rpg131023.model.combat;
 
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleIntegerProperty;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 
 /**
  * Base class for combat entities.
  * Provides default implementations for {@link Damageable} and {@link Attacker}.
  */
 public abstract class AbstractCombatant implements Damageable, Attacker {
-    private final IntegerProperty health = new SimpleIntegerProperty();
+    protected final PropertyChangeSupport support = new PropertyChangeSupport(this);
+    private int health;
     private final int damage;
 
     /**
@@ -20,7 +21,7 @@ public abstract class AbstractCombatant implements Damageable, Attacker {
         if (stats == null) {
             throw new NullPointerException("Combat stats cannot be null.");
         }
-        this.health.set(stats.getHealth());
+        this.health = stats.getHealth();
         this.damage = stats.getDamage();
     }
 
@@ -48,23 +49,29 @@ public abstract class AbstractCombatant implements Damageable, Attacker {
             throw new IllegalStateException("Entity is already dead.");
         }
 
-        this.health.set(this.health.get() - amount);
-        if (this.health.get() < 0) {
-            this.health.set(0);
+        int oldHealth = this.health;
+        this.health -= amount;
+        if (this.health < 0) {
+            this.health = 0;
         }
+        support.firePropertyChange("health", oldHealth, this.health);
     }
 
     @Override
     public boolean isAlive() {
-        return this.health.get() > 0;
+        return this.health > 0;
     }
 
     public int getHealth() {
-        return this.health.get();
+        return this.health;
     }
 
-    public IntegerProperty healthProperty() {
-        return this.health;
+    public void addPropertyChangeListener(PropertyChangeListener listener) {
+        support.addPropertyChangeListener(listener);
+    }
+
+    public void removePropertyChangeListener(PropertyChangeListener listener) {
+        support.removePropertyChangeListener(listener);
     }
 
     /**
@@ -72,8 +79,10 @@ public abstract class AbstractCombatant implements Damageable, Attacker {
      *
      * @param health The new health value.
      */
-    protected void setHealth(final int health) {
-        this.health.set(health);
+    public void setHealth(final int health) {
+        int oldHealth = this.health;
+        this.health = health;
+        support.firePropertyChange("health", oldHealth, this.health);
     }
 
     public int getDamage() {

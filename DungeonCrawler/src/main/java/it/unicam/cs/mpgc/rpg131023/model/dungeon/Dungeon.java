@@ -13,6 +13,10 @@ import it.unicam.cs.mpgc.rpg131023.model.player.Hero;
  * Represents a dungeon in the game.
  */
 public class Dungeon {
+    public enum Difficulty {
+        NORMAL, HARD
+    }
+
     private final String id;
     private final String name;
     private final String description;
@@ -86,6 +90,10 @@ public class Dungeon {
 
     public String getDescription() {
         return this.description;
+    }
+
+    public Difficulty getDifficulty() {
+        return this.id.toLowerCase().contains("bandit") ? Difficulty.NORMAL : Difficulty.HARD;
     }
 
     /**

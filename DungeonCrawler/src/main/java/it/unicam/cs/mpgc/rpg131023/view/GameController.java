@@ -6,14 +6,11 @@ import it.unicam.cs.mpgc.rpg131023.controller.GameManager.GameState;
 import it.unicam.cs.mpgc.rpg131023.model.dungeon.Dungeon;
 import it.unicam.cs.mpgc.rpg131023.model.enemy.AbstractEnemy;
 import it.unicam.cs.mpgc.rpg131023.model.player.Hero;
-import it.unicam.cs.mpgc.rpg131023.model.resource.ResourceType;
 import it.unicam.cs.mpgc.rpg131023.persistence.HeroSaveDTO;
 import it.unicam.cs.mpgc.rpg131023.persistence.SaveManager;
 import it.unicam.cs.mpgc.rpg131023.utils.DungeonLoader;
 
-import javafx.beans.binding.Bindings;
-import javafx.collections.ListChangeListener;
-import javafx.collections.MapChangeListener;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
@@ -66,74 +63,82 @@ public class GameController {
         
         setupBindings();
         populateDungeons();
+        updateFullUI();
     }
 
     private void setupBindings() {
         Hero hero = gameManager.getHero();
         
-        // Hero Stats
-        lblHeroHealth.textProperty().bind(Bindings.concat(hero.healthProperty(), "/", Hero.MAX_HEALTH));
-        lblHeroArmor.textProperty().bind(hero.shieldProperty().asString());
-        lblHeroHunger.textProperty().bind(hero.hungerProperty().asString());
-        lblHeroSword.textProperty().bind(Bindings.when(hero.swordEquippedProperty()).then("YES").otherwise("NO"));
-        barSwordDurability.progressProperty().bind(hero.swordDurabilityProperty().divide((double) Hero.MAX_SWORD_DURABILITY));
-        barSwordDurability.visibleProperty().bind(hero.swordEquippedProperty());
+        hero.addPropertyChangeListener(evt -> Platform.runLater(this::updateHeroUI));
         
-        // Inventory Updates
-        updateInventoryUI();
-        hero.resourcesProperty().addListener((MapChangeListener<ResourceType, Integer>) change -> updateInventoryUI());
-        
-        // Views Visibility
-        hubView.visibleProperty().bind(Bindings.equal(GameState.HUB, gameManager.currentStateProperty()));
-        hubView.managedProperty().bind(hubView.visibleProperty());
-        
-        combatView.visibleProperty().bind(Bindings.equal(GameState.IN_COMBAT, gameManager.currentStateProperty()));
-        combatView.managedProperty().bind(combatView.visibleProperty());
-        
-        gameOverView.visibleProperty().bind(Bindings.equal(GameState.GAME_OVER, gameManager.currentStateProperty()));
-        gameOverView.managedProperty().bind(gameOverView.visibleProperty());
-        
-        heroStatsPanel.visibleProperty().bind(Bindings.notEqual(GameState.GAME_OVER, gameManager.currentStateProperty()));
-        enemyStatsPanel.visibleProperty().bind(Bindings.equal(GameState.IN_COMBAT, gameManager.currentStateProperty()));
-        
-        // Combat Log
-        gameManager.getEventLog().addListener((ListChangeListener<String>) c -> {
-            while (c.next()) {
-                if (c.wasAdded()) {
-                    c.getAddedSubList().forEach(msg -> txtEventLog.appendText(msg + "\n"));
+        gameManager.addPropertyChangeListener(evt -> Platform.runLater(() -> {
+            String propName = evt.getPropertyName();
+            if ("currentState".equals(propName)) {
+                updateViewsVisibility();
+            } else if ("activeCombat".equals(propName)) {
+                CombatManager cm = (CombatManager) evt.getNewValue();
+                if (cm != null) {
+                    bindEnemy(cm.getEnemy());
+                    btnCombatBack.setVisible(!cm.hasCombatStarted());
+                    btnCombatBack.setManaged(!cm.hasCombatStarted());
+                } else {
+                    btnCombatBack.setVisible(false);
+                    btnCombatBack.setManaged(false);
                 }
+            } else if ("currentDungeon".equals(propName)) {
+                Dungeon d = (Dungeon) evt.getNewValue();
+                if (d != null) {
+                    lblCombatTitle.setText(d.getName().toUpperCase());
+                    renderLoot(d);
+                }
+            } else if ("eventLogAdded".equals(propName)) {
+                txtEventLog.appendText((String) evt.getNewValue() + "\n");
             }
-        });
+        }));
+    }
+
+    private void updateFullUI() {
+        updateHeroUI();
+        updateViewsVisibility();
+        CombatManager cm = gameManager.getActiveCombat();
+        if (cm != null) {
+            bindEnemy(cm.getEnemy());
+            btnCombatBack.setVisible(!cm.hasCombatStarted());
+            btnCombatBack.setManaged(!cm.hasCombatStarted());
+        }
+    }
+
+    private void updateViewsVisibility() {
+        GameState state = gameManager.getCurrentState();
+        hubView.setVisible(state == GameState.HUB);
+        hubView.setManaged(state == GameState.HUB);
         
-        // Combat Bindings
-        gameManager.activeCombatProperty().addListener((obs, oldVal, newVal) -> {
-            if (newVal != null) {
-                bindEnemy(newVal.getEnemy());
-                btnCombatBack.visibleProperty().bind(Bindings.createBooleanBinding(
-                        () -> !newVal.hasCombatStarted(),
-                        // since hasCombatStarted is a method, we might need to manually update or add property,
-                        // but since it changes when attack is clicked, we'll update it there.
-                        gameManager.currentStateProperty() // just a dummy trigger
-                ));
-            } else {
-                btnCombatBack.visibleProperty().unbind();
-            }
-        });
+        combatView.setVisible(state == GameState.IN_COMBAT);
+        combatView.setManaged(state == GameState.IN_COMBAT);
         
-        gameManager.currentDungeonProperty().addListener((obs, oldVal, newVal) -> {
-            if (newVal != null) {
-                lblCombatTitle.setText(newVal.getName().toUpperCase());
-                renderLoot(newVal);
-            }
-        });
+        gameOverView.setVisible(state == GameState.GAME_OVER);
+        gameOverView.setManaged(state == GameState.GAME_OVER);
+        
+        heroStatsPanel.setVisible(state != GameState.GAME_OVER);
+        enemyStatsPanel.setVisible(state == GameState.IN_COMBAT);
+    }
+
+    private void updateHeroUI() {
+        Hero hero = gameManager.getHero();
+        lblHeroHealth.setText(hero.getHealth() + "/" + Hero.MAX_HEALTH);
+        lblHeroArmor.setText(String.valueOf(hero.getShield()));
+        lblHeroHunger.setText(String.valueOf(hero.getHunger()));
+        lblHeroSword.setText(hero.isSwordEquipped() ? "YES" : "NO");
+        barSwordDurability.setProgress((double) hero.getSwordDurability() / Hero.MAX_SWORD_DURABILITY);
+        barSwordDurability.setVisible(hero.isSwordEquipped());
+        updateInventoryUI();
     }
 
     private void updateInventoryUI() {
-        // Keep only the "INVENTORY" label
         if (invBox.getChildren().size() > 1) {
             invBox.getChildren().remove(1, invBox.getChildren().size());
         }
-        gameManager.getHero().resourcesProperty().forEach((key, value) -> {
+        gameManager.getHero().getResources().forEach((key, value) -> {
             String resourceName = key.toString().replace("_", " ");
             Label item = new Label("⬡ " + resourceName + ": " + value);
             item.getStyleClass().add("ink-stat-val");
@@ -158,14 +163,13 @@ public class GameController {
                 imageBox.setStyle("-fx-background-color: #f0ebe0; -fx-border-color: transparent transparent #2c2418 transparent; -fx-border-width: 0 0 1.5px 0;");
                 card.getChildren().add(imageBox);
             } catch (Exception e) {
-                // Ignore missing images
             }
 
             Label dName = new Label(dungeon.getName().toUpperCase());
             dName.getStyleClass().add("ink-title");
             dName.setStyle("-fx-font-size: 16px; -fx-padding: 0;");
 
-            String diff = dungeon.getId().contains("bandit") ? "DIFFICULTY: NORMAL" : "DIFFICULTY: HARD";
+            String diff = "DIFFICULTY: " + dungeon.getDifficulty().name();
             Label dSub = new Label(diff);
             dSub.getStyleClass().add("ink-stat-key");
 
@@ -196,48 +200,43 @@ public class GameController {
 
     private void bindEnemy(AbstractEnemy enemy) {
         lblEnemyType.setText(enemy.getClass().getSimpleName());
-        lblEnemyHealth.textProperty().bind(enemy.healthProperty().asString());
+        lblEnemyHealth.setText(String.valueOf(enemy.getHealth()));
         lblEnemyDamage.setText(String.valueOf(enemy.getDamage()));
+        
+        enemy.addPropertyChangeListener(evt -> {
+            if ("health".equals(evt.getPropertyName())) {
+                Platform.runLater(() -> lblEnemyHealth.setText(String.valueOf(evt.getNewValue())));
+            }
+        });
+    }
+
+    private void executeHeroAction(Runnable action, String successMessage) {
+        try {
+            action.run();
+            gameManager.logEvent(successMessage);
+        } catch (Exception ex) {
+            gameManager.logEvent("Error: " + ex.getMessage());
+        }
     }
 
     @FXML
     private void handlePotion(ActionEvent event) {
-        try {
-            gameManager.getHero().heal();
-            gameManager.logEvent("Drank a healing potion.");
-        } catch (Exception ex) {
-            gameManager.logEvent("Error: " + ex.getMessage());
-        }
+        executeHeroAction(gameManager.getHero()::heal, "Drank a healing potion.");
     }
 
     @FXML
     private void handleFood(ActionEvent event) {
-        try {
-            gameManager.getHero().eat();
-            gameManager.logEvent("Ate a food ration.");
-        } catch (Exception ex) {
-            gameManager.logEvent("Error: " + ex.getMessage());
-        }
+        executeHeroAction(gameManager.getHero()::eat, "Ate a food ration.");
     }
 
     @FXML
     private void handleSword(ActionEvent event) {
-        try {
-            gameManager.getHero().equipSword();
-            gameManager.logEvent("Sword equipped.");
-        } catch (Exception ex) {
-            gameManager.logEvent("Error: " + ex.getMessage());
-        }
+        executeHeroAction(gameManager.getHero()::equipSword, "Sword equipped.");
     }
 
     @FXML
     private void handleArmor(ActionEvent event) {
-        try {
-            gameManager.getHero().equipArmor();
-            gameManager.logEvent("Armor equipped.");
-        } catch (Exception ex) {
-            gameManager.logEvent("Error: " + ex.getMessage());
-        }
+        executeHeroAction(gameManager.getHero()::equipArmor, "Armor equipped.");
     }
 
     @FXML
@@ -274,7 +273,6 @@ public class GameController {
                 gameManager.resolveCombatEnd();
             }
             
-            // update btnBack visibility manually since hasCombatStarted is not a property
             btnCombatBack.setVisible(!cm.hasCombatStarted());
             btnCombatBack.setManaged(!cm.hasCombatStarted());
             

@@ -34,15 +34,14 @@ public class HeroSaveDTO {
     }
 
     public void applyToHero(Hero hero) {
-        // We set properties explicitly to notify JavaFX bindings
-        hero.healthProperty().set(this.health);
-        hero.hungerProperty().set(this.hunger);
-        hero.xpProperty().set(this.xp);
-        hero.shieldProperty().set(this.shield);
-        hero.swordEquippedProperty().set(this.swordEquipped);
-        hero.swordDurabilityProperty().set(this.swordDurability);
+        hero.setHealth(this.health);
+        hero.setHunger(this.hunger);
+        hero.setXp(this.xp);
+        hero.setShield(this.shield);
+        hero.setSwordEquipped(this.swordEquipped);
+        hero.setSwordDurability(this.swordDurability);
         
-        hero.resourcesProperty().clear();
-        this.resources.forEach((key, value) -> hero.resourcesProperty().put(key, value));
+        hero.clearResources();
+        this.resources.forEach(hero::setResourceForce);
     }
 }
