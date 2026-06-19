@@ -52,4 +52,17 @@ public final class CombatStats {
     public String getClassName() {
         return this.className;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        CombatStats that = (CombatStats) o;
+        return health == that.health && damage == that.damage && java.util.Objects.equals(className, that.className);
+    }
+
+    @Override
+    public int hashCode() {
+        return java.util.Objects.hash(health, damage, className);
+    }
 }

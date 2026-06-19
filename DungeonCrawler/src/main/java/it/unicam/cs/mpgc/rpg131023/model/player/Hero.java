@@ -17,6 +17,7 @@ import javafx.collections.ObservableMap;
 
 public class Hero extends AbstractCombatant {
     public static final int MAX_SWORD_DURABILITY = 3;
+    public static final int EXPLORATION_FATIGUE = 25;
 
     private final IntegerProperty hunger = new SimpleIntegerProperty(0);
     private final IntegerProperty xp = new SimpleIntegerProperty(0);
@@ -100,6 +101,13 @@ public class Hero extends AbstractCombatant {
             throw new IllegalStateException("No food in the inventory.");
         }
         this.hunger.set(0);
+    }
+
+    /**
+     * Applica la penalita' di fame dovuta all'esplorazione del dungeon.
+     */
+    public void sufferFatigue() {
+        this.addHunger(EXPLORATION_FATIGUE);
     }
 
     /**
@@ -221,5 +229,20 @@ public class Hero extends AbstractCombatant {
         } else {
             super.takeDamage(amount);
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Hero hero = (Hero) o;
+        return getHealth() == hero.getHealth() && getHunger() == hero.getHunger() &&
+               getXp() == hero.getXp() && getShield() == hero.getShield() &&
+               isSwordEquipped() == hero.isSwordEquipped() && getSwordDurability() == hero.getSwordDurability();
+    }
+
+    @Override
+    public int hashCode() {
+        return java.util.Objects.hash(getHealth(), getHunger(), getXp(), getShield(), isSwordEquipped(), getSwordDurability());
     }
 }

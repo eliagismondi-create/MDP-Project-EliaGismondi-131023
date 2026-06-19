@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import it.unicam.cs.mpgc.rpg131023.model.enemy.EnemyType;
+import it.unicam.cs.mpgc.rpg131023.model.player.Hero;
 
 /**
  * Represents a dungeon in the game.
@@ -63,6 +64,18 @@ public class Dungeon {
         this.enemySpawns.put(enemyType, this.enemySpawns.getOrDefault(enemyType, 0) + quantity);
     }
 
+    /**
+     * Distribuisce i tesori del dungeon all'eroe passato.
+     * 
+     * @param hero L'eroe a cui distribuire il bottino.
+     */
+    public void claimLoot(final Hero hero) {
+        if (hero == null) {
+            throw new NullPointerException("Hero cannot be null.");
+        }
+        this.treasures.forEach(loot -> loot.applyTo(hero));
+    }
+
     public String getId() {
         return this.id;
     }
@@ -87,5 +100,18 @@ public class Dungeon {
      */
     public Map<EnemyType, Integer> getEnemySpawns() {
         return Collections.unmodifiableMap(this.enemySpawns);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Dungeon dungeon = (Dungeon) o;
+        return id.equals(dungeon.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return java.util.Objects.hash(id);
     }
 }

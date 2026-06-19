@@ -7,6 +7,8 @@ import it.unicam.cs.mpgc.rpg131023.model.dungeon.Dungeon;
 import it.unicam.cs.mpgc.rpg131023.model.enemy.AbstractEnemy;
 import it.unicam.cs.mpgc.rpg131023.model.player.Hero;
 import it.unicam.cs.mpgc.rpg131023.model.resource.ResourceType;
+import it.unicam.cs.mpgc.rpg131023.persistence.HeroSaveDTO;
+import it.unicam.cs.mpgc.rpg131023.persistence.SaveManager;
 import it.unicam.cs.mpgc.rpg131023.utils.DungeonLoader;
 
 import javafx.beans.binding.Bindings;
@@ -289,6 +291,29 @@ public class GameController {
     private void handleRestart(ActionEvent event) {
         if (onRestart != null) {
             onRestart.run();
+        }
+    }
+
+    @FXML
+    private void handleSave(ActionEvent event) {
+        try {
+            SaveManager.saveGame(gameManager.getHero());
+            gameManager.logEvent("Game saved successfully.");
+        } catch (Exception ex) {
+            gameManager.logEvent("Error saving game: " + ex.getMessage());
+            ex.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void handleLoad(ActionEvent event) {
+        try {
+            HeroSaveDTO dto = SaveManager.loadGame();
+            dto.applyToHero(gameManager.getHero());
+            gameManager.logEvent("Game loaded successfully.");
+        } catch (Exception ex) {
+            gameManager.logEvent("Error loading game: " + ex.getMessage());
+            ex.printStackTrace();
         }
     }
 }

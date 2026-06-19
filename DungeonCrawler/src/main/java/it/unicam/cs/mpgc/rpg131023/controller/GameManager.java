@@ -62,14 +62,16 @@ public class GameManager {
             return;
         }
 
-        this.hero.addHunger(25);
+        this.hero.sufferFatigue();
         if (!this.hero.isAlive()) {
             this.currentState.set(GameState.GAME_OVER);
             return;
         }
 
         if (this.activeCombat.get().isHeroVictorious()) {
-            distributeLoot();
+            if (this.currentDungeon.get() != null) {
+                this.currentDungeon.get().claimLoot(this.hero);
+            }
             this.currentState.set(GameState.HUB);
         } else {
             this.currentState.set(GameState.GAME_OVER);
@@ -84,7 +86,7 @@ public class GameManager {
             throw new IllegalStateException("Il combattimento e' gia' iniziato, non puoi fuggire.");
         }
         
-        this.hero.addHunger(25);
+        this.hero.sufferFatigue();
         if (!this.hero.isAlive()) {
             this.currentState.set(GameState.GAME_OVER);
         } else {
@@ -94,13 +96,7 @@ public class GameManager {
         }
     }
 
-    private void distributeLoot() {
-        if (this.currentDungeon.get() != null) {
-            for (Loot loot : this.currentDungeon.get().getTreasures()) {
-                loot.applyTo(this.hero);
-            }
-        }
-    }
+
 
     public GameState getCurrentState() {
         return this.currentState.get();

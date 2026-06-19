@@ -9,4 +9,16 @@ public abstract class AbstractEnemy extends AbstractCombatant {
         super(stats);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        AbstractEnemy that = (AbstractEnemy) o;
+        return getHealth() == that.getHealth() && getDamage() == that.getDamage();
+    }
+
+    @Override
+    public int hashCode() {
+        return java.util.Objects.hash(getHealth(), getDamage(), getClass());
+    }
 }
