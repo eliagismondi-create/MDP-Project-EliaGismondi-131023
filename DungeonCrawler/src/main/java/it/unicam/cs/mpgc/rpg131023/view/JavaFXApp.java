@@ -318,7 +318,6 @@ public class JavaFXApp extends Application implements GameView {
         lootBox.getChildren().add(lootTitle);
 
         UILootRendererVisitor visitor = new UILootRendererVisitor();
-        Dungeon currentDungeon = this.gameManager.getCurrentDungeon();
         if (currentDungeon != null) {
             for (it.unicam.cs.mpgc.rpg131023.model.dungeon.Loot loot : currentDungeon.getTreasures()) {
                 loot.accept(visitor);
