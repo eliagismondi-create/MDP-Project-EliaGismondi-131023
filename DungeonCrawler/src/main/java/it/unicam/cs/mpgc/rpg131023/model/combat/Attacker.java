@@ -1,17 +1,14 @@
 package it.unicam.cs.mpgc.rpg131023.model.combat;
 
 /**
- * Rappresenta un'entita' capace di infliggere danni a un bersaglio
- * {@link Damageable}.
- * Introdotta per risolvere la violazione dell'Interface Segregation Principle
- * (ISP).
+ * Represents an entity capable of dealing damage to a {@link Damageable} target.
  */
 public interface Attacker {
 
     /**
-     * Infligge danni al bersaglio specificato.
+     * Deals damage to the specified target.
      *
-     * @param target Il bersaglio da attaccare.
+     * @param target The target to attack.
      */
     void attack(Damageable target);
 }

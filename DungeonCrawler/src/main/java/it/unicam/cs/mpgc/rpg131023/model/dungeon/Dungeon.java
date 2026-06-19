@@ -9,8 +9,7 @@ import java.util.Map;
 import it.unicam.cs.mpgc.rpg131023.model.enemy.EnemyType;
 
 /**
- * Rappresenta un Dungeon nel gioco, le cui istanze vengono popolate a runtime
- * tramite un approccio Data-Driven.
+ * Represents a dungeon in the game.
  */
 public class Dungeon {
     private final String id;
@@ -21,13 +20,13 @@ public class Dungeon {
 
     public Dungeon(final String id, final String name, final String description) {
         if (id == null || id.trim().isEmpty()) {
-            throw new IllegalArgumentException("L'ID del dungeon non puo' essere nullo o vuoto.");
+            throw new IllegalArgumentException("Dungeon ID cannot be null or empty.");
         }
         if (name == null || name.trim().isEmpty()) {
-            throw new IllegalArgumentException("Il nome del dungeon non puo' essere nullo o vuoto.");
+            throw new IllegalArgumentException("Dungeon name cannot be null or empty.");
         }
         if (description == null || description.trim().isEmpty()) {
-            throw new IllegalArgumentException("La descrizione del dungeon non puo' essere nulla o vuota.");
+            throw new IllegalArgumentException("Dungeon description cannot be null or empty.");
         }
         this.id = id;
         this.name = name;
@@ -37,29 +36,29 @@ public class Dungeon {
     }
 
     /**
-     * Aggiunge un bottino al dungeon in modo sicuro (Fail-Fast).
+     * Adds loot to the dungeon.
      * 
-     * @param loot L'oggetto Loot da aggiungere.
+     * @param loot The loot to add.
      */
     public void addLoot(final Loot loot) {
         if (loot == null) {
-            throw new NullPointerException("Il loot non puo' essere null.");
+            throw new NullPointerException("Loot cannot be null.");
         }
         this.treasures.add(loot);
     }
 
     /**
-     * Configura la quantita' di nemici previsti per questo dungeon.
+     * Configures the number of enemies to spawn for this dungeon.
      * 
-     * @param enemyType Il tipo di nemico (es. GOBLIN, ORC).
-     * @param quantity  Il numero di nemici di quel tipo.
+     * @param enemyType The type of enemy.
+     * @param quantity  The number of enemies of that type.
      */
     public void addEnemySpawn(final EnemyType enemyType, final int quantity) {
         if (enemyType == null) {
-            throw new NullPointerException("Il tipo di nemico non puo' essere null.");
+            throw new NullPointerException("Enemy type cannot be null.");
         }
         if (quantity <= 0) {
-            throw new IllegalArgumentException("La quantita' deve essere maggiore di zero.");
+            throw new IllegalArgumentException("Quantity must be greater than zero.");
         }
         this.enemySpawns.put(enemyType, this.enemySpawns.getOrDefault(enemyType, 0) + quantity);
     }
@@ -77,14 +76,14 @@ public class Dungeon {
     }
 
     /**
-     * @return Lista immutabile dei tesori.
+     * @return An unmodifiable list of treasures.
      */
     public List<Loot> getTreasures() {
         return Collections.unmodifiableList(this.treasures);
     }
 
     /**
-     * @return Mappa immutabile degli spawn dei nemici.
+     * @return An unmodifiable map of enemy spawns.
      */
     public Map<EnemyType, Integer> getEnemySpawns() {
         return Collections.unmodifiableMap(this.enemySpawns);

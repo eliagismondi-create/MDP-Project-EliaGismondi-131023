@@ -1,11 +1,8 @@
 package it.unicam.cs.mpgc.rpg131023.model.combat;
 
 /**
- * Value Object immutabile che racchiude le statistiche di combattimento di
- * base.
- * Il campo opzionale {@code className} consente alla {@code EnemyFactory} di
- * risolvere
- * la classe concreta del nemico a runtime tramite Reflection (OCP).
+ * Immutable object containing basic combat statistics.
+ * The optional {@code className} allows the factory to resolve the concrete enemy class.
  */
 public final class CombatStats {
     private final int health;
@@ -13,19 +10,18 @@ public final class CombatStats {
     private final String className;
 
     /**
-     * Costruisce le statistiche validando i limiti.
+     * Constructs the combat statistics and validates the parameters.
      *
-     * @param health    La salute iniziale (1-100).
-     * @param damage    Il danno base (>= 0).
-     * @param className Il fully-qualified class name del nemico (può essere null
-     *                  per il Hero).
+     * @param health    The initial health (1-100).
+     * @param damage    The base damage (>= 0).
+     * @param className The fully-qualified class name of the enemy (can be null for the Hero).
      */
     public CombatStats(final int health, final int damage, final String className) {
         if (health <= 0 || health > 100) {
-            throw new IllegalArgumentException("La salute deve essere compresa tra 1 e 100 inclusi.");
+            throw new IllegalArgumentException("Health must be between 1 and 100 inclusive.");
         }
         if (damage < 0) {
-            throw new IllegalArgumentException("Il danno non puo' essere negativo.");
+            throw new IllegalArgumentException("Damage cannot be negative.");
         }
         this.health = health;
         this.damage = damage;
@@ -33,10 +29,10 @@ public final class CombatStats {
     }
 
     /**
-     * Costruisce le statistiche senza className (retrocompatibilita').
+     * Constructs the combat statistics without a class name.
      *
-     * @param health La salute iniziale (1-100).
-     * @param damage Il danno base (>= 0).
+     * @param health The initial health (1-100).
+     * @param damage The base damage (>= 0).
      */
     public CombatStats(final int health, final int damage) {
         this(health, damage, null);
@@ -51,8 +47,7 @@ public final class CombatStats {
     }
 
     /**
-     * @return Il fully-qualified class name dell'entita', oppure {@code null} se
-     *         non specificato.
+     * @return The fully-qualified class name of the entity, or {@code null} if not specified.
      */
     public String getClassName() {
         return this.className;

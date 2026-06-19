@@ -4,7 +4,7 @@ import it.unicam.cs.mpgc.rpg131023.model.player.Hero;
 import it.unicam.cs.mpgc.rpg131023.model.resource.ResourceType;
 
 /**
- * Rappresenta un tipo di bottino che fornisce risorse collezionabili.
+ * Represents loot that provides collectible resources.
  */
 public class ResourceLoot implements Loot {
     private final ResourceType type;
@@ -12,10 +12,10 @@ public class ResourceLoot implements Loot {
 
     public ResourceLoot(ResourceType type, int amount) {
         if (type == null) {
-            throw new NullPointerException("Il tipo di risorsa non puo' essere null.");
+            throw new NullPointerException("Resource type cannot be null.");
         }
         if (amount <= 0) {
-            throw new IllegalArgumentException("La quantita' deve essere maggiore di zero.");
+            throw new IllegalArgumentException("Amount must be greater than zero.");
         }
         this.type = type;
         this.amount = amount;

@@ -8,21 +8,26 @@ import it.unicam.cs.mpgc.rpg131023.model.combat.AbstractCombatant;
 import it.unicam.cs.mpgc.rpg131023.model.combat.CombatStats;
 import it.unicam.cs.mpgc.rpg131023.model.resource.ResourceType;
 
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableMap;
+
 public class Hero extends AbstractCombatant {
     public static final int MAX_SWORD_DURABILITY = 3;
 
-    private int hunger;
-    private int xp;
-    private int shield = 0;
-    private boolean swordEquipped = false;
-    private int swordDurability = 0;
-    private final Map<ResourceType, Integer> resources;
+    private final IntegerProperty hunger = new SimpleIntegerProperty(0);
+    private final IntegerProperty xp = new SimpleIntegerProperty(0);
+    private final IntegerProperty shield = new SimpleIntegerProperty(0);
+    private final BooleanProperty swordEquipped = new SimpleBooleanProperty(false);
+    private final IntegerProperty swordDurability = new SimpleIntegerProperty(0);
+    private final ObservableMap<ResourceType, Integer> resources;
 
     public Hero(final CombatStats stats) {
         super(stats);
-        this.xp = 0;
-        this.hunger = 0;
-        this.resources = new EnumMap<>(ResourceType.class);
+        this.resources = FXCollections.observableMap(new EnumMap<>(ResourceType.class));
     }
 
     /**
@@ -88,13 +93,13 @@ public class Hero extends AbstractCombatant {
      *                               o non possiede cibo nell'inventario.
      */
     public void eat() {
-        if (this.hunger == 0) {
+        if (this.hunger.get() == 0) {
             throw new IllegalStateException("Hero is not hungry.");
         }
         if (!consumeResource(ResourceType.FOOD, 1)) {
             throw new IllegalStateException("No food in the inventory.");
         }
-        this.hunger = 0;
+        this.hunger.set(0);
     }
 
     /**
@@ -106,8 +111,8 @@ public class Hero extends AbstractCombatant {
         if (amount < 0) {
             throw new IllegalArgumentException("L'aumento di fame non puo' essere negativo.");
         }
-        this.hunger += amount;
-        if (this.hunger >= 100) {
+        this.hunger.set(this.hunger.get() + amount);
+        if (this.hunger.get() >= 100) {
             this.setHealth(0); // Morte per inedia
         }
     }
@@ -123,23 +128,47 @@ public class Hero extends AbstractCombatant {
         return Collections.unmodifiableMap(this.resources);
     }
 
+    public ObservableMap<ResourceType, Integer> resourcesProperty() {
+        return this.resources;
+    }
+
     public int getHunger() {
+        return this.hunger.get();
+    }
+
+    public IntegerProperty hungerProperty() {
         return this.hunger;
     }
 
     public int getXp() {
+        return this.xp.get();
+    }
+
+    public IntegerProperty xpProperty() {
         return this.xp;
     }
 
     public int getShield() {
+        return this.shield.get();
+    }
+
+    public IntegerProperty shieldProperty() {
         return this.shield;
     }
 
     public boolean isSwordEquipped() {
+        return this.swordEquipped.get();
+    }
+
+    public BooleanProperty swordEquippedProperty() {
         return this.swordEquipped;
     }
 
     public int getSwordDurability() {
+        return this.swordDurability.get();
+    }
+
+    public IntegerProperty swordDurabilityProperty() {
         return this.swordDurability;
     }
 
@@ -147,30 +176,30 @@ public class Hero extends AbstractCombatant {
         if (!consumeResource(ResourceType.ARMOR, 1)) {
             throw new IllegalStateException("Nessuna armatura nell'inventario.");
         }
-        this.shield += 50;
+        this.shield.set(this.shield.get() + 50);
     }
 
     public void equipSword() {
         if (!consumeResource(ResourceType.SWORD, 1)) {
             throw new IllegalStateException("Nessuna spada nell'inventario.");
         }
-        this.swordEquipped = true;
-        this.swordDurability = MAX_SWORD_DURABILITY;
+        this.swordEquipped.set(true);
+        this.swordDurability.set(MAX_SWORD_DURABILITY);
     }
 
     @Override
     public int getDamage() {
-        return this.swordEquipped ? super.getDamage() + 25 : super.getDamage();
+        return this.swordEquipped.get() ? super.getDamage() + 25 : super.getDamage();
     }
 
     @Override
     public void attack(it.unicam.cs.mpgc.rpg131023.model.combat.Damageable target) {
         super.attack(target);
-        if (this.swordEquipped) {
-            this.swordDurability--;
-            if (this.swordDurability <= 0) {
-                this.swordEquipped = false;
-                this.swordDurability = 0;
+        if (this.swordEquipped.get()) {
+            this.swordDurability.set(this.swordDurability.get() - 1);
+            if (this.swordDurability.get() <= 0) {
+                this.swordEquipped.set(false);
+                this.swordDurability.set(0);
             }
         }
     }
@@ -181,12 +210,12 @@ public class Hero extends AbstractCombatant {
             throw new IllegalArgumentException("La quantita' di danni deve essere maggiore di zero.");
         }
         
-        if (this.shield > 0) {
-            if (this.shield >= amount) {
-                this.shield -= amount;
+        if (this.shield.get() > 0) {
+            if (this.shield.get() >= amount) {
+                this.shield.set(this.shield.get() - amount);
             } else {
-                int remainingDamage = amount - this.shield;
-                this.shield = 0;
+                int remainingDamage = amount - this.shield.get();
+                this.shield.set(0);
                 super.takeDamage(remainingDamage);
             }
         } else {

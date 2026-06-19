@@ -1,38 +1,39 @@
 package it.unicam.cs.mpgc.rpg131023.model.combat;
 
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
+
 /**
- * Superclasse astratta che centralizza la logica di base per le entita'
- * combattenti,
- * risolvendo la violazione del principio DRY (Don't Repeat Yourself).
- * Implementa le interfacce {@link Damageable} e {@link Attacker}.
+ * Base class for combat entities.
+ * Provides default implementations for {@link Damageable} and {@link Attacker}.
  */
 public abstract class AbstractCombatant implements Damageable, Attacker {
-    private int health;
+    private final IntegerProperty health = new SimpleIntegerProperty();
     private final int damage;
 
     /**
-     * Costruisce un combattente applicando il paradigma Fail-Fast.
+     * Constructs a new combatant.
      *
-     * @param stats Le statistiche di combattimento, non possono essere null.
+     * @param stats The combat statistics. Must not be null.
      */
     public AbstractCombatant(final CombatStats stats) {
         if (stats == null) {
-            throw new NullPointerException("Le statistiche di combattimento non possono essere null.");
+            throw new NullPointerException("Combat stats cannot be null.");
         }
-        this.health = stats.getHealth();
+        this.health.set(stats.getHealth());
         this.damage = stats.getDamage();
     }
 
     @Override
     public void attack(Damageable target) {
         if (!isAlive()) {
-            throw new IllegalStateException("L'entita' attaccante e' morta e non puo' attaccare.");
+            throw new IllegalStateException("Attacker is dead and cannot attack.");
         }
         if (target == null) {
-            throw new NullPointerException("Il bersaglio dell'attacco non puo' essere null.");
+            throw new NullPointerException("Target cannot be null.");
         }
         if (!target.isAlive()) {
-            throw new IllegalArgumentException("Il bersaglio e' gia' morto.");
+            throw new IllegalArgumentException("Target is already dead.");
         }
 
         target.takeDamage(getDamage());
@@ -41,34 +42,38 @@ public abstract class AbstractCombatant implements Damageable, Attacker {
     @Override
     public void takeDamage(int amount) {
         if (amount <= 0) {
-            throw new IllegalArgumentException("La quantita' di danni deve essere maggiore di zero.");
+            throw new IllegalArgumentException("Damage amount must be greater than zero.");
         }
         if (!isAlive()) {
-            throw new IllegalStateException("L'entita' e' gia' morta.");
+            throw new IllegalStateException("Entity is already dead.");
         }
 
-        this.health -= amount;
-        if (this.health < 0) {
-            this.health = 0;
+        this.health.set(this.health.get() - amount);
+        if (this.health.get() < 0) {
+            this.health.set(0);
         }
     }
 
     @Override
     public boolean isAlive() {
-        return this.health > 0;
+        return this.health.get() > 0;
     }
 
     public int getHealth() {
+        return this.health.get();
+    }
+
+    public IntegerProperty healthProperty() {
         return this.health;
     }
 
     /**
-     * Permette alle sottoclassi di modificare la salute (es. per la cura).
+     * Sets the health of the combatant.
      *
-     * @param health Il nuovo valore di salute.
+     * @param health The new health value.
      */
     protected void setHealth(final int health) {
-        this.health = health;
+        this.health.set(health);
     }
 
     public int getDamage() {

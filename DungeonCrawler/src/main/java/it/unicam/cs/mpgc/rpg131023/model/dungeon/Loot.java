@@ -3,22 +3,20 @@ package it.unicam.cs.mpgc.rpg131023.model.dungeon;
 import it.unicam.cs.mpgc.rpg131023.model.player.Hero;
 
 /**
- * Interfaccia che astrae il concetto di bottino (Loot).
- * Permette di applicare effetti diversi (Risorse, XP, armi)
- * senza dover modificare le classi consumatrici (GameManager).
+ * Represents a loot item that can be collected by the hero.
  */
 public interface Loot {
     /**
-     * Applica l'effetto del loot sull'eroe.
+     * Applies the loot effect to the hero.
      * 
-     * @param hero L'eroe che riceve il bottino.
+     * @param hero The hero receiving the loot.
      */
     void applyTo(Hero hero);
 
     /**
-     * Accetta un visitor (Double Dispatch).
+     * Accepts a loot visitor.
      * 
-     * @param visitor Il visitor da accettare.
+     * @param visitor The visitor to accept.
      */
     void accept(LootVisitor visitor);
 }
