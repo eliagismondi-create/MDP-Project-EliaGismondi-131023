@@ -100,9 +100,7 @@ public class GameController {
         gameManager.getEventLog().addListener((ListChangeListener<String>) c -> {
             while (c.next()) {
                 if (c.wasAdded()) {
-                    for (String msg : c.getAddedSubList()) {
-                        txtEventLog.appendText(msg + "\n");
-                    }
+                    c.getAddedSubList().forEach(msg -> txtEventLog.appendText(msg + "\n"));
                 }
             }
         });
@@ -135,17 +133,17 @@ public class GameController {
         if (invBox.getChildren().size() > 1) {
             invBox.getChildren().remove(1, invBox.getChildren().size());
         }
-        for (Map.Entry<ResourceType, Integer> entry : gameManager.getHero().resourcesProperty().entrySet()) {
-            String resourceName = entry.getKey().toString().replace("_", " ");
-            Label item = new Label("⬡ " + resourceName + ": " + entry.getValue());
+        gameManager.getHero().resourcesProperty().forEach((key, value) -> {
+            String resourceName = key.toString().replace("_", " ");
+            Label item = new Label("⬡ " + resourceName + ": " + value);
             item.getStyleClass().add("ink-stat-val");
             invBox.getChildren().add(item);
-        }
+        });
     }
 
     private void populateDungeons() {
         Map<String, Dungeon> worldMap = DungeonLoader.getAllDungeons();
-        for (Dungeon dungeon : worldMap.values()) {
+        worldMap.values().forEach(dungeon -> {
             VBox card = new VBox(15);
             card.setAlignment(Pos.CENTER);
             card.getStyleClass().add("ink-dungeon-card");
@@ -184,7 +182,7 @@ public class GameController {
 
             card.getChildren().addAll(dName, dSub, enterBtn);
             dungeonRow.getChildren().add(card);
-        }
+        });
     }
 
     private void renderLoot(Dungeon dungeon) {
@@ -192,9 +190,7 @@ public class GameController {
             lootBox.getChildren().remove(1, lootBox.getChildren().size());
         }
         UILootRendererVisitor visitor = new UILootRendererVisitor();
-        for (it.unicam.cs.mpgc.rpg131023.model.dungeon.Loot loot : dungeon.getTreasures()) {
-            loot.accept(visitor);
-        }
+        dungeon.getTreasures().forEach(loot -> loot.accept(visitor));
         lootBox.getChildren().add(visitor.getGraphic());
     }
 

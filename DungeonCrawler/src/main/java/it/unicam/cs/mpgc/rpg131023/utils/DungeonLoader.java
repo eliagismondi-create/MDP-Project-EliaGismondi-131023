@@ -58,15 +58,11 @@ public final class DungeonLoader {
         final Dungeon dungeon = new Dungeon(dungeonId, dto.name, dto.description);
 
         if (dto.loot != null) {
-            for (Map.Entry<ResourceType, Integer> entry : dto.loot.entrySet()) {
-                dungeon.addLoot(new ResourceLoot(entry.getKey(), entry.getValue()));
-            }
+            dto.loot.forEach((type, amount) -> dungeon.addLoot(new ResourceLoot(type, amount)));
         }
 
         if (dto.enemySpawns != null) {
-            for (Map.Entry<EnemyType, Integer> entry : dto.enemySpawns.entrySet()) {
-                dungeon.addEnemySpawn(entry.getKey(), entry.getValue());
-            }
+            dto.enemySpawns.forEach(dungeon::addEnemySpawn);
         }
 
         return dungeon;
@@ -81,9 +77,7 @@ public final class DungeonLoader {
             loadAllDungeons();
         }
         final Map<String, Dungeon> worldMap = new java.util.HashMap<>();
-        for (String id : dungeonsCache.keySet()) {
-            worldMap.put(id, loadDungeon(id));
-        }
+        dungeonsCache.keySet().forEach(id -> worldMap.put(id, loadDungeon(id)));
         return worldMap;
     }
 

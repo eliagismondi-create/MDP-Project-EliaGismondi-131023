@@ -28,9 +28,7 @@ public class HeroSaveDTO {
         dto.swordEquipped = hero.isSwordEquipped();
         dto.swordDurability = hero.getSwordDurability();
         
-        for (Map.Entry<ResourceType, Integer> entry : hero.getResources().entrySet()) {
-            dto.resources.put(entry.getKey(), entry.getValue());
-        }
+        hero.getResources().forEach((key, value) -> dto.resources.put(key, value));
         
         return dto;
     }
@@ -45,8 +43,6 @@ public class HeroSaveDTO {
         hero.swordDurabilityProperty().set(this.swordDurability);
         
         hero.resourcesProperty().clear();
-        for (Map.Entry<ResourceType, Integer> entry : this.resources.entrySet()) {
-            hero.resourcesProperty().put(entry.getKey(), entry.getValue());
-        }
+        this.resources.forEach((key, value) -> hero.resourcesProperty().put(key, value));
     }
 }
