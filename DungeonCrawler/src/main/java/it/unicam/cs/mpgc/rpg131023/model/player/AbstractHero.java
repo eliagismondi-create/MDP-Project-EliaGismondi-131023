@@ -6,13 +6,14 @@ import java.util.Map;
 
 import it.unicam.cs.mpgc.rpg131023.model.combat.AbstractCombatant;
 import it.unicam.cs.mpgc.rpg131023.model.combat.CombatStats;
+import it.unicam.cs.mpgc.rpg131023.model.resource.ResourceCollector;
 import it.unicam.cs.mpgc.rpg131023.model.resource.ResourceType;
 
 /**
  * Base logic for player characters.
  * Holds state for inventory, shield, hunger, and experience.
  */
-public abstract class AbstractHero extends AbstractCombatant {
+public abstract class AbstractHero extends AbstractCombatant implements ResourceCollector {
     public static final int MAX_SWORD_DURABILITY = 3;
     public static final int EXPLORATION_FATIGUE = 25;
     public static final int MAX_HEALTH = 100;
@@ -38,6 +39,7 @@ public abstract class AbstractHero extends AbstractCombatant {
      * @param type   Resource variant.
      * @param amount Quantity to add.
      */
+    @Override
     public void addResource(final ResourceType type, final int amount) {
         if (type == null) {
             throw new NullPointerException("Resource type cannot be null.");

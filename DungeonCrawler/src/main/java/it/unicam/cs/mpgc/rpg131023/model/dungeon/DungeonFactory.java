@@ -23,7 +23,11 @@ public final class DungeonFactory {
             throw new IllegalArgumentException("DungeonDTO cannot be null for ID: " + dungeonId);
         }
 
-        final Dungeon dungeon = new Dungeon(dungeonId, dto.name, dto.description);
+        final Dungeon.Difficulty difficulty = dto.difficulty != null ?
+                Dungeon.Difficulty.valueOf(dto.difficulty.toUpperCase()) :
+                Dungeon.Difficulty.NORMAL;
+
+        final Dungeon dungeon = new Dungeon(dungeonId, dto.name, dto.description, difficulty);
 
         if (dto.loot != null) {
             dto.loot.forEach((type, amount) -> dungeon.addLoot(new ResourceLoot(type, amount)));

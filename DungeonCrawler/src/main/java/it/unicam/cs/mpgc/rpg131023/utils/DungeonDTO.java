@@ -11,6 +11,7 @@ import java.util.Map;
 public class DungeonDTO {
     public String name;
     public String description;
+    public String difficulty;
     public Map<ResourceType, Integer> loot;
     public Map<EnemyType, Integer> enemySpawns;
 }

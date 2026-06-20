@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import it.unicam.cs.mpgc.rpg131023.model.enemy.EnemyType;
-import it.unicam.cs.mpgc.rpg131023.model.player.AbstractHero;
+import it.unicam.cs.mpgc.rpg131023.model.resource.ResourceCollector;
 
 /**
  * Game level containing loot and enemy spawn configurations.
@@ -20,10 +20,11 @@ public class Dungeon {
     private final String id;
     private final String name;
     private final String description;
+    private final Difficulty difficulty;
     private final List<Loot> treasures;
     private final Map<EnemyType, Integer> enemySpawns;
 
-    public Dungeon(final String id, final String name, final String description) {
+    public Dungeon(final String id, final String name, final String description, final Difficulty difficulty) {
         if (id == null || id.trim().isEmpty()) {
             throw new IllegalArgumentException("Dungeon ID cannot be null or empty.");
         }
@@ -36,6 +37,10 @@ public class Dungeon {
         this.id = id;
         this.name = name;
         this.description = description;
+        if (difficulty == null) {
+            throw new NullPointerException("Difficulty cannot be null.");
+        }
+        this.difficulty = difficulty;
         this.treasures = new ArrayList<>();
         this.enemySpawns = new EnumMap<>(EnemyType.class);
     }
@@ -69,15 +74,15 @@ public class Dungeon {
     }
 
     /**
-     * Distributes all collected treasures to the given hero.
+     * Distributes all collected treasures to the given collector.
      * 
-     * @param hero Target character receiving the loot.
+     * @param collector Target character receiving the loot.
      */
-    public void claimLoot(final AbstractHero hero) {
-        if (hero == null) {
-            throw new NullPointerException("Hero cannot be null.");
+    public void claimLoot(final ResourceCollector collector) {
+        if (collector == null) {
+            throw new NullPointerException("Collector cannot be null.");
         }
-        this.treasures.forEach(loot -> loot.applyTo(hero));
+        this.treasures.forEach(loot -> loot.applyTo(collector));
     }
 
     public String getId() {
@@ -93,7 +98,7 @@ public class Dungeon {
     }
 
     public Difficulty getDifficulty() {
-        return this.id.toLowerCase().contains("bandit") ? Difficulty.NORMAL : Difficulty.HARD;
+        return this.difficulty;
     }
 
     /**
