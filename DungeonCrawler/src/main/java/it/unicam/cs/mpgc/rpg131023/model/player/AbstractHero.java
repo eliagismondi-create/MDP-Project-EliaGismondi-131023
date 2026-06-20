@@ -23,6 +23,7 @@ public abstract class AbstractHero extends AbstractCombatant implements Resource
 
     private int hunger = 0;
     private int xp = 0;
+    private int level = 1;
     private int shield = 0;
     private boolean swordEquipped = false;
     private int swordDurability = 0;
@@ -156,6 +157,30 @@ public abstract class AbstractHero extends AbstractCombatant implements Resource
         support.firePropertyChange("xp", old, this.xp);
     }
 
+    public void addXp(int amount) {
+        if (amount <= 0) {
+            return;
+        }
+        int totalXp = this.xp + amount;
+        int levelsGained = totalXp / 100;
+        int remainingXp = totalXp % 100;
+
+        if (levelsGained > 0) {
+            setLevel(this.level + levelsGained);
+        }
+        setXp(remainingXp);
+    }
+
+    public int getLevel() {
+        return this.level;
+    }
+
+    public void setLevel(int level) {
+        int old = this.level;
+        this.level = level;
+        support.firePropertyChange("level", old, this.level);
+    }
+
     public int getShield() {
         return this.shield;
     }
@@ -256,13 +281,13 @@ public abstract class AbstractHero extends AbstractCombatant implements Resource
             return false;
         AbstractHero hero = (AbstractHero) o;
         return getHealth() == hero.getHealth() && getHunger() == hero.getHunger() &&
-                getXp() == hero.getXp() && getShield() == hero.getShield() &&
+                getXp() == hero.getXp() && getLevel() == hero.getLevel() && getShield() == hero.getShield() &&
                 isSwordEquipped() == hero.isSwordEquipped() && getSwordDurability() == hero.getSwordDurability();
     }
 
     @Override
     public int hashCode() {
-        return java.util.Objects.hash(getHealth(), getHunger(), getXp(), getShield(), isSwordEquipped(),
+        return java.util.Objects.hash(getHealth(), getHunger(), getXp(), getLevel(), getShield(), isSwordEquipped(),
                 getSwordDurability());
     }
 }

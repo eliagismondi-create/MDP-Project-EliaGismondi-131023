@@ -20,12 +20,23 @@
 
     <!-- LEFT: Hero Stats -->
     <left>
-        <VBox fx:id="heroStatsPanel" prefWidth="280.0" spacing="15.0" styleClass="ink-panel" BorderPane.alignment="CENTER">
+        <VBox fx:id="heroStatsPanel" prefWidth="230.0" maxHeight="-Infinity" spacing="15.0" styleClass="ink-panel" BorderPane.alignment="CENTER">
+            <BorderPane.margin>
+                <Insets right="30.0" />
+            </BorderPane.margin>
             <children>
                 <Label styleClass="ink-title" text="HERO STATS" />
                 <Region minHeight="2.0" styleClass="ink-separator" />
                 <VBox spacing="8.0">
                     <children>
+                        <HBox spacing="5.0">
+                            <Label styleClass="ink-stat-key" text="Level:" />
+                            <Label fx:id="lblHeroLevel" styleClass="ink-stat-val" text="1" />
+                        </HBox>
+                        <HBox spacing="5.0">
+                            <Label styleClass="ink-stat-key" text="XP:" />
+                            <Label fx:id="lblHeroXp" styleClass="ink-stat-val" text="0/100" />
+                        </HBox>
                         <HBox spacing="5.0">
                             <Label styleClass="ink-stat-key" text="Health:" />
                             <Label fx:id="lblHeroHealth" styleClass="ink-stat-val" text="100/100" />
@@ -116,7 +127,10 @@
 
     <!-- RIGHT: Enemy Stats -->
     <right>
-        <VBox fx:id="enemyStatsPanel" prefWidth="200.0" spacing="15.0" styleClass="ink-panel" visible="false" BorderPane.alignment="CENTER">
+        <VBox fx:id="enemyStatsPanel" prefWidth="200.0" maxHeight="-Infinity" spacing="15.0" styleClass="ink-panel" visible="false" BorderPane.alignment="CENTER">
+            <BorderPane.margin>
+                <Insets left="30.0" />
+            </BorderPane.margin>
             <children>
                 <Label styleClass="ink-title" text="ENEMY" />
                 <Region minHeight="2.0" styleClass="ink-separator" />

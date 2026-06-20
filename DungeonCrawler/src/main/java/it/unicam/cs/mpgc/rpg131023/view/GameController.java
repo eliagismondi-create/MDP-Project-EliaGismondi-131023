@@ -30,6 +30,8 @@ import java.util.Map;
 public class GameController {
 
     @FXML private VBox heroStatsPanel;
+    @FXML private Label lblHeroLevel;
+    @FXML private Label lblHeroXp;
     @FXML private Label lblHeroHealth;
     @FXML private Label lblHeroArmor;
     @FXML private Label lblHeroHunger;
@@ -132,6 +134,8 @@ public class GameController {
 
     private void updateHeroUI() {
         AbstractHero hero = gameManager.getHero();
+        lblHeroLevel.setText(String.valueOf(hero.getLevel()));
+        lblHeroXp.setText(hero.getXp() + "/100");
         lblHeroHealth.setText(hero.getHealth() + "/" + AbstractHero.MAX_HEALTH);
         lblHeroArmor.setText(String.valueOf(hero.getShield()));
         lblHeroHunger.setText(String.valueOf(hero.getHunger()));

@@ -13,6 +13,7 @@ public class HeroSaveDTO {
     public int health;
     public int hunger;
     public int xp;
+    public int level;
     public int shield;
     public boolean swordEquipped;
     public int swordDurability;
@@ -33,6 +34,7 @@ public class HeroSaveDTO {
         dto.health = hero.getHealth();
         dto.hunger = hero.getHunger();
         dto.xp = hero.getXp();
+        dto.level = hero.getLevel();
         dto.shield = hero.getShield();
         dto.swordEquipped = hero.isSwordEquipped();
         dto.swordDurability = hero.getSwordDurability();
@@ -51,6 +53,7 @@ public class HeroSaveDTO {
         hero.setHealth(this.health);
         hero.setHunger(this.hunger);
         hero.setXp(this.xp);
+        hero.setLevel(this.level > 0 ? this.level : 1);
         hero.setShield(this.shield);
         hero.setSwordEquipped(this.swordEquipped);
         hero.setSwordDurability(this.swordDurability);

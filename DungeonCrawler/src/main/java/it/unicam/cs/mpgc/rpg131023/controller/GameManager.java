@@ -96,6 +96,7 @@ public class GameManager {
         }
 
         if (this.activeCombat.isHeroVictorious()) {
+            this.hero.addXp(25);
             if (this.currentDungeon != null) {
                 this.currentDungeon.claimLoot(this.hero);
             }
