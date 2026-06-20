@@ -8,6 +8,10 @@ import it.unicam.cs.mpgc.rpg131023.model.combat.AbstractCombatant;
 import it.unicam.cs.mpgc.rpg131023.model.combat.CombatStats;
 import it.unicam.cs.mpgc.rpg131023.model.resource.ResourceType;
 
+/**
+ * Base abstraction for all playable characters.
+ * Manages common attributes like health, hunger, inventory, and equipment.
+ */
 public abstract class AbstractHero extends AbstractCombatant {
     public static final int MAX_SWORD_DURABILITY = 3;
     public static final int EXPLORATION_FATIGUE = 25;
@@ -28,6 +32,12 @@ public abstract class AbstractHero extends AbstractCombatant {
         this.resources = new EnumMap<>(ResourceType.class);
     }
 
+    /**
+     * Adds a specific quantity of a resource to the inventory.
+     *
+     * @param type   The resource type to add.
+     * @param amount The quantity to add.
+     */
     public void addResource(final ResourceType type, final int amount) {
         if (type == null) {
             throw new NullPointerException("Resource type cannot be null.");
@@ -39,6 +49,13 @@ public abstract class AbstractHero extends AbstractCombatant {
         support.firePropertyChange("resources", null, getResources());
     }
 
+    /**
+     * Consumes a specific quantity of a resource if available.
+     *
+     * @param type   The resource type to consume.
+     * @param amount The quantity to consume.
+     * @return True if successfully consumed, false otherwise.
+     */
     public boolean consumeResource(final ResourceType type, final int amount) {
         if (type == null) {
             throw new NullPointerException("Resource type cannot be null.");
@@ -57,6 +74,9 @@ public abstract class AbstractHero extends AbstractCombatant {
         return true;
     }
 
+    /**
+     * Restores health to maximum by consuming a health potion.
+     */
     public void heal() {
         if (getHealth() == MAX_HEALTH) {
             throw new IllegalStateException("Hero is not wounded.");
@@ -67,6 +87,9 @@ public abstract class AbstractHero extends AbstractCombatant {
         setHealth(MAX_HEALTH);
     }
 
+    /**
+     * Resets hunger to zero by consuming a food ration.
+     */
     public void eat() {
         if (this.hunger == 0) {
             throw new IllegalStateException("Hero is not hungry.");
@@ -77,6 +100,9 @@ public abstract class AbstractHero extends AbstractCombatant {
         setHunger(0);
     }
 
+    /**
+     * Increases hunger due to dungeon exploration fatigue.
+     */
     public void sufferFatigue() {
         this.addHunger(EXPLORATION_FATIGUE);
     }
@@ -95,7 +121,9 @@ public abstract class AbstractHero extends AbstractCombatant {
         return Collections.unmodifiableMap(this.resources);
     }
 
-    // Usato dal DTO e per pulire l'inventario senza sovrascrivere l'oggetto mappa
+    /**
+     * Clears the inventory without overwriting the map object, primarily used by DTOs.
+     */
     public void clearResources() {
         this.resources.clear();
         support.firePropertyChange("resources", null, getResources());
@@ -156,6 +184,9 @@ public abstract class AbstractHero extends AbstractCombatant {
         support.firePropertyChange("swordDurability", old, this.swordDurability);
     }
 
+    /**
+     * Consumes armor from inventory to increase the shield value.
+     */
     public void equipArmor() {
         if (!consumeResource(ResourceType.ARMOR, 1)) {
             throw new IllegalStateException("No armor in the inventory.");
@@ -163,6 +194,9 @@ public abstract class AbstractHero extends AbstractCombatant {
         setShield(this.shield + ARMOR_SHIELD_VALUE);
     }
 
+    /**
+     * Consumes a sword from inventory to equip it, resetting its durability.
+     */
     public void equipSword() {
         if (!consumeResource(ResourceType.SWORD, 1)) {
             throw new IllegalStateException("No sword in the inventory.");
@@ -188,12 +222,17 @@ public abstract class AbstractHero extends AbstractCombatant {
         }
     }
 
+    /**
+     * Applies damage to the hero, prioritizing shield reduction before health.
+     *
+     * @param amount The total damage taken.
+     */
     @Override
     public void takeDamage(int amount) {
         if (amount <= 0) {
             throw new IllegalArgumentException("Damage amount must be greater than zero.");
         }
-        
+
         if (this.shield > 0) {
             if (this.shield >= amount) {
                 setShield(this.shield - amount);
@@ -209,16 +248,19 @@ public abstract class AbstractHero extends AbstractCombatant {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
         AbstractHero hero = (AbstractHero) o;
         return getHealth() == hero.getHealth() && getHunger() == hero.getHunger() &&
-               getXp() == hero.getXp() && getShield() == hero.getShield() &&
-               isSwordEquipped() == hero.isSwordEquipped() && getSwordDurability() == hero.getSwordDurability();
+                getXp() == hero.getXp() && getShield() == hero.getShield() &&
+                isSwordEquipped() == hero.isSwordEquipped() && getSwordDurability() == hero.getSwordDurability();
     }
 
     @Override
     public int hashCode() {
-        return java.util.Objects.hash(getHealth(), getHunger(), getXp(), getShield(), isSwordEquipped(), getSwordDurability());
+        return java.util.Objects.hash(getHealth(), getHunger(), getXp(), getShield(), isSwordEquipped(),
+                getSwordDurability());
     }
 }

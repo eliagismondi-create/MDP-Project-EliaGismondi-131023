@@ -139,6 +139,10 @@ public class GameManager {
         return this.hero;
     }
 
+    public Map<String, Dungeon> getWorldMap() {
+        return Collections.unmodifiableMap(this.worldMap);
+    }
+
     public List<String> getEventLog() {
         return Collections.unmodifiableList(this.eventLog);
     }

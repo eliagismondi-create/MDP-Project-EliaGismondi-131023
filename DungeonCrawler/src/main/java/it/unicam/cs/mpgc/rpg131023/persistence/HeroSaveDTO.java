@@ -6,6 +6,9 @@ import java.util.Map;
 import it.unicam.cs.mpgc.rpg131023.model.player.AbstractHero;
 import it.unicam.cs.mpgc.rpg131023.model.resource.ResourceType;
 
+/**
+ * Data Transfer Object representing the serializable state of a hero.
+ */
 public class HeroSaveDTO {
     public int health;
     public int hunger;
@@ -19,6 +22,12 @@ public class HeroSaveDTO {
         this.resources = new HashMap<>();
     }
 
+    /**
+     * Creates a snapshot DTO from the current state of a hero.
+     *
+     * @param hero The hero to serialize.
+     * @return A populated HeroSaveDTO.
+     */
     public static HeroSaveDTO fromHero(AbstractHero hero) {
         HeroSaveDTO dto = new HeroSaveDTO();
         dto.health = hero.getHealth();
@@ -33,6 +42,11 @@ public class HeroSaveDTO {
         return dto;
     }
 
+    /**
+     * Restores the state of a hero from this DTO.
+     *
+     * @param hero The hero to restore.
+     */
     public void applyToHero(AbstractHero hero) {
         hero.setHealth(this.health);
         hero.setHunger(this.hunger);

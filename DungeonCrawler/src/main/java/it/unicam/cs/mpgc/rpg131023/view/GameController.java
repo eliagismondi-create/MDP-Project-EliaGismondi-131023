@@ -8,7 +8,6 @@ import it.unicam.cs.mpgc.rpg131023.model.enemy.AbstractEnemy;
 import it.unicam.cs.mpgc.rpg131023.model.player.AbstractHero;
 import it.unicam.cs.mpgc.rpg131023.persistence.HeroSaveDTO;
 import it.unicam.cs.mpgc.rpg131023.persistence.SaveManager;
-import it.unicam.cs.mpgc.rpg131023.utils.DungeonLoader;
 
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -58,7 +57,12 @@ public class GameController {
     @FXML private TextArea txtEventLog;
     
     private GameManager gameManager;
+    private SaveManager saveManager;
     private Runnable onRestart;
+
+    public void setSaveManager(SaveManager saveManager) {
+        this.saveManager = saveManager;
+    }
 
     public void setGameManager(GameManager gameManager, Runnable onRestart) {
         this.gameManager = gameManager;
@@ -150,7 +154,7 @@ public class GameController {
     }
 
     private void populateDungeons() {
-        Map<String, Dungeon> worldMap = DungeonLoader.getAllDungeons();
+        Map<String, Dungeon> worldMap = gameManager.getWorldMap();
         worldMap.values().forEach(dungeon -> {
             VBox card = new VBox(15);
             card.setAlignment(Pos.CENTER);
@@ -294,8 +298,12 @@ public class GameController {
     @FXML
     private void handleSave(ActionEvent event) {
         try {
-            SaveManager.saveGame(gameManager.getHero());
-            gameManager.logEvent("Game saved successfully.");
+            if (saveManager != null) {
+                saveManager.saveGame(gameManager.getHero());
+                gameManager.logEvent("Game saved successfully.");
+            } else {
+                gameManager.logEvent("Error: SaveManager not initialized.");
+            }
         } catch (Exception ex) {
             gameManager.logEvent("Error saving game: " + ex.getMessage());
             ex.printStackTrace();
@@ -305,9 +313,13 @@ public class GameController {
     @FXML
     private void handleLoad(ActionEvent event) {
         try {
-            HeroSaveDTO dto = SaveManager.loadGame();
-            dto.applyToHero(gameManager.getHero());
-            gameManager.logEvent("Game loaded successfully.");
+            if (saveManager != null) {
+                HeroSaveDTO dto = saveManager.loadGame();
+                dto.applyToHero(gameManager.getHero());
+                gameManager.logEvent("Game loaded successfully.");
+            } else {
+                gameManager.logEvent("Error: SaveManager not initialized.");
+            }
         } catch (Exception ex) {
             gameManager.logEvent("Error loading game: " + ex.getMessage());
             ex.printStackTrace();

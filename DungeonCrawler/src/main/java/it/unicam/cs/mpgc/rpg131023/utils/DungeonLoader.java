@@ -3,99 +3,40 @@ package it.unicam.cs.mpgc.rpg131023.utils;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-import it.unicam.cs.mpgc.rpg131023.model.dungeon.Dungeon;
-import it.unicam.cs.mpgc.rpg131023.model.dungeon.ResourceLoot;
-import it.unicam.cs.mpgc.rpg131023.model.enemy.EnemyType;
-import it.unicam.cs.mpgc.rpg131023.model.resource.ResourceType;
-
-import java.io.InputStreamReader;
 import java.io.Reader;
 import java.lang.reflect.Type;
 import java.util.Map;
-import java.util.Objects;
 
 /**
- * Utility per il caricamento dinamico dei Dungeon da file JSON.
- * Rispettando l'SRP, questa classe isola la logica di parsing
- * dalla classe di dominio Dungeon.
+ * Utility for dynamically parsing Dungeons from JSON streams.
+ * Isolates parsing logic from the Dungeon domain class.
  */
 public final class DungeonLoader {
-    private static final String DUNGEONS_FILE = "/dungeons.json";
-    private static Map<String, DungeonDTO> dungeonsCache = null;
 
     private DungeonLoader() {
-        // Impedisce l'istanza
+        // Prevents instantiation
     }
 
     /**
-     * DTO interno per il parsing del JSON.
+     * Parses the JSON stream and returns a map of DungeonDTOs.
+     *
+     * @param reader The Reader providing the JSON data.
+     * @return A map of all parsed dungeons, indexed by ID.
      */
-    private static class DungeonDTO {
-        String name;
-        String description;
-        Map<ResourceType, Integer> loot;
-        Map<EnemyType, Integer> enemySpawns;
-    }
-
-    /**
-     * Carica e restituisce un'istanza di Dungeon in base al suo ID.
-     * Utilizza la logica Data-Driven chiamando programmaticamente i metodi sicuri
-     * della classe Dungeon.
-     * 
-     * @param dungeonId L'identificatore testuale del dungeon.
-     * @return Una nuova istanza del Dungeon richiesto.
-     */
-    public static Dungeon loadDungeon(final String dungeonId) {
-        if (dungeonsCache == null) {
-            loadAllDungeons();
-        }
-
-        final DungeonDTO dto = dungeonsCache.get(dungeonId.toLowerCase());
-        if (dto == null) {
-            throw new IllegalStateException("Nessun dungeon trovato per l'ID: " + dungeonId);
-        }
-
-        final Dungeon dungeon = new Dungeon(dungeonId, dto.name, dto.description);
-
-        if (dto.loot != null) {
-            dto.loot.forEach((type, amount) -> dungeon.addLoot(new ResourceLoot(type, amount)));
-        }
-
-        if (dto.enemySpawns != null) {
-            dto.enemySpawns.forEach(dungeon::addEnemySpawn);
-        }
-
-        return dungeon;
-    }
-
-    /**
-     * Carica tutti i dungeon e li restituisce in una mappa.
-     * @return Mappa di tutti i dungeon caricati, indicizzati per ID.
-     */
-    public static Map<String, Dungeon> getAllDungeons() {
-        if (dungeonsCache == null) {
-            loadAllDungeons();
-        }
-        final Map<String, Dungeon> worldMap = new java.util.HashMap<>();
-        dungeonsCache.keySet().forEach(id -> worldMap.put(id, loadDungeon(id)));
-        return worldMap;
-    }
-
-    private static void loadAllDungeons() {
-        try (Reader reader = new InputStreamReader(
-                Objects.requireNonNull(DungeonLoader.class.getResourceAsStream(DUNGEONS_FILE),
-                        "File " + DUNGEONS_FILE + " not found in classpath."))) {
-
+    public static Map<String, DungeonDTO> parseDungeons(Reader reader) {
+        try {
             final Gson gson = new Gson();
             final Type type = new TypeToken<Map<String, DungeonDTO>>() {
             }.getType();
-            dungeonsCache = gson.fromJson(reader, type);
+            Map<String, DungeonDTO> parsedMap = gson.fromJson(reader, type);
 
-            if (dungeonsCache == null || dungeonsCache.isEmpty()) {
-                throw new IllegalStateException("Dungeons file is empty or malformed.");
+            if (parsedMap == null || parsedMap.isEmpty()) {
+                throw new IllegalStateException("Dungeons JSON stream is empty or malformed.");
             }
-        } catch (java.io.IOException | com.google.gson.JsonSyntaxException e) {
-            throw new IllegalStateException("Critical error loading dungeons from " + DUNGEONS_FILE, e);
+
+            return parsedMap;
+        } catch (com.google.gson.JsonSyntaxException e) {
+            throw new IllegalStateException("Critical error parsing dungeons JSON", e);
         }
     }
 }

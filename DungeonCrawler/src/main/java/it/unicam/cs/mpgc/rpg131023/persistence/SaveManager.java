@@ -5,55 +5,64 @@ import com.google.gson.GsonBuilder;
 
 import it.unicam.cs.mpgc.rpg131023.model.player.AbstractHero;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 
+/**
+ * Handles serializing and deserializing game state using JSON.
+ * Delegates actual file I/O to a StorageService.
+ */
 public class SaveManager {
 
-    private static final String SAVE_DIR = System.getProperty("user.home") + File.separator + ".dungeoncrawler";
-    private static final String SAVE_FILE = SAVE_DIR + File.separator + "savegame.json";
+    private final StorageService storageService;
+    private final String saveFilePath;
+    private final Gson gson;
 
-    private SaveManager() {
-        // Impedisce l'istanza
+    /**
+     * Constructs a SaveManager with the specified storage service and file path.
+     *
+     * @param storageService The service responsible for read/write operations.
+     * @param saveFilePath   The destination path for the save file.
+     */
+    public SaveManager(StorageService storageService, String saveFilePath) {
+        this.storageService = storageService;
+        this.saveFilePath = saveFilePath;
+        this.gson = new GsonBuilder().setPrettyPrinting().create();
     }
 
-    public static void saveGame(AbstractHero hero) {
+    /**
+     * Serializes the hero's state and saves it.
+     *
+     * @param hero The hero to save.
+     */
+    public void saveGame(AbstractHero hero) {
         if (hero == null) {
             throw new IllegalArgumentException("Cannot save a null hero.");
         }
 
-        File directory = new File(SAVE_DIR);
-        if (!directory.exists()) {
-            directory.mkdirs();
-        }
-
         HeroSaveDTO dto = HeroSaveDTO.fromHero(hero);
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-
-        try (FileWriter writer = new FileWriter(SAVE_FILE)) {
-            gson.toJson(dto, writer);
+        try {
+            String json = gson.toJson(dto);
+            storageService.write(saveFilePath, json);
         } catch (IOException e) {
-            throw new IllegalStateException("Failed to save the game to " + SAVE_FILE, e);
+            throw new IllegalStateException("Failed to save the game to " + saveFilePath, e);
         }
     }
 
-    public static HeroSaveDTO loadGame() {
-        File saveFile = new File(SAVE_FILE);
-        if (!saveFile.exists()) {
-            throw new IllegalStateException("No save game found at " + SAVE_FILE);
-        }
-
-        Gson gson = new Gson();
-        try (FileReader reader = new FileReader(saveFile)) {
-            HeroSaveDTO dto = gson.fromJson(reader, HeroSaveDTO.class);
+    /**
+     * Reads the save file and returns the deserialized hero data.
+     *
+     * @return The loaded HeroSaveDTO.
+     */
+    public HeroSaveDTO loadGame() {
+        try {
+            String json = storageService.read(saveFilePath);
+            HeroSaveDTO dto = gson.fromJson(json, HeroSaveDTO.class);
             if (dto == null) {
                 throw new IllegalStateException("Save file is corrupted or empty.");
             }
             return dto;
         } catch (IOException | com.google.gson.JsonSyntaxException e) {
-            throw new IllegalStateException("Failed to load the game from " + SAVE_FILE, e);
+            throw new IllegalStateException("Failed to load the game from " + saveFilePath, e);
         }
     }
 }
