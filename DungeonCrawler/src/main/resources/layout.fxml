@@ -55,8 +55,8 @@
                             <ProgressBar fx:id="barSwordDurability" prefHeight="10.0" prefWidth="50.0" progress="0.0" />
                         </HBox>
                         <HBox spacing="5.0">
-                            <Label styleClass="ink-stat-key" text="Base Damage:" />
-                            <Label fx:id="lblHeroDamage" styleClass="ink-stat-val" text="10" />
+                            <Label styleClass="ink-stat-key" text="Total Damage:" />
+                            <Label fx:id="lblHeroDamage" styleClass="ink-stat-val" text="20" />
                         </HBox>
                     </children>
                 </VBox>

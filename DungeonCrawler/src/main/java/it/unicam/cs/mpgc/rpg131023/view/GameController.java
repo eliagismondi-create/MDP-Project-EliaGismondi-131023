@@ -36,6 +36,7 @@ public class GameController {
     @FXML private Label lblHeroArmor;
     @FXML private Label lblHeroHunger;
     @FXML private Label lblHeroSword;
+    @FXML private Label lblHeroDamage;
     @FXML private ProgressBar barSwordDurability;
     @FXML private HBox boxSword;
     @FXML private VBox invBox;
@@ -140,6 +141,7 @@ public class GameController {
         lblHeroArmor.setText(String.valueOf(hero.getShield()));
         lblHeroHunger.setText(String.valueOf(hero.getHunger()));
         lblHeroSword.setText(hero.isSwordEquipped() ? "YES" : "NO");
+        lblHeroDamage.setText(String.valueOf(hero.getDamage()));
         barSwordDurability.setProgress((double) hero.getSwordDurability() / AbstractHero.MAX_SWORD_DURABILITY);
         barSwordDurability.setVisible(hero.isSwordEquipped());
         updateInventoryUI();
