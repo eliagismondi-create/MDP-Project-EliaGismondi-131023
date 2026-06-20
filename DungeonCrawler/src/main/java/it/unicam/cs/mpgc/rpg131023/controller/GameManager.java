@@ -4,7 +4,7 @@ import it.unicam.cs.mpgc.rpg131023.model.dungeon.Dungeon;
 import it.unicam.cs.mpgc.rpg131023.model.enemy.AbstractEnemy;
 import it.unicam.cs.mpgc.rpg131023.model.enemy.EnemyFactory;
 import it.unicam.cs.mpgc.rpg131023.model.enemy.EnemyType;
-import it.unicam.cs.mpgc.rpg131023.model.player.Hero;
+import it.unicam.cs.mpgc.rpg131023.model.player.AbstractHero;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
@@ -24,14 +24,14 @@ public class GameManager {
 
     private final PropertyChangeSupport support = new PropertyChangeSupport(this);
 
-    private final Hero hero;
+    private final AbstractHero hero;
     private final Map<String, Dungeon> worldMap;
     private GameState currentState = GameState.HUB;
     private Dungeon currentDungeon;
     private CombatManager activeCombat;
     private final List<String> eventLog = new ArrayList<>();
 
-    public GameManager(final Hero hero, final Map<String, Dungeon> worldMap) {
+    public GameManager(final AbstractHero hero, final Map<String, Dungeon> worldMap) {
         this.hero = Objects.requireNonNull(hero, "Hero cannot be null");
         this.worldMap = Objects.requireNonNull(worldMap, "WorldMap cannot be null");
     }
@@ -135,7 +135,7 @@ public class GameManager {
         return this.currentDungeon;
     }
 
-    public Hero getHero() {
+    public AbstractHero getHero() {
         return this.hero;
     }
 

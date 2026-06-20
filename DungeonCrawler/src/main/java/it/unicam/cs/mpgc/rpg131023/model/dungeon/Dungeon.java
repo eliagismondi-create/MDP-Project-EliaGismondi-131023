@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import it.unicam.cs.mpgc.rpg131023.model.enemy.EnemyType;
-import it.unicam.cs.mpgc.rpg131023.model.player.Hero;
+import it.unicam.cs.mpgc.rpg131023.model.player.AbstractHero;
 
 /**
  * Represents a dungeon in the game.
@@ -73,7 +73,7 @@ public class Dungeon {
      * 
      * @param hero L'eroe a cui distribuire il bottino.
      */
-    public void claimLoot(final Hero hero) {
+    public void claimLoot(final AbstractHero hero) {
         if (hero == null) {
             throw new NullPointerException("Hero cannot be null.");
         }

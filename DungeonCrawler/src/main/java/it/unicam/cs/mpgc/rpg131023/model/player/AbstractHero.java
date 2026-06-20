@@ -8,7 +8,7 @@ import it.unicam.cs.mpgc.rpg131023.model.combat.AbstractCombatant;
 import it.unicam.cs.mpgc.rpg131023.model.combat.CombatStats;
 import it.unicam.cs.mpgc.rpg131023.model.resource.ResourceType;
 
-public class Hero extends AbstractCombatant {
+public abstract class AbstractHero extends AbstractCombatant {
     public static final int MAX_SWORD_DURABILITY = 3;
     public static final int EXPLORATION_FATIGUE = 25;
     public static final int MAX_HEALTH = 100;
@@ -23,7 +23,7 @@ public class Hero extends AbstractCombatant {
     private int swordDurability = 0;
     private final Map<ResourceType, Integer> resources;
 
-    public Hero(final CombatStats stats) {
+    public AbstractHero(final CombatStats stats) {
         super(stats);
         this.resources = new EnumMap<>(ResourceType.class);
     }
@@ -211,7 +211,7 @@ public class Hero extends AbstractCombatant {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Hero hero = (Hero) o;
+        AbstractHero hero = (AbstractHero) o;
         return getHealth() == hero.getHealth() && getHunger() == hero.getHunger() &&
                getXp() == hero.getXp() && getShield() == hero.getShield() &&
                isSwordEquipped() == hero.isSwordEquipped() && getSwordDurability() == hero.getSwordDurability();

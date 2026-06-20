@@ -3,7 +3,7 @@ package it.unicam.cs.mpgc.rpg131023.persistence;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import it.unicam.cs.mpgc.rpg131023.model.player.Hero;
+import it.unicam.cs.mpgc.rpg131023.model.player.AbstractHero;
 
 import java.io.File;
 import java.io.FileReader;
@@ -19,7 +19,7 @@ public class SaveManager {
         // Impedisce l'istanza
     }
 
-    public static void saveGame(Hero hero) {
+    public static void saveGame(AbstractHero hero) {
         if (hero == null) {
             throw new IllegalArgumentException("Cannot save a null hero.");
         }

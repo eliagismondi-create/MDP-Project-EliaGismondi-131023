@@ -1,6 +1,6 @@
 package it.unicam.cs.mpgc.rpg131023.model.dungeon;
 
-import it.unicam.cs.mpgc.rpg131023.model.player.Hero;
+import it.unicam.cs.mpgc.rpg131023.model.player.AbstractHero;
 
 /**
  * Represents a loot item that can be collected by the hero.
@@ -11,7 +11,7 @@ public interface Loot {
      * 
      * @param hero The hero receiving the loot.
      */
-    void applyTo(Hero hero);
+    void applyTo(AbstractHero hero);
 
     /**
      * Accepts a loot visitor.

@@ -1,17 +1,17 @@
 package it.unicam.cs.mpgc.rpg131023.controller;
 
 import it.unicam.cs.mpgc.rpg131023.model.enemy.AbstractEnemy;
-import it.unicam.cs.mpgc.rpg131023.model.player.Hero;
+import it.unicam.cs.mpgc.rpg131023.model.player.AbstractHero;
 
 import java.util.Objects;
 
 public class CombatManager {
-    private final Hero hero;
+    private final AbstractHero hero;
     private final AbstractEnemy enemy;
     private boolean heroTurn;
     private boolean combatStarted;
 
-    public CombatManager(final Hero hero, final AbstractEnemy enemy) {
+    public CombatManager(final AbstractHero hero, final AbstractEnemy enemy) {
         this.hero = Objects.requireNonNull(hero, "Hero cannot be null");
         this.enemy = Objects.requireNonNull(enemy, "Enemy cannot be null");
         this.heroTurn = true;
@@ -45,7 +45,7 @@ public class CombatManager {
         return this.combatStarted;
     }
 
-    public Hero getHero() {
+    public AbstractHero getHero() {
         return this.hero;
     }
 

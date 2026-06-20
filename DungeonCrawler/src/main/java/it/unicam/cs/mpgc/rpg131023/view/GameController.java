@@ -5,7 +5,7 @@ import it.unicam.cs.mpgc.rpg131023.controller.GameManager;
 import it.unicam.cs.mpgc.rpg131023.controller.GameManager.GameState;
 import it.unicam.cs.mpgc.rpg131023.model.dungeon.Dungeon;
 import it.unicam.cs.mpgc.rpg131023.model.enemy.AbstractEnemy;
-import it.unicam.cs.mpgc.rpg131023.model.player.Hero;
+import it.unicam.cs.mpgc.rpg131023.model.player.AbstractHero;
 import it.unicam.cs.mpgc.rpg131023.persistence.HeroSaveDTO;
 import it.unicam.cs.mpgc.rpg131023.persistence.SaveManager;
 import it.unicam.cs.mpgc.rpg131023.utils.DungeonLoader;
@@ -70,7 +70,7 @@ public class GameController {
     }
 
     private void setupBindings() {
-        Hero hero = gameManager.getHero();
+        AbstractHero hero = gameManager.getHero();
         
         hero.addPropertyChangeListener(evt -> Platform.runLater(this::updateHeroUI));
         
@@ -127,12 +127,12 @@ public class GameController {
     }
 
     private void updateHeroUI() {
-        Hero hero = gameManager.getHero();
-        lblHeroHealth.setText(hero.getHealth() + "/" + Hero.MAX_HEALTH);
+        AbstractHero hero = gameManager.getHero();
+        lblHeroHealth.setText(hero.getHealth() + "/" + AbstractHero.MAX_HEALTH);
         lblHeroArmor.setText(String.valueOf(hero.getShield()));
         lblHeroHunger.setText(String.valueOf(hero.getHunger()));
         lblHeroSword.setText(hero.isSwordEquipped() ? "YES" : "NO");
-        barSwordDurability.setProgress((double) hero.getSwordDurability() / Hero.MAX_SWORD_DURABILITY);
+        barSwordDurability.setProgress((double) hero.getSwordDurability() / AbstractHero.MAX_SWORD_DURABILITY);
         barSwordDurability.setVisible(hero.isSwordEquipped());
         updateInventoryUI();
     }
@@ -253,7 +253,7 @@ public class GameController {
         try {
             CombatManager cm = gameManager.getActiveCombat();
             AbstractEnemy enemy = cm.getEnemy();
-            Hero hero = cm.getHero();
+            AbstractHero hero = cm.getHero();
             
             int enemyHpBefore = enemy.getHealth();
             cm.executeNextTurn();

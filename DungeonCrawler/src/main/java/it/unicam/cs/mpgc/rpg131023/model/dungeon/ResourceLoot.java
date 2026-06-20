@@ -1,6 +1,6 @@
 package it.unicam.cs.mpgc.rpg131023.model.dungeon;
 
-import it.unicam.cs.mpgc.rpg131023.model.player.Hero;
+import it.unicam.cs.mpgc.rpg131023.model.player.AbstractHero;
 import it.unicam.cs.mpgc.rpg131023.model.resource.ResourceType;
 
 /**
@@ -22,7 +22,7 @@ public class ResourceLoot implements Loot {
     }
 
     @Override
-    public void applyTo(Hero hero) {
+    public void applyTo(AbstractHero hero) {
         hero.addResource(this.type, this.amount);
     }
 

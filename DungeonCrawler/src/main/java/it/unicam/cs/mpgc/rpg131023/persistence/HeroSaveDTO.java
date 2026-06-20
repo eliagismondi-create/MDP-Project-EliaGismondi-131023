@@ -3,7 +3,7 @@ package it.unicam.cs.mpgc.rpg131023.persistence;
 import java.util.HashMap;
 import java.util.Map;
 
-import it.unicam.cs.mpgc.rpg131023.model.player.Hero;
+import it.unicam.cs.mpgc.rpg131023.model.player.AbstractHero;
 import it.unicam.cs.mpgc.rpg131023.model.resource.ResourceType;
 
 public class HeroSaveDTO {
@@ -19,7 +19,7 @@ public class HeroSaveDTO {
         this.resources = new HashMap<>();
     }
 
-    public static HeroSaveDTO fromHero(Hero hero) {
+    public static HeroSaveDTO fromHero(AbstractHero hero) {
         HeroSaveDTO dto = new HeroSaveDTO();
         dto.health = hero.getHealth();
         dto.hunger = hero.getHunger();
@@ -33,7 +33,7 @@ public class HeroSaveDTO {
         return dto;
     }
 
-    public void applyToHero(Hero hero) {
+    public void applyToHero(AbstractHero hero) {
         hero.setHealth(this.health);
         hero.setHunger(this.hunger);
         hero.setXp(this.xp);

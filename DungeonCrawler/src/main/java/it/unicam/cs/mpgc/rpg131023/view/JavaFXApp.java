@@ -3,7 +3,8 @@ package it.unicam.cs.mpgc.rpg131023.view;
 import it.unicam.cs.mpgc.rpg131023.controller.GameManager;
 import it.unicam.cs.mpgc.rpg131023.model.combat.CombatStats;
 import it.unicam.cs.mpgc.rpg131023.model.dungeon.Dungeon;
-import it.unicam.cs.mpgc.rpg131023.model.player.Hero;
+import it.unicam.cs.mpgc.rpg131023.model.player.AbstractHero;
+import it.unicam.cs.mpgc.rpg131023.model.player.Warrior;
 import it.unicam.cs.mpgc.rpg131023.model.resource.ResourceType;
 import it.unicam.cs.mpgc.rpg131023.utils.DungeonLoader;
 import it.unicam.cs.mpgc.rpg131023.utils.StatsLoader;
@@ -35,7 +36,7 @@ public class JavaFXApp extends Application {
 
     private void restartGame() {
         CombatStats heroStats = StatsLoader.getStatsFor("hero");
-        Hero hero = new Hero(heroStats);
+        AbstractHero hero = new Warrior(heroStats);
 
         hero.addResource(ResourceType.HEALTH_POTION, 3);
         hero.addResource(ResourceType.FOOD, 2);
