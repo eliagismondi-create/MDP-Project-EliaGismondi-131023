@@ -16,6 +16,9 @@ import javafx.stage.Stage;
 
 import java.util.Map;
 
+/**
+ * Main JavaFX Application class. Handles stage setup, FXML loading, and core dependency wiring.
+ */
 public class JavaFXApp extends Application {
 
     private Stage primaryStage;

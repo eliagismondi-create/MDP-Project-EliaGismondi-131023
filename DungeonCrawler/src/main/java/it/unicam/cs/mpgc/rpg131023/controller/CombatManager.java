@@ -12,8 +12,8 @@ public class CombatManager {
     private boolean combatStarted;
 
     public CombatManager(final Hero hero, final AbstractEnemy enemy) {
-        this.hero = Objects.requireNonNull(hero, "L'eroe non puo' essere null");
-        this.enemy = Objects.requireNonNull(enemy, "Il nemico non puo' essere null");
+        this.hero = Objects.requireNonNull(hero, "Hero cannot be null");
+        this.enemy = Objects.requireNonNull(enemy, "Enemy cannot be null");
         this.heroTurn = true;
         this.combatStarted = false;
     }

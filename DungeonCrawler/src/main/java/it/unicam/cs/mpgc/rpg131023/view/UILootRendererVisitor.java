@@ -7,9 +7,7 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 
 /**
- * Implementazione concreta del LootVisitor per la View.
- * Costruisce i componenti JavaFX necessari a renderizzare le informazioni
- * sui vari tipi di bottino.
+ * Generates JavaFX UI components for the different types of loot.
  */
 public class UILootRendererVisitor implements LootVisitor {
     private final VBox container;

@@ -30,10 +30,10 @@ public class Hero extends AbstractCombatant {
 
     public void addResource(final ResourceType type, final int amount) {
         if (type == null) {
-            throw new NullPointerException("Il tipo di risorsa non puo' essere null.");
+            throw new NullPointerException("Resource type cannot be null.");
         }
         if (amount <= 0) {
-            throw new IllegalArgumentException("La quantita' da aggiungere deve essere maggiore di zero.");
+            throw new IllegalArgumentException("Amount to add must be greater than zero.");
         }
         this.resources.put(type, this.resources.getOrDefault(type, 0) + amount);
         support.firePropertyChange("resources", null, getResources());
@@ -41,10 +41,10 @@ public class Hero extends AbstractCombatant {
 
     public boolean consumeResource(final ResourceType type, final int amount) {
         if (type == null) {
-            throw new NullPointerException("Il tipo di risorsa non puo' essere null.");
+            throw new NullPointerException("Resource type cannot be null.");
         }
         if (amount <= 0) {
-            throw new IllegalArgumentException("La quantita' da consumare deve essere maggiore di zero.");
+            throw new IllegalArgumentException("Amount to consume must be greater than zero.");
         }
 
         final int currentAmount = this.resources.getOrDefault(type, 0);
@@ -83,11 +83,11 @@ public class Hero extends AbstractCombatant {
 
     public void addHunger(int amount) {
         if (amount < 0) {
-            throw new IllegalArgumentException("L'aumento di fame non puo' essere negativo.");
+            throw new IllegalArgumentException("Hunger increase cannot be negative.");
         }
         setHunger(this.hunger + amount);
         if (this.hunger >= MAX_HUNGER) {
-            this.setHealth(0); // Morte per inedia
+            this.setHealth(0); // Death by starvation
         }
     }
 
@@ -158,14 +158,14 @@ public class Hero extends AbstractCombatant {
 
     public void equipArmor() {
         if (!consumeResource(ResourceType.ARMOR, 1)) {
-            throw new IllegalStateException("Nessuna armatura nell'inventario.");
+            throw new IllegalStateException("No armor in the inventory.");
         }
         setShield(this.shield + ARMOR_SHIELD_VALUE);
     }
 
     public void equipSword() {
         if (!consumeResource(ResourceType.SWORD, 1)) {
-            throw new IllegalStateException("Nessuna spada nell'inventario.");
+            throw new IllegalStateException("No sword in the inventory.");
         }
         setSwordEquipped(true);
         setSwordDurability(MAX_SWORD_DURABILITY);
@@ -191,7 +191,7 @@ public class Hero extends AbstractCombatant {
     @Override
     public void takeDamage(int amount) {
         if (amount <= 0) {
-            throw new IllegalArgumentException("La quantita' di danni deve essere maggiore di zero.");
+            throw new IllegalArgumentException("Damage amount must be greater than zero.");
         }
         
         if (this.shield > 0) {

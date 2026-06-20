@@ -25,6 +25,9 @@ import javafx.scene.layout.VBox;
 
 import java.util.Map;
 
+/**
+ * Binds the JavaFX UI elements to the GameManager data and handles user interactions.
+ */
 public class GameController {
 
     @FXML private VBox heroStatsPanel;

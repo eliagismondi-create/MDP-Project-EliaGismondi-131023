@@ -1,8 +1,7 @@
 package it.unicam.cs.mpgc.rpg131023.view;
 
 /**
- * Classe Launcher necessaria per avviare l'applicazione JavaFX 11+
- * bypassando i controlli sui moduli quando si lancia direttamente dall'IDE.
+ * Entry point to start the JavaFX application while bypassing module path checks.
  */
 public class Launcher {
     public static void main(String[] args) {

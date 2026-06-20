@@ -47,7 +47,7 @@ public final class StatsLoader {
     private static void loadStats() {
         try (Reader reader = new InputStreamReader(
                 Objects.requireNonNull(StatsLoader.class.getResourceAsStream(STATS_FILE),
-                        "File " + STATS_FILE + " non trovato nel classpath."))) {
+                        "File " + STATS_FILE + " not found in classpath."))) {
 
             final Gson gson = new Gson();
             final Type type = new TypeToken<Map<String, CombatStats>>() {
@@ -55,10 +55,10 @@ public final class StatsLoader {
             statsCache = gson.fromJson(reader, type);
 
             if (statsCache == null || statsCache.isEmpty()) {
-                throw new IllegalStateException("Il file delle statistiche e' vuoto o malformato.");
+                throw new IllegalStateException("Stats file is empty or malformed.");
             }
         } catch (java.io.IOException | com.google.gson.JsonSyntaxException e) {
-            throw new IllegalStateException("Errore critico durante il caricamento delle statistiche da " + STATS_FILE,
+            throw new IllegalStateException("Critical error loading stats from " + STATS_FILE,
                     e);
         }
     }

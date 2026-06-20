@@ -39,7 +39,7 @@ public final class EnemyFactory {
      */
     public static AbstractEnemy create(final String enemyId) {
         if (enemyId == null || enemyId.trim().isEmpty()) {
-            throw new IllegalArgumentException("L'ID del nemico non puo' essere nullo o vuoto.");
+            throw new IllegalArgumentException("Enemy ID cannot be null or empty.");
         }
 
         final CombatStats stats = StatsLoader.getStatsFor(enemyId);
@@ -47,7 +47,7 @@ public final class EnemyFactory {
         final String className = stats.getClassName();
         if (className == null || className.trim().isEmpty()) {
             throw new IllegalStateException(
-                    "Nessun className definito per il nemico: " + enemyId);
+                    "No className defined for enemy: " + enemyId);
         }
 
         try {
@@ -55,7 +55,7 @@ public final class EnemyFactory {
 
             if (!AbstractEnemy.class.isAssignableFrom(clazz)) {
                 throw new IllegalStateException(
-                        "La classe " + className + " non e' un sottotipo di AbstractEnemy.");
+                        "Class " + className + " is not a subtype of AbstractEnemy.");
             }
 
             final Constructor<?> constructor = clazz.getConstructor(CombatStats.class);
@@ -64,13 +64,13 @@ public final class EnemyFactory {
 
         } catch (ClassNotFoundException e) {
             throw new IllegalStateException(
-                    "Classe non trovata: " + className, e);
+                    "Class not found: " + className, e);
         } catch (NoSuchMethodException e) {
             throw new IllegalStateException(
-                    "La classe " + className + " non ha un costruttore (CombatStats).", e);
+                    "Class " + className + " does not have a (CombatStats) constructor.", e);
         } catch (InvocationTargetException | InstantiationException | IllegalAccessException e) {
             throw new IllegalStateException(
-                    "Errore durante l'istanziazione di " + className, e);
+                    "Error instantiating " + className, e);
         }
     }
 }

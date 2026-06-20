@@ -32,8 +32,8 @@ public class GameManager {
     private final List<String> eventLog = new ArrayList<>();
 
     public GameManager(final Hero hero, final Map<String, Dungeon> worldMap) {
-        this.hero = Objects.requireNonNull(hero, "L'eroe non puo' essere null");
-        this.worldMap = Objects.requireNonNull(worldMap, "La worldMap non puo' essere null");
+        this.hero = Objects.requireNonNull(hero, "Hero cannot be null");
+        this.worldMap = Objects.requireNonNull(worldMap, "WorldMap cannot be null");
     }
 
     public void addPropertyChangeListener(PropertyChangeListener listener) {
@@ -64,12 +64,12 @@ public class GameManager {
 
     public void enterDungeon(final String dungeonId) {
         if (this.currentState != GameState.HUB) {
-            throw new IllegalStateException("Lo stato attuale non e' HUB.");
+            throw new IllegalStateException("Current state is not HUB.");
         }
 
         final Dungeon dungeon = this.worldMap.get(dungeonId);
         if (dungeon == null) {
-            throw new IllegalArgumentException("Dungeon inesistente: " + dungeonId);
+            throw new IllegalArgumentException("Dungeon does not exist: " + dungeonId);
         }
 
         setCurrentDungeon(dungeon);
@@ -107,10 +107,10 @@ public class GameManager {
 
     public void retreatFromDungeon() {
         if (this.currentState != GameState.IN_COMBAT) {
-            throw new IllegalStateException("Non sei in un dungeon.");
+            throw new IllegalStateException("You are not in a dungeon.");
         }
         if (this.activeCombat != null && this.activeCombat.hasCombatStarted()) {
-            throw new IllegalStateException("Il combattimento e' gia' iniziato, non puoi fuggire.");
+            throw new IllegalStateException("Combat has already started, you cannot flee.");
         }
         
         this.hero.sufferFatigue();

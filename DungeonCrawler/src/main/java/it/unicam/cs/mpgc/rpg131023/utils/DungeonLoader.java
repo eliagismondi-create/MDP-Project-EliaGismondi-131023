@@ -84,7 +84,7 @@ public final class DungeonLoader {
     private static void loadAllDungeons() {
         try (Reader reader = new InputStreamReader(
                 Objects.requireNonNull(DungeonLoader.class.getResourceAsStream(DUNGEONS_FILE),
-                        "File " + DUNGEONS_FILE + " non trovato nel classpath."))) {
+                        "File " + DUNGEONS_FILE + " not found in classpath."))) {
 
             final Gson gson = new Gson();
             final Type type = new TypeToken<Map<String, DungeonDTO>>() {
@@ -92,10 +92,10 @@ public final class DungeonLoader {
             dungeonsCache = gson.fromJson(reader, type);
 
             if (dungeonsCache == null || dungeonsCache.isEmpty()) {
-                throw new IllegalStateException("Il file dei dungeon e' vuoto o malformato.");
+                throw new IllegalStateException("Dungeons file is empty or malformed.");
             }
         } catch (java.io.IOException | com.google.gson.JsonSyntaxException e) {
-            throw new IllegalStateException("Errore critico durante il caricamento dei dungeon da " + DUNGEONS_FILE, e);
+            throw new IllegalStateException("Critical error loading dungeons from " + DUNGEONS_FILE, e);
         }
     }
 }
