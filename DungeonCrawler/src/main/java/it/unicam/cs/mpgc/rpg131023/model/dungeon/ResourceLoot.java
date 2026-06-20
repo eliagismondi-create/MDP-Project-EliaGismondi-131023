@@ -4,7 +4,7 @@ import it.unicam.cs.mpgc.rpg131023.model.player.AbstractHero;
 import it.unicam.cs.mpgc.rpg131023.model.resource.ResourceType;
 
 /**
- * Represents loot that provides collectible resources.
+ * Loot implementation mapping to game resources.
  */
 public class ResourceLoot implements Loot {
     private final ResourceType type;

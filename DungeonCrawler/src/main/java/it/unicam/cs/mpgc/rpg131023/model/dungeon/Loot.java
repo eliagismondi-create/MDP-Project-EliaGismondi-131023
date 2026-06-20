@@ -3,20 +3,20 @@ package it.unicam.cs.mpgc.rpg131023.model.dungeon;
 import it.unicam.cs.mpgc.rpg131023.model.player.AbstractHero;
 
 /**
- * Represents a loot item that can be collected by the hero.
+ * Collectible item found within a level.
  */
 public interface Loot {
     /**
-     * Applies the loot effect to the hero.
+     * Triggers the loot effect on the character.
      * 
-     * @param hero The hero receiving the loot.
+     * @param hero Target character.
      */
     void applyTo(AbstractHero hero);
 
     /**
-     * Accepts a loot visitor.
+     * Dispatches the visitor to the concrete loot type.
      * 
-     * @param visitor The visitor to accept.
+     * @param visitor The visiting logic instance.
      */
     void accept(LootVisitor visitor);
 }

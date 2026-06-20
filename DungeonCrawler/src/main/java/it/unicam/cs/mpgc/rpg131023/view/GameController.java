@@ -4,7 +4,7 @@ import it.unicam.cs.mpgc.rpg131023.controller.CombatManager;
 import it.unicam.cs.mpgc.rpg131023.controller.GameManager;
 import it.unicam.cs.mpgc.rpg131023.controller.GameManager.GameState;
 import it.unicam.cs.mpgc.rpg131023.model.dungeon.Dungeon;
-import it.unicam.cs.mpgc.rpg131023.model.enemy.AbstractEnemy;
+import it.unicam.cs.mpgc.rpg131023.model.enemy.Enemy;
 import it.unicam.cs.mpgc.rpg131023.model.player.AbstractHero;
 import it.unicam.cs.mpgc.rpg131023.persistence.HeroSaveDTO;
 import it.unicam.cs.mpgc.rpg131023.persistence.SaveManager;
@@ -205,8 +205,8 @@ public class GameController {
         lootBox.getChildren().add(visitor.getGraphic());
     }
 
-    private void bindEnemy(AbstractEnemy enemy) {
-        lblEnemyType.setText(enemy.getClass().getSimpleName());
+    private void bindEnemy(Enemy enemy) {
+        lblEnemyType.setText(enemy.getType().name());
         lblEnemyHealth.setText(String.valueOf(enemy.getHealth()));
         lblEnemyDamage.setText(String.valueOf(enemy.getDamage()));
         
@@ -256,7 +256,7 @@ public class GameController {
     private void handleAttack(ActionEvent event) {
         try {
             CombatManager cm = gameManager.getActiveCombat();
-            AbstractEnemy enemy = cm.getEnemy();
+            Enemy enemy = cm.getEnemy();
             AbstractHero hero = cm.getHero();
             
             int enemyHpBefore = enemy.getHealth();

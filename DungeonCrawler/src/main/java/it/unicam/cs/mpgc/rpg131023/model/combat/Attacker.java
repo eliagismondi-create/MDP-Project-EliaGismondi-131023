@@ -1,14 +1,14 @@
 package it.unicam.cs.mpgc.rpg131023.model.combat;
 
 /**
- * Represents an entity capable of dealing damage to a {@link Damageable} target.
+ * Entity capable of inflicting damage.
  */
 public interface Attacker {
 
     /**
-     * Deals damage to the specified target.
+     * Strikes the given target.
      *
-     * @param target The target to attack.
+     * @param target The target receiving the attack.
      */
     void attack(Damageable target);
 }

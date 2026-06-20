@@ -3,7 +3,7 @@ package it.unicam.cs.mpgc.rpg131023.model.dungeon;
 import it.unicam.cs.mpgc.rpg131023.utils.DungeonDTO;
 
 /**
- * Factory responsible for assembling Dungeon domain objects from DTOs.
+ * Assembler for dungeon domain entities from parsed DTOs.
  */
 public final class DungeonFactory {
 
@@ -12,11 +12,11 @@ public final class DungeonFactory {
     }
 
     /**
-     * Creates a fully populated Dungeon instance based on a DTO.
+     * Builds a concrete dungeon entity from transfer data.
      *
-     * @param dungeonId The textual identifier of the dungeon.
-     * @param dto       The parsed data transfer object.
-     * @return A new instance of the Dungeon.
+     * @param dungeonId Unique level identifier.
+     * @param dto       Parsed data transfer object.
+     * @return Fully populated dungeon instance.
      */
     public static Dungeon createDungeon(String dungeonId, DungeonDTO dto) {
         if (dto == null) {

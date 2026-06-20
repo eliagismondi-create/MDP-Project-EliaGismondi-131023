@@ -10,7 +10,7 @@ import it.unicam.cs.mpgc.rpg131023.model.enemy.EnemyType;
 import it.unicam.cs.mpgc.rpg131023.model.player.AbstractHero;
 
 /**
- * Represents a dungeon in the game.
+ * Game level containing loot and enemy spawn configurations.
  */
 public class Dungeon {
     public enum Difficulty {
@@ -41,9 +41,9 @@ public class Dungeon {
     }
 
     /**
-     * Adds loot to the dungeon.
+     * Appends loot to the level pool.
      * 
-     * @param loot The loot to add.
+     * @param loot Item to add.
      */
     public void addLoot(final Loot loot) {
         if (loot == null) {
@@ -53,10 +53,10 @@ public class Dungeon {
     }
 
     /**
-     * Configures the number of enemies to spawn for this dungeon.
+     * Configures spawn amounts for a specific enemy variant.
      * 
-     * @param enemyType The type of enemy.
-     * @param quantity  The number of enemies of that type.
+     * @param enemyType Enemy variant.
+     * @param quantity  Spawn count.
      */
     public void addEnemySpawn(final EnemyType enemyType, final int quantity) {
         if (enemyType == null) {
@@ -69,9 +69,9 @@ public class Dungeon {
     }
 
     /**
-     * Distribuisce i tesori del dungeon all'eroe passato.
+     * Distributes all collected treasures to the given hero.
      * 
-     * @param hero L'eroe a cui distribuire il bottino.
+     * @param hero Target character receiving the loot.
      */
     public void claimLoot(final AbstractHero hero) {
         if (hero == null) {

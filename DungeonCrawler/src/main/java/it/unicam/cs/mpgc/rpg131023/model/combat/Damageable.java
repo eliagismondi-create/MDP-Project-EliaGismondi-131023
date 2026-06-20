@@ -1,21 +1,21 @@
 package it.unicam.cs.mpgc.rpg131023.model.combat;
 
 /**
- * Represents an entity that can take damage and have a health status.
+ * Target capable of receiving damage and having a health state.
  */
 public interface Damageable {
 
     /**
-     * Reduces the entity's health by the specified amount.
+     * Applies damage to the current health pool.
      *
-     * @param amount The amount of damage to take.
+     * @param amount Damage to take.
      */
     public void takeDamage(int amount);
 
     /**
-     * Checks if the entity is still alive.
+     * Checks if health is above zero.
      *
-     * @return {@code true} if the entity has health greater than 0, {@code false} otherwise.
+     * @return True if alive.
      */
     public boolean isAlive();
 }

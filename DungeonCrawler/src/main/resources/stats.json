@@ -5,17 +5,14 @@
   },
   "goblin": {
     "health": 50,
-    "damage": 10,
-    "className": "it.unicam.cs.mpgc.rpg131023.model.enemy.Goblin"
+    "damage": 10
   },
   "orc": {
     "health": 100,
-    "damage": 25,
-    "className": "it.unicam.cs.mpgc.rpg131023.model.enemy.Orc"
+    "damage": 25
   },
   "skeleton": {
     "health": 40,
-    "damage": 12,
-    "className": "it.unicam.cs.mpgc.rpg131023.model.enemy.Skeleton"
+    "damage": 12
   }
 }

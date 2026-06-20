@@ -1,22 +1,19 @@
 package it.unicam.cs.mpgc.rpg131023.model.combat;
 
 /**
- * Immutable object containing basic combat statistics.
- * The optional {@code className} allows the factory to resolve the concrete enemy class.
+ * Mutable state tracker for entity health and base damage.
  */
-public final class CombatStats {
-    private final int health;
+public class CombatStats {
+    private int health;
     private final int damage;
-    private final String className;
 
     /**
-     * Constructs the combat statistics and validates the parameters.
+     * Initializes the combat stats.
      *
-     * @param health    The initial health (1-100).
-     * @param damage    The base damage (>= 0).
-     * @param className The fully-qualified class name of the enemy (can be null for the Hero).
+     * @param health Initial hit points (1-100).
+     * @param damage Base damage output.
      */
-    public CombatStats(final int health, final int damage, final String className) {
+    public CombatStats(final int health, final int damage) {
         if (health <= 0 || health > 100) {
             throw new IllegalArgumentException("Health must be between 1 and 100 inclusive.");
         }
@@ -25,32 +22,32 @@ public final class CombatStats {
         }
         this.health = health;
         this.damage = damage;
-        this.className = className;
-    }
-
-    /**
-     * Constructs the combat statistics without a class name.
-     *
-     * @param health The initial health (1-100).
-     * @param damage The base damage (>= 0).
-     */
-    public CombatStats(final int health, final int damage) {
-        this(health, damage, null);
     }
 
     public int getHealth() {
         return this.health;
     }
 
+    public void setHealth(int health) {
+        this.health = health;
+    }
+
     public int getDamage() {
         return this.damage;
     }
 
-    /**
-     * @return The fully-qualified class name of the entity, or {@code null} if not specified.
-     */
-    public String getClassName() {
-        return this.className;
+    public void takeDamage(int amount) {
+        if (amount <= 0) {
+            throw new IllegalArgumentException("Damage amount must be greater than zero.");
+        }
+        this.health -= amount;
+        if (this.health < 0) {
+            this.health = 0;
+        }
+    }
+
+    public boolean isAlive() {
+        return this.health > 0;
     }
 
     @Override
@@ -58,11 +55,11 @@ public final class CombatStats {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         CombatStats that = (CombatStats) o;
-        return health == that.health && damage == that.damage && java.util.Objects.equals(className, that.className);
+        return health == that.health && damage == that.damage;
     }
 
     @Override
     public int hashCode() {
-        return java.util.Objects.hash(health, damage, className);
+        return java.util.Objects.hash(health, damage);
     }
 }

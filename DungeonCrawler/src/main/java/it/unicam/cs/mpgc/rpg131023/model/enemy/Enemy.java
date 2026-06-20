@@ -1,26 +1,34 @@
-package it.unicam.cs.mpgc.rpg131023.model.combat;
+package it.unicam.cs.mpgc.rpg131023.model.enemy;
+
+import it.unicam.cs.mpgc.rpg131023.model.combat.Attacker;
+import it.unicam.cs.mpgc.rpg131023.model.combat.CombatStats;
+import it.unicam.cs.mpgc.rpg131023.model.combat.Damageable;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 
 /**
- * Base wrapper bridging combat logic and property change events.
+ * Concrete enemy entity delegating combat math to composition stats.
  */
-public abstract class AbstractCombatant implements Damageable, Attacker {
-    protected final PropertyChangeSupport support = new PropertyChangeSupport(this);
-    private final CombatStats stats;
+public class Enemy implements Attacker, Damageable {
 
-    /**
-     * Creates a combatant with deep-copied stats.
-     *
-     * @param stats The base stats to copy.
-     */
-    public AbstractCombatant(final CombatStats stats) {
+    private final PropertyChangeSupport support = new PropertyChangeSupport(this);
+    private final CombatStats stats;
+    private final EnemyType type;
+
+    public Enemy(final CombatStats stats, final EnemyType type) {
         if (stats == null) {
             throw new NullPointerException("Combat stats cannot be null.");
         }
-        // Deep copy the stats so this entity has its own mutable state
+        if (type == null) {
+            throw new NullPointerException("Enemy type cannot be null.");
+        }
         this.stats = new CombatStats(stats.getHealth(), stats.getDamage());
+        this.type = type;
+    }
+
+    public EnemyType getType() {
+        return this.type;
     }
 
     @Override
@@ -34,7 +42,6 @@ public abstract class AbstractCombatant implements Damageable, Attacker {
         if (!target.isAlive()) {
             throw new IllegalArgumentException("Target is already dead.");
         }
-
         target.takeDamage(getDamage());
     }
 
@@ -61,6 +68,10 @@ public abstract class AbstractCombatant implements Damageable, Attacker {
         return this.stats.getHealth();
     }
 
+    public int getDamage() {
+        return this.stats.getDamage();
+    }
+
     public void addPropertyChangeListener(PropertyChangeListener listener) {
         support.addPropertyChangeListener(listener);
     }
@@ -69,18 +80,16 @@ public abstract class AbstractCombatant implements Damageable, Attacker {
         support.removePropertyChangeListener(listener);
     }
 
-    /**
-     * Overrides current health and triggers property listeners.
-     *
-     * @param health The new health value.
-     */
-    public void setHealth(final int health) {
-        int oldHealth = this.stats.getHealth();
-        this.stats.setHealth(health);
-        support.firePropertyChange("health", oldHealth, this.stats.getHealth());
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Enemy enemy = (Enemy) o;
+        return type == enemy.type && stats.equals(enemy.stats);
     }
 
-    public int getDamage() {
-        return this.stats.getDamage();
+    @Override
+    public int hashCode() {
+        return java.util.Objects.hash(stats, type);
     }
 }

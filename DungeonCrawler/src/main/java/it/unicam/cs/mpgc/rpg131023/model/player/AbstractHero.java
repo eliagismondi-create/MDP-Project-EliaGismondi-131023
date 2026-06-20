@@ -9,8 +9,8 @@ import it.unicam.cs.mpgc.rpg131023.model.combat.CombatStats;
 import it.unicam.cs.mpgc.rpg131023.model.resource.ResourceType;
 
 /**
- * Base abstraction for all playable characters.
- * Manages common attributes like health, hunger, inventory, and equipment.
+ * Base logic for player characters.
+ * Holds state for inventory, shield, hunger, and experience.
  */
 public abstract class AbstractHero extends AbstractCombatant {
     public static final int MAX_SWORD_DURABILITY = 3;
@@ -33,10 +33,10 @@ public abstract class AbstractHero extends AbstractCombatant {
     }
 
     /**
-     * Adds a specific quantity of a resource to the inventory.
+     * Stores specific resource quantity in inventory.
      *
-     * @param type   The resource type to add.
-     * @param amount The quantity to add.
+     * @param type   Resource variant.
+     * @param amount Quantity to add.
      */
     public void addResource(final ResourceType type, final int amount) {
         if (type == null) {
@@ -50,11 +50,11 @@ public abstract class AbstractHero extends AbstractCombatant {
     }
 
     /**
-     * Consumes a specific quantity of a resource if available.
+     * Removes specific resource quantity from inventory.
      *
-     * @param type   The resource type to consume.
-     * @param amount The quantity to consume.
-     * @return True if successfully consumed, false otherwise.
+     * @param type   Resource variant.
+     * @param amount Quantity needed.
+     * @return True on success.
      */
     public boolean consumeResource(final ResourceType type, final int amount) {
         if (type == null) {
@@ -75,7 +75,7 @@ public abstract class AbstractHero extends AbstractCombatant {
     }
 
     /**
-     * Restores health to maximum by consuming a health potion.
+     * Fully restores health using a potion.
      */
     public void heal() {
         if (getHealth() == MAX_HEALTH) {
@@ -88,7 +88,7 @@ public abstract class AbstractHero extends AbstractCombatant {
     }
 
     /**
-     * Resets hunger to zero by consuming a food ration.
+     * Resets hunger using a food ration.
      */
     public void eat() {
         if (this.hunger == 0) {
@@ -101,7 +101,7 @@ public abstract class AbstractHero extends AbstractCombatant {
     }
 
     /**
-     * Increases hunger due to dungeon exploration fatigue.
+     * Increases hunger from exploration penalty.
      */
     public void sufferFatigue() {
         this.addHunger(EXPLORATION_FATIGUE);
@@ -122,7 +122,7 @@ public abstract class AbstractHero extends AbstractCombatant {
     }
 
     /**
-     * Clears the inventory without overwriting the map object, primarily used by DTOs.
+     * Empties resource inventory map content.
      */
     public void clearResources() {
         this.resources.clear();
@@ -185,7 +185,7 @@ public abstract class AbstractHero extends AbstractCombatant {
     }
 
     /**
-     * Consumes armor from inventory to increase the shield value.
+     * Consumes armor item to increase shield points.
      */
     public void equipArmor() {
         if (!consumeResource(ResourceType.ARMOR, 1)) {
@@ -195,7 +195,7 @@ public abstract class AbstractHero extends AbstractCombatant {
     }
 
     /**
-     * Consumes a sword from inventory to equip it, resetting its durability.
+     * Consumes sword item to equip weapon and reset durability.
      */
     public void equipSword() {
         if (!consumeResource(ResourceType.SWORD, 1)) {
@@ -223,9 +223,9 @@ public abstract class AbstractHero extends AbstractCombatant {
     }
 
     /**
-     * Applies damage to the hero, prioritizing shield reduction before health.
+     * Absorbs damage prioritizing shield over health.
      *
-     * @param amount The total damage taken.
+     * @param amount Incoming damage.
      */
     @Override
     public void takeDamage(int amount) {

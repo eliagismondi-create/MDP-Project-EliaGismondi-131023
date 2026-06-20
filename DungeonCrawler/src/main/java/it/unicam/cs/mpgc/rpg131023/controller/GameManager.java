@@ -1,7 +1,7 @@
 package it.unicam.cs.mpgc.rpg131023.controller;
 
 import it.unicam.cs.mpgc.rpg131023.model.dungeon.Dungeon;
-import it.unicam.cs.mpgc.rpg131023.model.enemy.AbstractEnemy;
+import it.unicam.cs.mpgc.rpg131023.model.enemy.Enemy;
 import it.unicam.cs.mpgc.rpg131023.model.enemy.EnemyFactory;
 import it.unicam.cs.mpgc.rpg131023.model.enemy.EnemyType;
 import it.unicam.cs.mpgc.rpg131023.model.player.AbstractHero;
@@ -78,7 +78,7 @@ public class GameManager {
 
     private void startEncounter() {
         final EnemyType enemyType = this.currentDungeon.getEnemySpawns().keySet().iterator().next();
-        final AbstractEnemy enemy = EnemyFactory.create(enemyType.name());
+        final Enemy enemy = EnemyFactory.create(enemyType.name());
 
         setActiveCombat(new CombatManager(this.hero, enemy));
         setCurrentState(GameState.IN_COMBAT);

@@ -1,12 +1,12 @@
 package it.unicam.cs.mpgc.rpg131023.model.dungeon;
 
 /**
- * Visitor interface for loot items.
+ * Dispatcher pattern interface for loot variants.
  */
 public interface LootVisitor {
     /**
-     * Visits a resource loot.
-     * @param loot The resource loot to visit.
+     * Handles resource-based loot logic.
+     * @param loot The resource loot instance.
      */
     void visit(ResourceLoot loot);
 }

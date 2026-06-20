@@ -1,9 +1,7 @@
 package it.unicam.cs.mpgc.rpg131023.model.resource;
 
 /**
- * Definisce i tipi di risorse collezionabili all'interno del gioco.
- * Questo Enum puo' essere esteso in futuro senza impattare le altre classi
- * (OCP).
+ * Lootable resource variants.
  */
 public enum ResourceType {
     HEALTH_POTION,
