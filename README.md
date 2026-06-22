@@ -1,6 +1,6 @@
-# Dungeon Crawler: Rune & Ink
+# Dungeon Crawler
 
-Dungeon Crawler è un emozionante gioco di ruolo esplorativo e gestionale (RPG). Mettiti nei panni di un coraggioso eroe e addentrati nei meandri di oscuri dungeon, affronta temibili nemici come Banditi, Orchi e Draghi e rivendica preziosi tesori. Sopravvivi gestendo saggiamente le tue risorse: consuma cibo per evitare l'inedia, bevi pozioni per recuperare la salute, forgia equipaggiamenti migliori per non farti cogliere impreparato dalle insidie delle tenebre. La gloria ti attende, ma solo la tattica ti terrà in vita!
+Dungeon Crawler è un  gioco di ruolo esplorativo e gestionale (RPG). Mettiti nei panni di un coraggioso eroe e addentrati nei meandri di oscuri dungeon, affronta temibili nemici come Banditi, Orchi e Draghi e rivendica preziosi tesori. Sopravvivi gestendo saggiamente le tue risorse: consuma cibo per evitare l'inedia, bevi pozioni per recuperare la salute, forgia equipaggiamenti migliori per non farti cogliere impreparato dalle insidie delle tenebre. La gloria ti attende, ma solo la tattica ti terrà in vita!
 
 ## Compilazione ed Esecuzione
 Il progetto utilizza **Gradle** per la gestione del ciclo di vita e delle dipendenze.
