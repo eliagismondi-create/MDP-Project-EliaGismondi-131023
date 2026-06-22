@@ -18,7 +18,7 @@ public class UILootRendererVisitor implements LootVisitor {
 
     @Override
     public void visit(ResourceLoot loot) {
-        String name = loot.getType().toString().replace("_", " ");
+        String name = loot.getItem().getName();
         Label lbl = new Label("⬡ " + name + ": " + loot.getAmount());
         lbl.getStyleClass().add("ink-stat-val");
         this.container.getChildren().add(lbl);

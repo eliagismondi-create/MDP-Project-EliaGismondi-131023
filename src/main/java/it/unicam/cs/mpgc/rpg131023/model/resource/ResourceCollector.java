@@ -1,15 +1,17 @@
 package it.unicam.cs.mpgc.rpg131023.model.resource;
 
+import it.unicam.cs.mpgc.rpg131023.model.item.Item;
+
 /**
  * Interface representing an entity capable of collecting resources.
  */
 public interface ResourceCollector {
 
     /**
-     * Stores specific resource quantity in inventory.
+     * Stores specific item quantity in inventory.
      *
-     * @param type   Resource variant.
+     * @param item   Item variant.
      * @param amount Quantity to add.
      */
-    void addResource(ResourceType type, int amount);
+    void addItem(Item item, int amount);
 }

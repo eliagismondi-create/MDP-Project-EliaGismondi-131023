@@ -30,7 +30,12 @@ public final class DungeonFactory {
         final Dungeon dungeon = new Dungeon(dungeonId, dto.name, dto.description, difficulty);
 
         if (dto.loot != null) {
-            dto.loot.forEach((type, amount) -> dungeon.addLoot(new ResourceLoot(type, amount)));
+            dto.loot.forEach((typeString, amount) -> {
+                it.unicam.cs.mpgc.rpg131023.model.item.Item item = it.unicam.cs.mpgc.rpg131023.model.item.ItemRegistry.get(typeString);
+                if (item != null) {
+                    dungeon.addLoot(new ResourceLoot(item, amount));
+                }
+            });
         }
 
         if (dto.enemySpawns != null) {

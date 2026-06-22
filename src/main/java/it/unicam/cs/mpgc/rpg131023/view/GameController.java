@@ -151,8 +151,8 @@ public class GameController {
         if (invBox.getChildren().size() > 1) {
             invBox.getChildren().remove(1, invBox.getChildren().size());
         }
-        gameManager.getHero().getResources().forEach((key, value) -> {
-            String resourceName = key.toString().replace("_", " ");
+        gameManager.getHero().getInventory().forEach((itemKey, value) -> {
+            String resourceName = itemKey.getName();
             Label item = new Label("⬡ " + resourceName + ": " + value);
             item.getStyleClass().add("ink-stat-val");
             invBox.getChildren().add(item);
@@ -234,22 +234,22 @@ public class GameController {
 
     @FXML
     private void handlePotion(ActionEvent event) {
-        executeHeroAction(gameManager.getHero()::heal, "Drank a healing potion.");
+        executeHeroAction(() -> gameManager.getHero().useItem(it.unicam.cs.mpgc.rpg131023.model.item.ItemRegistry.get("HEALTH_POTION")), "Drank a healing potion.");
     }
 
     @FXML
     private void handleFood(ActionEvent event) {
-        executeHeroAction(gameManager.getHero()::eat, "Ate a food ration.");
+        executeHeroAction(() -> gameManager.getHero().useItem(it.unicam.cs.mpgc.rpg131023.model.item.ItemRegistry.get("FOOD")), "Ate a food ration.");
     }
 
     @FXML
     private void handleSword(ActionEvent event) {
-        executeHeroAction(gameManager.getHero()::equipSword, "Sword equipped.");
+        executeHeroAction(() -> gameManager.getHero().useItem(it.unicam.cs.mpgc.rpg131023.model.item.ItemRegistry.get("SWORD")), "Sword equipped.");
     }
 
     @FXML
     private void handleArmor(ActionEvent event) {
-        executeHeroAction(gameManager.getHero()::equipArmor, "Armor equipped.");
+        executeHeroAction(() -> gameManager.getHero().useItem(it.unicam.cs.mpgc.rpg131023.model.item.ItemRegistry.get("ARMOR")), "Armor equipped.");
     }
 
     @FXML

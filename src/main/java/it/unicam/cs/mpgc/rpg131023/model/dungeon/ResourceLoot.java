@@ -1,29 +1,29 @@
 package it.unicam.cs.mpgc.rpg131023.model.dungeon;
 
+import it.unicam.cs.mpgc.rpg131023.model.item.Item;
 import it.unicam.cs.mpgc.rpg131023.model.resource.ResourceCollector;
-import it.unicam.cs.mpgc.rpg131023.model.resource.ResourceType;
 
 /**
- * Loot implementation mapping to game resources.
+ * Loot implementation mapping to game items.
  */
 public class ResourceLoot implements Loot {
-    private final ResourceType type;
+    private final Item item;
     private final int amount;
 
-    public ResourceLoot(ResourceType type, int amount) {
-        if (type == null) {
-            throw new NullPointerException("Resource type cannot be null.");
+    public ResourceLoot(Item item, int amount) {
+        if (item == null) {
+            throw new NullPointerException("Item cannot be null.");
         }
         if (amount <= 0) {
             throw new IllegalArgumentException("Amount must be greater than zero.");
         }
-        this.type = type;
+        this.item = item;
         this.amount = amount;
     }
 
     @Override
     public void applyTo(ResourceCollector collector) {
-        collector.addResource(this.type, this.amount);
+        collector.addItem(this.item, this.amount);
     }
 
     @Override
@@ -31,8 +31,8 @@ public class ResourceLoot implements Loot {
         visitor.visit(this);
     }
 
-    public ResourceType getType() {
-        return this.type;
+    public Item getItem() {
+        return this.item;
     }
 
     public int getAmount() {
@@ -44,11 +44,11 @@ public class ResourceLoot implements Loot {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ResourceLoot that = (ResourceLoot) o;
-        return amount == that.amount && type == that.type;
+        return amount == that.amount && item.equals(that.item);
     }
 
     @Override
     public int hashCode() {
-        return java.util.Objects.hash(type, amount);
+        return java.util.Objects.hash(item, amount);
     }
 }

@@ -1,13 +1,13 @@
 package it.unicam.cs.mpgc.rpg131023.model.player;
 
 import java.util.Collections;
-import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.Map;
 
 import it.unicam.cs.mpgc.rpg131023.model.combat.AbstractCombatant;
 import it.unicam.cs.mpgc.rpg131023.model.combat.CombatStats;
+import it.unicam.cs.mpgc.rpg131023.model.item.Item;
 import it.unicam.cs.mpgc.rpg131023.model.resource.ResourceCollector;
-import it.unicam.cs.mpgc.rpg131023.model.resource.ResourceType;
 
 /**
  * Base logic for player characters.
@@ -27,80 +27,70 @@ public abstract class AbstractHero extends AbstractCombatant implements Resource
     private int shield = 0;
     private boolean swordEquipped = false;
     private int swordDurability = 0;
-    private final Map<ResourceType, Integer> resources;
+    private final Map<Item, Integer> inventory;
 
     public AbstractHero(final CombatStats stats) {
         super(stats);
-        this.resources = new EnumMap<>(ResourceType.class);
+        this.inventory = new HashMap<>();
     }
 
     /**
-     * Stores specific resource quantity in inventory.
+     * Stores specific item quantity in inventory.
      *
-     * @param type   Resource variant.
+     * @param item   Item variant.
      * @param amount Quantity to add.
      */
     @Override
-    public void addResource(final ResourceType type, final int amount) {
-        if (type == null) {
-            throw new NullPointerException("Resource type cannot be null.");
+    public void addItem(final Item item, final int amount) {
+        if (item == null) {
+            throw new NullPointerException("Item cannot be null.");
         }
         if (amount <= 0) {
             throw new IllegalArgumentException("Amount to add must be greater than zero.");
         }
-        this.resources.put(type, this.resources.getOrDefault(type, 0) + amount);
-        support.firePropertyChange("resources", null, getResources());
+        this.inventory.put(item, this.inventory.getOrDefault(item, 0) + amount);
+        support.firePropertyChange("inventory", null, getInventory());
     }
 
     /**
-     * Removes specific resource quantity from inventory.
+     * Removes specific item quantity from inventory.
      *
-     * @param type   Resource variant.
+     * @param item   Item variant.
      * @param amount Quantity needed.
      * @return True on success.
      */
-    public boolean consumeResource(final ResourceType type, final int amount) {
-        if (type == null) {
-            throw new NullPointerException("Resource type cannot be null.");
+    public boolean consumeItem(final Item item, final int amount) {
+        if (item == null) {
+            throw new NullPointerException("Item cannot be null.");
         }
         if (amount <= 0) {
             throw new IllegalArgumentException("Amount to consume must be greater than zero.");
         }
 
-        final int currentAmount = this.resources.getOrDefault(type, 0);
+        final int currentAmount = this.inventory.getOrDefault(item, 0);
         if (currentAmount < amount) {
             return false;
         }
 
-        this.resources.put(type, currentAmount - amount);
-        support.firePropertyChange("resources", null, getResources());
+        this.inventory.put(item, currentAmount - amount);
+        support.firePropertyChange("inventory", null, getInventory());
         return true;
     }
 
-    /**
-     * Fully restores health using a potion.
-     */
-    public void heal() {
-        if (getHealth() == MAX_HEALTH) {
-            throw new IllegalStateException("Hero is not wounded.");
+    public void useItem(Item item) {
+        if (!consumeItem(item, 1)) {
+            throw new IllegalStateException("No " + item.getName() + " in the inventory.");
         }
-        if (!consumeResource(ResourceType.HEALTH_POTION, 1)) {
-            throw new IllegalStateException("No health potion in the inventory.");
-        }
-        setHealth(MAX_HEALTH);
+        item.use(this);
     }
 
-    /**
-     * Resets hunger using a food ration.
-     */
-    public void eat() {
-        if (this.hunger == 0) {
-            throw new IllegalStateException("Hero is not hungry.");
-        }
-        if (!consumeResource(ResourceType.FOOD, 1)) {
-            throw new IllegalStateException("No food in the inventory.");
-        }
-        setHunger(0);
+    public void restoreHealth(int amount) {
+        int newHealth = Math.min(MAX_HEALTH, getHealth() + amount);
+        setHealth(newHealth);
+    }
+
+    public void modifyHunger(int amount) {
+        setHunger(Math.max(0, this.hunger + amount));
     }
 
     /**
@@ -120,21 +110,21 @@ public abstract class AbstractHero extends AbstractCombatant implements Resource
         }
     }
 
-    public Map<ResourceType, Integer> getResources() {
-        return Collections.unmodifiableMap(this.resources);
+    public Map<Item, Integer> getInventory() {
+        return Collections.unmodifiableMap(this.inventory);
     }
 
     /**
      * Empties resource inventory map content.
      */
-    public void clearResources() {
-        this.resources.clear();
-        support.firePropertyChange("resources", null, getResources());
+    public void clearInventory() {
+        this.inventory.clear();
+        support.firePropertyChange("inventory", null, getInventory());
     }
 
-    public void setResourceForce(ResourceType type, int amount) {
-        this.resources.put(type, amount);
-        support.firePropertyChange("resources", null, getResources());
+    public void setItemForce(Item item, int amount) {
+        this.inventory.put(item, amount);
+        support.firePropertyChange("inventory", null, getInventory());
     }
 
     public int getHunger() {
@@ -211,26 +201,7 @@ public abstract class AbstractHero extends AbstractCombatant implements Resource
         support.firePropertyChange("swordDurability", old, this.swordDurability);
     }
 
-    /**
-     * Consumes armor item to increase shield points.
-     */
-    public void equipArmor() {
-        if (!consumeResource(ResourceType.ARMOR, 1)) {
-            throw new IllegalStateException("No armor in the inventory.");
-        }
-        setShield(this.shield + ARMOR_SHIELD_VALUE);
-    }
-
-    /**
-     * Consumes sword item to equip weapon and reset durability.
-     */
-    public void equipSword() {
-        if (!consumeResource(ResourceType.SWORD, 1)) {
-            throw new IllegalStateException("No sword in the inventory.");
-        }
-        setSwordEquipped(true);
-        setSwordDurability(MAX_SWORD_DURABILITY);
-    }
+    // Removed specific equip methods. Items handle their own effects via the use() method.
 
     @Override
     public int getDamage() {

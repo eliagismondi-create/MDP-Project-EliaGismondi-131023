@@ -5,7 +5,7 @@ import it.unicam.cs.mpgc.rpg131023.model.combat.CombatStats;
 import it.unicam.cs.mpgc.rpg131023.model.dungeon.Dungeon;
 import it.unicam.cs.mpgc.rpg131023.model.player.AbstractHero;
 import it.unicam.cs.mpgc.rpg131023.model.player.Warrior;
-import it.unicam.cs.mpgc.rpg131023.model.resource.ResourceType;
+import it.unicam.cs.mpgc.rpg131023.model.item.ItemRegistry;
 import it.unicam.cs.mpgc.rpg131023.persistence.FileStorageService;
 import it.unicam.cs.mpgc.rpg131023.persistence.SaveManager;
 import it.unicam.cs.mpgc.rpg131023.utils.DungeonDTO;
@@ -52,8 +52,9 @@ public class JavaFXApp extends Application {
         CombatStats heroStats = StatsLoader.getStatsFor("hero");
         AbstractHero hero = new Warrior(heroStats);
 
-        hero.addResource(ResourceType.HEALTH_POTION, 3);
-        hero.addResource(ResourceType.FOOD, 2);
+        ItemRegistry.init();
+        hero.addItem(ItemRegistry.get("HEALTH_POTION"), 3);
+        hero.addItem(ItemRegistry.get("FOOD"), 2);
 
         Map<String, Dungeon> worldMap = new HashMap<>();
         try (Reader dungeonReader = new InputStreamReader(getClass().getResourceAsStream("/dungeons.json"))) {

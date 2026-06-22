@@ -3,8 +3,8 @@ package it.unicam.cs.mpgc.rpg131023.persistence;
 import java.util.HashMap;
 import java.util.Map;
 
+import it.unicam.cs.mpgc.rpg131023.model.item.ItemRegistry;
 import it.unicam.cs.mpgc.rpg131023.model.player.AbstractHero;
-import it.unicam.cs.mpgc.rpg131023.model.resource.ResourceType;
 
 /**
  * Data Transfer Object representing the serializable state of a hero.
@@ -17,7 +17,7 @@ public class HeroSaveDTO {
     public int shield;
     public boolean swordEquipped;
     public int swordDurability;
-    public Map<ResourceType, Integer> resources;
+    public Map<String, Integer> resources;
 
     public HeroSaveDTO() {
         this.resources = new HashMap<>();
@@ -39,7 +39,7 @@ public class HeroSaveDTO {
         dto.swordEquipped = hero.isSwordEquipped();
         dto.swordDurability = hero.getSwordDurability();
         
-        hero.getResources().forEach((key, value) -> dto.resources.put(key, value));
+        hero.getInventory().forEach((item, amount) -> dto.resources.put(item.getId(), amount));
         
         return dto;
     }
@@ -58,7 +58,12 @@ public class HeroSaveDTO {
         hero.setSwordEquipped(this.swordEquipped);
         hero.setSwordDurability(this.swordDurability);
         
-        hero.clearResources();
-        this.resources.forEach(hero::setResourceForce);
+        hero.clearInventory();
+        this.resources.forEach((id, amount) -> {
+            it.unicam.cs.mpgc.rpg131023.model.item.Item item = ItemRegistry.get(id);
+            if (item != null) {
+                hero.setItemForce(item, amount);
+            }
+        });
     }
 }

@@ -1,7 +1,6 @@
 package it.unicam.cs.mpgc.rpg131023.utils;
 
 import it.unicam.cs.mpgc.rpg131023.model.enemy.EnemyType;
-import it.unicam.cs.mpgc.rpg131023.model.resource.ResourceType;
 
 import java.util.Map;
 
@@ -12,6 +11,7 @@ public class DungeonDTO {
     public String name;
     public String description;
     public String difficulty;
-    public Map<ResourceType, Integer> loot;
+    public Map<String, Integer> loot;
     public Map<EnemyType, Integer> enemySpawns;
 }
+
