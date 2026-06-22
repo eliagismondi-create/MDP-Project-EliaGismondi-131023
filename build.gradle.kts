@@ -16,7 +16,7 @@ repositories {
 }
 
 javafx {
-    version = "17.0.6"
+    version = "21.0.3"
     modules = listOf("javafx.controls", "javafx.fxml")
 }
 
@@ -24,9 +24,9 @@ dependencies {
     implementation("com.google.code.gson:gson:2.10.1")
     
     // Dipendenze esplicite per il Language Server dell'IDE
-    implementation("org.openjfx:javafx-controls:17.0.6")
-    implementation("org.openjfx:javafx-graphics:17.0.6")
-    implementation("org.openjfx:javafx-base:17.0.6")
+    implementation("org.openjfx:javafx-controls:21.0.3")
+    implementation("org.openjfx:javafx-graphics:21.0.3")
+    implementation("org.openjfx:javafx-base:21.0.3")
 
     testImplementation(platform("org.junit:junit-bom:5.10.0"))
     testImplementation("org.junit.jupiter:junit-jupiter")

@@ -138,7 +138,7 @@ public class GameController {
         lblHeroLevel.setText(String.valueOf(hero.getLevel()));
         lblHeroXp.setText(hero.getXp() + "/100");
         lblHeroHealth.setText(hero.getHealth() + "/" + AbstractHero.MAX_HEALTH);
-        lblHeroArmor.setText(String.valueOf(hero.getShield()));
+        lblHeroArmor.setText(hero.getShield() > 0 ? String.valueOf(hero.getShield()) : "NO");
         lblHeroHunger.setText(String.valueOf(hero.getHunger()));
         lblHeroSword.setText(hero.isSwordEquipped() ? "YES" : "NO");
         lblHeroDamage.setText(String.valueOf(hero.getDamage()));
@@ -228,7 +228,7 @@ public class GameController {
             action.run();
             gameManager.logEvent(successMessage);
         } catch (Exception ex) {
-            gameManager.logEvent("Error: " + ex.getMessage());
+            gameManager.logEvent(ex.getMessage());
         }
     }
 
