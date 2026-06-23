@@ -16,8 +16,7 @@ public class Sword implements Item {
 
     @Override
     public void use(AbstractHero hero) {
-        hero.setSwordEquipped(true);
-        hero.setSwordDurability(AbstractHero.MAX_SWORD_DURABILITY);
+        hero.getEquipment().addBuff("SWORD", AbstractHero.MAX_SWORD_DURABILITY);
     }
 
     @Override

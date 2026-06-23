@@ -1,6 +1,6 @@
 package it.unicam.cs.mpgc.rpg131023.view;
 
-import it.unicam.cs.mpgc.rpg131023.controller.GameManager;
+import it.unicam.cs.mpgc.rpg131023.controller.core.GameManager;
 import it.unicam.cs.mpgc.rpg131023.model.combat.CombatStats;
 import it.unicam.cs.mpgc.rpg131023.model.dungeon.Dungeon;
 import it.unicam.cs.mpgc.rpg131023.model.player.AbstractHero;

@@ -24,8 +24,6 @@ public final class EnemyFactory {
         }
 
         final CombatStats stats = StatsLoader.getStatsFor(enemyId);
-        final EnemyType type = EnemyType.valueOf(enemyId.toUpperCase());
-
-        return new Enemy(stats, type);
+        return new Enemy(stats, enemyId.toUpperCase());
     }
 }

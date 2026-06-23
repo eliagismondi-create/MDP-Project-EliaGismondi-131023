@@ -7,16 +7,18 @@ import it.unicam.cs.mpgc.rpg131023.model.combat.Damageable;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 
+import it.unicam.cs.mpgc.rpg131023.model.combat.Combatant;
+
 /**
  * Concrete enemy entity delegating combat math to composition stats.
  */
-public class Enemy implements Attacker, Damageable {
+public class Enemy implements Combatant {
 
     private final PropertyChangeSupport support = new PropertyChangeSupport(this);
     private final CombatStats stats;
-    private final EnemyType type;
+    private final String type;
 
-    public Enemy(final CombatStats stats, final EnemyType type) {
+    public Enemy(final CombatStats stats, final String type) {
         if (stats == null) {
             throw new NullPointerException("Combat stats cannot be null.");
         }
@@ -27,7 +29,7 @@ public class Enemy implements Attacker, Damageable {
         this.type = type;
     }
 
-    public EnemyType getType() {
+    public String getType() {
         return this.type;
     }
 

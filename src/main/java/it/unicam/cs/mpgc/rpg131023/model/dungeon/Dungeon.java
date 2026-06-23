@@ -2,11 +2,9 @@ package it.unicam.cs.mpgc.rpg131023.model.dungeon;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 
-import it.unicam.cs.mpgc.rpg131023.model.enemy.EnemyType;
 import it.unicam.cs.mpgc.rpg131023.model.resource.ResourceCollector;
 
 /**
@@ -22,7 +20,7 @@ public class Dungeon {
     private final String description;
     private final Difficulty difficulty;
     private final List<Loot> treasures;
-    private final Map<EnemyType, Integer> enemySpawns;
+    private final Map<String, Integer> enemySpawns;
 
     public Dungeon(final String id, final String name, final String description, final Difficulty difficulty) {
         if (id == null || id.trim().isEmpty()) {
@@ -42,7 +40,7 @@ public class Dungeon {
         }
         this.difficulty = difficulty;
         this.treasures = new ArrayList<>();
-        this.enemySpawns = new EnumMap<>(EnemyType.class);
+        this.enemySpawns = new java.util.HashMap<>();
     }
 
     /**
@@ -63,7 +61,7 @@ public class Dungeon {
      * @param enemyType Enemy variant.
      * @param quantity  Spawn count.
      */
-    public void addEnemySpawn(final EnemyType enemyType, final int quantity) {
+    public void addEnemySpawn(final String enemyType, final int quantity) {
         if (enemyType == null) {
             throw new NullPointerException("Enemy type cannot be null.");
         }
@@ -111,14 +109,14 @@ public class Dungeon {
     /**
      * @return An unmodifiable map of enemy spawns.
      */
-    public Map<EnemyType, Integer> getEnemySpawns() {
+    public Map<String, Integer> getEnemySpawns() {
         return Collections.unmodifiableMap(this.enemySpawns);
     }
 
     /**
      * @return The next enemy type to spawn.
      */
-    public EnemyType getNextEnemyType() {
+    public String getNextEnemyType() {
         if (this.enemySpawns.isEmpty()) {
             return null;
         }
@@ -127,8 +125,10 @@ public class Dungeon {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
         Dungeon dungeon = (Dungeon) o;
         return id.equals(dungeon.id);
     }

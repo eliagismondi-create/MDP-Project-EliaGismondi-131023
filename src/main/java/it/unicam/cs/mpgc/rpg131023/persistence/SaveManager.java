@@ -39,7 +39,7 @@ public class SaveManager {
             throw new IllegalArgumentException("Cannot save a null hero.");
         }
 
-        HeroSaveDTO dto = HeroSaveDTO.fromHero(hero);
+        HeroSaveDTO dto = HeroMapper.toDTO(hero);
         try {
             String json = gson.toJson(dto);
             storageService.write(saveFilePath, json);

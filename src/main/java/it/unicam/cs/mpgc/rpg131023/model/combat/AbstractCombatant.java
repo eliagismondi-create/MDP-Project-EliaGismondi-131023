@@ -6,7 +6,7 @@ import java.beans.PropertyChangeSupport;
 /**
  * Base wrapper bridging combat logic and property change events.
  */
-public abstract class AbstractCombatant implements Damageable, Attacker {
+public abstract class AbstractCombatant implements Combatant {
     protected final PropertyChangeSupport support = new PropertyChangeSupport(this);
     private final CombatStats stats;
 

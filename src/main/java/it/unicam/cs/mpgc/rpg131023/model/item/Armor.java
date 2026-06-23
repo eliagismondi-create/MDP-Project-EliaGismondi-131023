@@ -16,7 +16,7 @@ public class Armor implements Item {
 
     @Override
     public void use(AbstractHero hero) {
-        hero.setShield(hero.getShield() + AbstractHero.ARMOR_SHIELD_VALUE);
+        hero.getEquipment().addBuff("SHIELD", 50); // ARMOR_SHIELD_VALUE
     }
 
     @Override

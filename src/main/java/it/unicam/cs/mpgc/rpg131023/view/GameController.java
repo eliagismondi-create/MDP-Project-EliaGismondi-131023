@@ -1,8 +1,8 @@
 package it.unicam.cs.mpgc.rpg131023.view;
 
-import it.unicam.cs.mpgc.rpg131023.controller.CombatManager;
-import it.unicam.cs.mpgc.rpg131023.controller.GameManager;
-import it.unicam.cs.mpgc.rpg131023.controller.GameManager.GameState;
+import it.unicam.cs.mpgc.rpg131023.controller.core.CombatManager;
+import it.unicam.cs.mpgc.rpg131023.controller.core.GameManager;
+import it.unicam.cs.mpgc.rpg131023.controller.state.StateType;
 import it.unicam.cs.mpgc.rpg131023.model.dungeon.Dungeon;
 import it.unicam.cs.mpgc.rpg131023.model.enemy.Enemy;
 import it.unicam.cs.mpgc.rpg131023.model.player.AbstractHero;
@@ -81,12 +81,13 @@ public class GameController {
         
         hero.addPropertyChangeListener(evt -> Platform.runLater(this::updateHeroUI));
         
-        gameManager.addPropertyChangeListener(evt -> Platform.runLater(() -> {
+        gameManager.getEventDispatcher().addPropertyChangeListener(evt -> Platform.runLater(() -> {
             String propName = evt.getPropertyName();
             if ("currentState".equals(propName)) {
                 updateViewsVisibility();
             } else if ("activeCombat".equals(propName)) {
-                CombatManager cm = (CombatManager) evt.getNewValue();
+                @SuppressWarnings("unchecked")
+                CombatManager<AbstractHero, Enemy> cm = (CombatManager<AbstractHero, Enemy>) evt.getNewValue();
                 if (cm != null) {
                     bindEnemy(cm.getEnemy());
                     btnCombatBack.setVisible(!cm.hasCombatStarted());
@@ -110,7 +111,7 @@ public class GameController {
     private void updateFullUI() {
         updateHeroUI();
         updateViewsVisibility();
-        CombatManager cm = gameManager.getActiveCombat();
+        CombatManager<AbstractHero, Enemy> cm = gameManager.getActiveCombat();
         if (cm != null) {
             bindEnemy(cm.getEnemy());
             btnCombatBack.setVisible(!cm.hasCombatStarted());
@@ -119,18 +120,18 @@ public class GameController {
     }
 
     private void updateViewsVisibility() {
-        GameState state = gameManager.getCurrentState();
-        hubView.setVisible(state == GameState.HUB);
-        hubView.setManaged(state == GameState.HUB);
+        StateType stateType = gameManager.getCurrentState().getType();
+        hubView.setVisible(stateType == StateType.HUB);
+        hubView.setManaged(stateType == StateType.HUB);
         
-        combatView.setVisible(state == GameState.IN_COMBAT);
-        combatView.setManaged(state == GameState.IN_COMBAT);
+        combatView.setVisible(stateType == StateType.IN_COMBAT);
+        combatView.setManaged(stateType == StateType.IN_COMBAT);
         
-        gameOverView.setVisible(state == GameState.GAME_OVER);
-        gameOverView.setManaged(state == GameState.GAME_OVER);
+        gameOverView.setVisible(stateType == StateType.GAME_OVER);
+        gameOverView.setManaged(stateType == StateType.GAME_OVER);
         
-        heroStatsPanel.setVisible(state != GameState.GAME_OVER);
-        enemyStatsPanel.setVisible(state == GameState.IN_COMBAT);
+        heroStatsPanel.setVisible(stateType != StateType.GAME_OVER);
+        enemyStatsPanel.setVisible(stateType == StateType.IN_COMBAT);
     }
 
     private void updateHeroUI() {
@@ -212,7 +213,7 @@ public class GameController {
     }
 
     private void bindEnemy(Enemy enemy) {
-        lblEnemyType.setText(enemy.getType().name());
+        lblEnemyType.setText(enemy.getType());
         lblEnemyHealth.setText(String.valueOf(enemy.getHealth()));
         lblEnemyDamage.setText(String.valueOf(enemy.getDamage()));
         
@@ -261,7 +262,7 @@ public class GameController {
     @FXML
     private void handleAttack(ActionEvent event) {
         try {
-            CombatManager cm = gameManager.getActiveCombat();
+            CombatManager<AbstractHero, Enemy> cm = gameManager.getActiveCombat();
             Enemy enemy = cm.getEnemy();
             AbstractHero hero = cm.getHero();
             
@@ -321,7 +322,7 @@ public class GameController {
         try {
             if (saveManager != null) {
                 HeroSaveDTO dto = saveManager.loadGame();
-                dto.applyToHero(gameManager.getHero());
+                it.unicam.cs.mpgc.rpg131023.persistence.HeroMapper.updateHeroFromDTO(gameManager.getHero(), dto);
                 gameManager.logEvent("Game loaded successfully.");
             } else {
                 gameManager.logEvent("Error: SaveManager not initialized.");
