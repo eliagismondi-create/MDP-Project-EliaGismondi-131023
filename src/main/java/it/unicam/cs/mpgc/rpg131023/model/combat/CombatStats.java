@@ -29,6 +29,9 @@ public class CombatStats {
     }
 
     public void setHealth(int health) {
+        if (health < 0 || health > 100) {
+            throw new IllegalArgumentException("Health must be between 0 and 100 inclusive.");
+        }
         this.health = health;
     }
 

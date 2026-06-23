@@ -20,6 +20,7 @@ public abstract class AbstractHero extends AbstractCombatant implements Resource
     public static final int MAX_HUNGER = 100;
     public static final int ARMOR_SHIELD_VALUE = 50;
     public static final int SWORD_DAMAGE_BONUS = 25;
+    public static final int XP_PER_LEVEL = 100;
 
     private int hunger = 0;
     private int xp = 0;
@@ -132,6 +133,9 @@ public abstract class AbstractHero extends AbstractCombatant implements Resource
     }
 
     public void setHunger(int hunger) {
+        if (hunger < 0 || hunger > MAX_HUNGER) {
+            throw new IllegalArgumentException("Hunger must be between 0 and " + MAX_HUNGER);
+        }
         int old = this.hunger;
         this.hunger = hunger;
         support.firePropertyChange("hunger", old, this.hunger);
@@ -152,8 +156,8 @@ public abstract class AbstractHero extends AbstractCombatant implements Resource
             return;
         }
         int totalXp = this.xp + amount;
-        int levelsGained = totalXp / 100;
-        int remainingXp = totalXp % 100;
+        int levelsGained = totalXp / XP_PER_LEVEL;
+        int remainingXp = totalXp % XP_PER_LEVEL;
 
         if (levelsGained > 0) {
             setLevel(this.level + levelsGained);

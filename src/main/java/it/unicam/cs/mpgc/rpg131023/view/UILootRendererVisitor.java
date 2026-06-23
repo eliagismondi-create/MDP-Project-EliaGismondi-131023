@@ -25,7 +25,7 @@ public class UILootRendererVisitor implements LootVisitor {
     }
 
     /**
-     * @return Il contenitore con tutti i nodi generati.
+     * @return Container with all the generated nodes
      */
     public Node getGraphic() {
         return this.container;

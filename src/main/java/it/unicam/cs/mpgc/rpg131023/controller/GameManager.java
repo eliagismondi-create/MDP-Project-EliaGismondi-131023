@@ -22,6 +22,8 @@ public class GameManager {
         GAME_OVER
     }
 
+    private static final int COMBAT_WIN_XP_REWARD = 25;
+
     private final PropertyChangeSupport support = new PropertyChangeSupport(this);
 
     private final AbstractHero hero;
@@ -77,11 +79,18 @@ public class GameManager {
     }
 
     private void startEncounter() {
-        final EnemyType enemyType = this.currentDungeon.getEnemySpawns().keySet().iterator().next();
+        final EnemyType enemyType = this.currentDungeon.getNextEnemyType();
         final Enemy enemy = EnemyFactory.create(enemyType.name());
 
         setActiveCombat(new CombatManager(this.hero, enemy));
         setCurrentState(GameState.IN_COMBAT);
+    }
+
+    private void applyFatigueAndCheckDeath() {
+        this.hero.sufferFatigue();
+        if (!this.hero.isAlive()) {
+            setCurrentState(GameState.GAME_OVER);
+        }
     }
 
     public void resolveCombatEnd() {
@@ -89,14 +98,13 @@ public class GameManager {
             return;
         }
 
-        this.hero.sufferFatigue();
-        if (!this.hero.isAlive()) {
-            setCurrentState(GameState.GAME_OVER);
+        applyFatigueAndCheckDeath();
+        if (this.currentState == GameState.GAME_OVER) {
             return;
         }
 
         if (this.activeCombat.isHeroVictorious()) {
-            this.hero.addXp(25);
+            this.hero.addXp(COMBAT_WIN_XP_REWARD);
             if (this.currentDungeon != null) {
                 this.currentDungeon.claimLoot(this.hero);
             }
@@ -114,10 +122,8 @@ public class GameManager {
             throw new IllegalStateException("Combat has already started, you cannot flee.");
         }
         
-        this.hero.sufferFatigue();
-        if (!this.hero.isAlive()) {
-            setCurrentState(GameState.GAME_OVER);
-        } else {
+        applyFatigueAndCheckDeath();
+        if (this.currentState != GameState.GAME_OVER) {
             setCurrentState(GameState.HUB);
             setActiveCombat(null);
             setCurrentDungeon(null);

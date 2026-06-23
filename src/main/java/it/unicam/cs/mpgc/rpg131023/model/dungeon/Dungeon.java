@@ -115,6 +115,16 @@ public class Dungeon {
         return Collections.unmodifiableMap(this.enemySpawns);
     }
 
+    /**
+     * @return The next enemy type to spawn.
+     */
+    public EnemyType getNextEnemyType() {
+        if (this.enemySpawns.isEmpty()) {
+            return null;
+        }
+        return this.enemySpawns.keySet().iterator().next();
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
