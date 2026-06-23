@@ -20,13 +20,15 @@ public class GameManager {
 
     private final AbstractHero hero;
     private final Map<String, Dungeon> worldMap;
+    private final EnemyFactory enemyFactory;
     private GameState currentState = new HubState();
     private Dungeon currentDungeon;
     private CombatManager<AbstractHero, Enemy> activeCombat;
 
-    public GameManager(final AbstractHero hero, final Map<String, Dungeon> worldMap) {
+    public GameManager(final AbstractHero hero, final Map<String, Dungeon> worldMap, final EnemyFactory enemyFactory) {
         this.hero = Objects.requireNonNull(hero, "Hero cannot be null");
         this.worldMap = Objects.requireNonNull(worldMap, "WorldMap cannot be null");
+        this.enemyFactory = Objects.requireNonNull(enemyFactory, "EnemyFactory cannot be null");
     }
 
     public EventDispatcher getEventDispatcher() {
@@ -57,7 +59,7 @@ public class GameManager {
 
     public void startEncounter() {
         final String enemyType = this.currentDungeon.getNextEnemyType();
-        final Enemy enemy = EnemyFactory.create(enemyType);
+        final Enemy enemy = this.enemyFactory.create(enemyType);
 
         setActiveCombat(new CombatManager<>(this.hero, enemy));
     }

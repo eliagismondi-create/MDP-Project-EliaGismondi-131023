@@ -1,15 +1,17 @@
 package it.unicam.cs.mpgc.rpg131023.model.enemy;
 
 import it.unicam.cs.mpgc.rpg131023.model.combat.CombatStats;
-import it.unicam.cs.mpgc.rpg131023.utils.StatsLoader;
+import it.unicam.cs.mpgc.rpg131023.utils.StatsService;
 
 /**
  * Data-driven factory for enemy instantiation.
  */
-public final class EnemyFactory {
+public class EnemyFactory {
+    
+    private final StatsService statsService;
 
-    private EnemyFactory() {
-        // Impedisce l'istanziazione
+    public EnemyFactory(StatsService statsService) {
+        this.statsService = statsService;
     }
 
     /**
@@ -18,12 +20,12 @@ public final class EnemyFactory {
      * @param enemyId Textual identifier (e.g. "goblin").
      * @return Fully configured enemy instance.
      */
-    public static Enemy create(final String enemyId) {
+    public Enemy create(final String enemyId) {
         if (enemyId == null || enemyId.trim().isEmpty()) {
             throw new IllegalArgumentException("Enemy ID cannot be null or empty.");
         }
 
-        final CombatStats stats = StatsLoader.getStatsFor(enemyId);
+        final CombatStats stats = this.statsService.getStatsFor(enemyId);
         return new Enemy(stats, enemyId.toUpperCase());
     }
 }

@@ -12,7 +12,7 @@ import java.util.Map;
 public interface GameView {
     void showWelcomeMessage();
     void displayHub(AbstractHero hero, Map<String, Dungeon> worldMap);
-    void displayCombat(CombatManager combatManager);
+    void displayCombat(CombatManager<AbstractHero, it.unicam.cs.mpgc.rpg131023.model.enemy.Enemy> combatManager);
     void displayGameOver();
     void showMessage(String message);
 }

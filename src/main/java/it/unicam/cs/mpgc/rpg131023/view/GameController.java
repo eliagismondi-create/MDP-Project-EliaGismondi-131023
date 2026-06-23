@@ -29,18 +29,9 @@ import java.util.Map;
  */
 public class GameController {
 
-    @FXML private VBox heroStatsPanel;
-    @FXML private Label lblHeroLevel;
-    @FXML private Label lblHeroXp;
-    @FXML private Label lblHeroHealth;
-    @FXML private Label lblHeroArmor;
-    @FXML private Label lblHeroHunger;
-    @FXML private Label lblHeroSword;
-    @FXML private Label lblHeroDamage;
-    @FXML private ProgressBar barSwordDurability;
-    @FXML private HBox boxSword;
-    @FXML private VBox invBox;
-    
+    @FXML private HeroStatsController heroStatsController;
+    @FXML private VBox heroStats;
+
     @FXML private VBox hubView;
     @FXML private HBox dungeonRow;
     
@@ -78,8 +69,7 @@ public class GameController {
 
     private void setupBindings() {
         AbstractHero hero = gameManager.getHero();
-        
-        hero.addPropertyChangeListener(evt -> Platform.runLater(this::updateHeroUI));
+        heroStatsController.bindHero(hero, gameManager);
         
         gameManager.getEventDispatcher().addPropertyChangeListener(evt -> Platform.runLater(() -> {
             String propName = evt.getPropertyName();
@@ -109,7 +99,6 @@ public class GameController {
     }
 
     private void updateFullUI() {
-        updateHeroUI();
         updateViewsVisibility();
         CombatManager<AbstractHero, Enemy> cm = gameManager.getActiveCombat();
         if (cm != null) {
@@ -130,35 +119,12 @@ public class GameController {
         gameOverView.setVisible(stateType == StateType.GAME_OVER);
         gameOverView.setManaged(stateType == StateType.GAME_OVER);
         
-        heroStatsPanel.setVisible(stateType != StateType.GAME_OVER);
+        if (heroStats != null) {
+            heroStats.setVisible(stateType != StateType.GAME_OVER);
+        }
         enemyStatsPanel.setVisible(stateType == StateType.IN_COMBAT);
     }
 
-    private void updateHeroUI() {
-        AbstractHero hero = gameManager.getHero();
-        lblHeroLevel.setText(String.valueOf(hero.getLevel()));
-        lblHeroXp.setText(hero.getXp() + "/100");
-        lblHeroHealth.setText(hero.getHealth() + "/" + AbstractHero.MAX_HEALTH);
-        lblHeroArmor.setText(hero.getShield() > 0 ? String.valueOf(hero.getShield()) : "NO");
-        lblHeroHunger.setText(String.valueOf(hero.getHunger()));
-        lblHeroSword.setText(hero.isSwordEquipped() ? "YES" : "NO");
-        lblHeroDamage.setText(String.valueOf(hero.getDamage()));
-        barSwordDurability.setProgress((double) hero.getSwordDurability() / AbstractHero.MAX_SWORD_DURABILITY);
-        barSwordDurability.setVisible(hero.isSwordEquipped());
-        updateInventoryUI();
-    }
-
-    private void updateInventoryUI() {
-        if (invBox.getChildren().size() > 1) {
-            invBox.getChildren().remove(1, invBox.getChildren().size());
-        }
-        gameManager.getHero().getInventory().forEach((itemKey, value) -> {
-            String resourceName = itemKey.getName();
-            Label item = new Label("⬡ " + resourceName + ": " + value);
-            item.getStyleClass().add("ink-stat-val");
-            invBox.getChildren().add(item);
-        });
-    }
 
     private void populateDungeons() {
         Map<String, Dungeon> worldMap = gameManager.getWorldMap();
@@ -224,34 +190,6 @@ public class GameController {
         });
     }
 
-    private void executeHeroAction(Runnable action, String successMessage) {
-        try {
-            action.run();
-            gameManager.logEvent(successMessage);
-        } catch (Exception ex) {
-            gameManager.logEvent(ex.getMessage());
-        }
-    }
-
-    @FXML
-    private void handlePotion(ActionEvent event) {
-        executeHeroAction(() -> gameManager.getHero().useItem(it.unicam.cs.mpgc.rpg131023.model.item.ItemRegistry.get("HEALTH_POTION")), "Drank a healing potion.");
-    }
-
-    @FXML
-    private void handleFood(ActionEvent event) {
-        executeHeroAction(() -> gameManager.getHero().useItem(it.unicam.cs.mpgc.rpg131023.model.item.ItemRegistry.get("FOOD")), "Ate a food ration.");
-    }
-
-    @FXML
-    private void handleSword(ActionEvent event) {
-        executeHeroAction(() -> gameManager.getHero().useItem(it.unicam.cs.mpgc.rpg131023.model.item.ItemRegistry.get("SWORD")), "Sword equipped.");
-    }
-
-    @FXML
-    private void handleArmor(ActionEvent event) {
-        executeHeroAction(() -> gameManager.getHero().useItem(it.unicam.cs.mpgc.rpg131023.model.item.ItemRegistry.get("ARMOR")), "Armor equipped.");
-    }
 
     @FXML
     private void handleRetreat(ActionEvent event) {

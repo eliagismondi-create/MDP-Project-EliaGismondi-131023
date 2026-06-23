@@ -11,7 +11,7 @@ import it.unicam.cs.mpgc.rpg131023.persistence.SaveManager;
 import it.unicam.cs.mpgc.rpg131023.utils.DungeonDTO;
 import it.unicam.cs.mpgc.rpg131023.utils.DungeonLoader;
 import it.unicam.cs.mpgc.rpg131023.model.dungeon.DungeonFactory;
-import it.unicam.cs.mpgc.rpg131023.utils.StatsLoader;
+import it.unicam.cs.mpgc.rpg131023.utils.StatsService;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -43,13 +43,15 @@ public class JavaFXApp extends Application {
     }
 
     private void restartGame() {
+        StatsService statsService = null;
         try (Reader statsReader = new InputStreamReader(getClass().getResourceAsStream("/stats.json"))) {
-            StatsLoader.init(statsReader);
+            statsService = new StatsService(statsReader);
         } catch (Exception e) {
             System.err.println("Failed to load stats: " + e.getMessage());
+            return;
         }
 
-        CombatStats heroStats = StatsLoader.getStatsFor("hero");
+        CombatStats heroStats = statsService.getStatsFor("hero");
         AbstractHero hero = new Warrior(heroStats);
 
         ItemRegistry.init();
@@ -64,7 +66,8 @@ public class JavaFXApp extends Application {
             System.err.println("Failed to load dungeons: " + e.getMessage());
         }
 
-        GameManager gameManager = new GameManager(hero, worldMap);
+        it.unicam.cs.mpgc.rpg131023.model.enemy.EnemyFactory enemyFactory = new it.unicam.cs.mpgc.rpg131023.model.enemy.EnemyFactory(statsService);
+        GameManager gameManager = new GameManager(hero, worldMap, enemyFactory);
 
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/layout.fxml"));
