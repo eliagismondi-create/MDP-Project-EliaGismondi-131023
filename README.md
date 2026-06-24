@@ -1,7 +1,7 @@
 # 📌 Dungeon Crawler
 
 Dungeon Crawler è un gioco di ruolo (RPG) esplorativo e gestionale realizzato in Java con interfaccia JavaFX.
-Il giocatore veste i panni di un eroe che si addentra in oscuri dungeon, affronta nemici (Banditi, Orchi, Draghi) e raccoglie tesori, dovendo al contempo gestire le proprie risorse: consumare cibo per non soccombere alla fatica, bere pozioni per recuperare salute ed equipaggiare spade e armature per sopravvivere. Lo stato di gioco può essere salvato e ripreso grazie alla persistenza su file in formato JSON.
+Il giocatore veste i panni di un eroe che si addentra in oscuri dungeon, affronta nemici e raccoglie tesori, dovendo al contempo gestire le proprie risorse: consumare cibo per non soccombere alla fatica, bere pozioni per recuperare salute ed equipaggiare spade e armature per sopravvivere. Lo stato di gioco può essere salvato e ripreso grazie alla persistenza su file in formato JSON.
 
 ---
 
