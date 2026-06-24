@@ -15,6 +15,7 @@ public class CombatManager<F1 extends Combatant, F2 extends Combatant> {
     private final F2 fighter2;
     private boolean isFighter1Turn;
     private boolean combatStarted;
+    private int lastDamageDealt;
 
     /**
      * Constructs a new CombatManager with the specified fighters.
@@ -27,24 +28,38 @@ public class CombatManager<F1 extends Combatant, F2 extends Combatant> {
         this.fighter2 = Objects.requireNonNull(fighter2, "Fighter 2 cannot be null");
         this.isFighter1Turn = true;
         this.combatStarted = false;
+        this.lastDamageDealt = 0;
     }
 
     /**
      * Executes the next turn in the combat, allowing the active fighter to attack.
+     * Tracks the damage dealt during this turn.
      */
     public void executeNextTurn() {
         this.combatStarted = true;
         if (isCombatOver()) {
+            this.lastDamageDealt = 0;
             return;
         }
 
         if (this.isFighter1Turn) {
+            int hpBefore = this.fighter2.getHealth();
             this.fighter1.attack(this.fighter2);
+            this.lastDamageDealt = hpBefore - this.fighter2.getHealth();
         } else {
+            int hpBefore = this.fighter1.getHealth();
             this.fighter2.attack(this.fighter1);
+            this.lastDamageDealt = hpBefore - this.fighter1.getHealth();
         }
 
         this.isFighter1Turn = !this.isFighter1Turn;
+    }
+
+    /**
+     * @return The damage dealt during the last executed turn.
+     */
+    public int getLastDamageDealt() {
+        return this.lastDamageDealt;
     }
 
     /**

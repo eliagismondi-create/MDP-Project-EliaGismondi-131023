@@ -1,7 +1,8 @@
 package it.unicam.cs.mpgc.rpg131023.model.player;
 
 import java.beans.PropertyChangeSupport;
-import java.util.HashMap;
+import java.util.Collections;
+import java.util.EnumMap;
 import java.util.Map;
 
 /**
@@ -9,48 +10,70 @@ import java.util.Map;
  */
 public class EquipmentManager {
 
+    /** Bonus damage granted by an equipped sword. */
+    public static final int SWORD_DAMAGE_BONUS = 25;
+
     private final PropertyChangeSupport support;
-    
-    // We can store generic buffs here. Key = Buff ID (e.g., "SWORD", "SHIELD")
-    // For simplicity, we just store durability/value.
-    private final Map<String, Integer> activeBuffs = new HashMap<>();
+    private final Map<BuffType, Integer> activeBuffs = new EnumMap<>(BuffType.class);
 
     public EquipmentManager(PropertyChangeSupport support) {
         this.support = support;
     }
 
-    public Map<String, Integer> getActiveBuffs() {
-        return java.util.Collections.unmodifiableMap(this.activeBuffs);
+    /**
+     * @return An unmodifiable view of active buffs.
+     */
+    public Map<BuffType, Integer> getActiveBuffs() {
+        return Collections.unmodifiableMap(this.activeBuffs);
     }
 
-    public void addBuff(String id, int value) {
-        int oldVal = getBuffValue(id);
-        this.activeBuffs.put(id, value);
-        support.firePropertyChange("buff_" + id, oldVal, value);
+    /**
+     * Adds or replaces a buff with the given value.
+     *
+     * @param type  The buff type.
+     * @param value The buff value (e.g. durability or shield points).
+     */
+    public void addBuff(BuffType type, int value) {
+        int oldVal = getBuffValue(type);
+        this.activeBuffs.put(type, value);
+        support.firePropertyChange("buff_" + type.name(), oldVal, value);
     }
 
-    public int getBuffValue(String id) {
-        return this.activeBuffs.getOrDefault(id, 0);
+    /**
+     * @return The value of the given buff, or 0 if not active.
+     */
+    public int getBuffValue(BuffType type) {
+        return this.activeBuffs.getOrDefault(type, 0);
     }
 
-    public void removeBuff(String id) {
-        int oldVal = getBuffValue(id);
-        this.activeBuffs.remove(id);
-        support.firePropertyChange("buff_" + id, oldVal, 0);
+    /**
+     * Removes an active buff.
+     *
+     * @param type The buff type to remove.
+     */
+    public void removeBuff(BuffType type) {
+        int oldVal = getBuffValue(type);
+        this.activeBuffs.remove(type);
+        support.firePropertyChange("buff_" + type.name(), oldVal, 0);
     }
 
-    public boolean hasBuff(String id) {
-        return getBuffValue(id) > 0;
+    /**
+     * @return True if the given buff is active with a positive value.
+     */
+    public boolean hasBuff(BuffType type) {
+        return getBuffValue(type) > 0;
     }
 
     /**
      * Calculates the total damage considering active weapon buffs.
+     *
+     * @param baseDamage The base damage without buffs.
+     * @return The total damage output.
      */
     public int calculateDamage(int baseDamage) {
         int totalDamage = baseDamage;
-        if (hasBuff("SWORD")) {
-            // Note: SWORD_DAMAGE_BONUS was 25 in AbstractHero
-            totalDamage += 25; 
+        if (hasBuff(BuffType.SWORD)) {
+            totalDamage += SWORD_DAMAGE_BONUS;
         }
         return totalDamage;
     }
@@ -59,28 +82,31 @@ public class EquipmentManager {
      * Called when an attack is made to reduce weapon durability.
      */
     public void onAttack() {
-        if (hasBuff("SWORD")) {
-            int durability = getBuffValue("SWORD");
+        if (hasBuff(BuffType.SWORD)) {
+            int durability = getBuffValue(BuffType.SWORD);
             if (durability > 1) {
-                addBuff("SWORD", durability - 1);
+                addBuff(BuffType.SWORD, durability - 1);
             } else {
-                removeBuff("SWORD");
+                removeBuff(BuffType.SWORD);
             }
         }
     }
 
     /**
-     * Absorbs damage using shield buff. Returns remaining damage.
+     * Absorbs damage using shield buff. Returns remaining damage after absorption.
+     *
+     * @param amount The incoming damage amount.
+     * @return The damage remaining after shield absorption.
      */
     public int absorbDamage(int amount) {
-        int shield = getBuffValue("SHIELD");
+        int shield = getBuffValue(BuffType.SHIELD);
         if (shield > 0) {
             if (shield >= amount) {
-                addBuff("SHIELD", shield - amount);
+                addBuff(BuffType.SHIELD, shield - amount);
                 return 0;
             } else {
                 int remainingDamage = amount - shield;
-                removeBuff("SHIELD");
+                removeBuff(BuffType.SHIELD);
                 return remainingDamage;
             }
         }

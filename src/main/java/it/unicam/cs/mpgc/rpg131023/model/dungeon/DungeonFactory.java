@@ -1,5 +1,7 @@
 package it.unicam.cs.mpgc.rpg131023.model.dungeon;
 
+import it.unicam.cs.mpgc.rpg131023.model.item.Item;
+import it.unicam.cs.mpgc.rpg131023.model.item.ItemRegistry;
 import it.unicam.cs.mpgc.rpg131023.utils.DungeonDTO;
 
 /**
@@ -14,11 +16,12 @@ public final class DungeonFactory {
     /**
      * Builds a concrete dungeon entity from transfer data.
      *
-     * @param dungeonId Unique level identifier.
-     * @param dto       Parsed data transfer object.
+     * @param dungeonId    Unique level identifier.
+     * @param dto          Parsed data transfer object.
+     * @param itemRegistry The registry to resolve item IDs for loot.
      * @return Fully populated dungeon instance.
      */
-    public static Dungeon createDungeon(String dungeonId, DungeonDTO dto) {
+    public static Dungeon createDungeon(String dungeonId, DungeonDTO dto, ItemRegistry itemRegistry) {
         if (dto == null) {
             throw new IllegalArgumentException("DungeonDTO cannot be null for ID: " + dungeonId);
         }
@@ -31,10 +34,8 @@ public final class DungeonFactory {
 
         if (dto.loot != null) {
             dto.loot.forEach((typeString, amount) -> {
-                it.unicam.cs.mpgc.rpg131023.model.item.Item item = it.unicam.cs.mpgc.rpg131023.model.item.ItemRegistry.get(typeString);
-                if (item != null) {
-                    dungeon.addLoot(new ResourceLoot(item, amount));
-                }
+                Item item = itemRegistry.get(typeString);
+                dungeon.addLoot(new ResourceLoot(item, amount));
             });
         }
 

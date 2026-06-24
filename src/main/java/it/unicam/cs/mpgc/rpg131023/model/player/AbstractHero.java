@@ -5,15 +5,16 @@ import java.util.Map;
 import it.unicam.cs.mpgc.rpg131023.model.combat.AbstractCombatant;
 import it.unicam.cs.mpgc.rpg131023.model.combat.CombatStats;
 import it.unicam.cs.mpgc.rpg131023.model.item.Item;
+import it.unicam.cs.mpgc.rpg131023.model.item.ItemConsumer;
+import it.unicam.cs.mpgc.rpg131023.model.item.Sword;
 import it.unicam.cs.mpgc.rpg131023.model.resource.ResourceCollector;
 
 /**
  * Base logic for player characters.
- * Logic is now decoupled into Inventory, LevelSystem, HungerSystem, and EquipmentManager.
+ * Logic is decoupled into Inventory, LevelSystem, HungerSystem, and EquipmentManager.
  */
-public abstract class AbstractHero extends AbstractCombatant implements ResourceCollector {
+public abstract class AbstractHero extends AbstractCombatant implements ResourceCollector, ItemConsumer {
     public static final int MAX_HEALTH = 100;
-    public static final int MAX_SWORD_DURABILITY = 3;
     
     private final Inventory inventory;
     private final LevelSystem levelSystem;
@@ -28,8 +29,14 @@ public abstract class AbstractHero extends AbstractCombatant implements Resource
         this.equipmentManager = new EquipmentManager(support);
     }
 
+    @Override
     public EquipmentManager getEquipment() {
         return this.equipmentManager;
+    }
+
+    @Override
+    public int getMaxHealth() {
+        return MAX_HEALTH;
     }
 
     @Override
@@ -48,11 +55,13 @@ public abstract class AbstractHero extends AbstractCombatant implements Resource
         item.use(this);
     }
 
+    @Override
     public void restoreHealth(int amount) {
         int newHealth = Math.min(MAX_HEALTH, getHealth() + amount);
         setHealth(newHealth);
     }
 
+    @Override
     public void modifyHunger(int amount) {
         this.hungerSystem.modifyHunger(amount);
     }
@@ -65,6 +74,7 @@ public abstract class AbstractHero extends AbstractCombatant implements Resource
         this.hungerSystem.addHunger(amount);
     }
 
+    @Override
     public int getHunger() {
         return this.hungerSystem.getHunger();
     }
@@ -105,36 +115,35 @@ public abstract class AbstractHero extends AbstractCombatant implements Resource
         this.levelSystem.setLevel(level);
     }
 
-    // Convenience getters for UI & DTO compatibility
     public int getShield() {
-        return this.equipmentManager.getBuffValue("SHIELD");
+        return this.equipmentManager.getBuffValue(BuffType.SHIELD);
     }
 
     public void setShield(int shield) {
-        this.equipmentManager.addBuff("SHIELD", shield);
+        this.equipmentManager.addBuff(BuffType.SHIELD, shield);
     }
 
     public boolean isSwordEquipped() {
-        return this.equipmentManager.hasBuff("SWORD");
+        return this.equipmentManager.hasBuff(BuffType.SWORD);
     }
 
     public void setSwordEquipped(boolean equipped) {
         if (equipped) {
-            this.equipmentManager.addBuff("SWORD", MAX_SWORD_DURABILITY);
+            this.equipmentManager.addBuff(BuffType.SWORD, Sword.DEFAULT_DURABILITY);
         } else {
-            this.equipmentManager.removeBuff("SWORD");
+            this.equipmentManager.removeBuff(BuffType.SWORD);
         }
     }
 
     public int getSwordDurability() {
-        return this.equipmentManager.getBuffValue("SWORD");
+        return this.equipmentManager.getBuffValue(BuffType.SWORD);
     }
 
     public void setSwordDurability(int durability) {
         if (durability > 0) {
-            this.equipmentManager.addBuff("SWORD", durability);
+            this.equipmentManager.addBuff(BuffType.SWORD, durability);
         } else {
-            this.equipmentManager.removeBuff("SWORD");
+            this.equipmentManager.removeBuff(BuffType.SWORD);
         }
     }
 

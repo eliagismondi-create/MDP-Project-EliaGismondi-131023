@@ -18,4 +18,11 @@ public interface Damageable {
      * @return True if alive.
      */
     public boolean isAlive();
+
+    /**
+     * Returns the current health of the entity.
+     *
+     * @return Current health.
+     */
+    public int getHealth();
 }

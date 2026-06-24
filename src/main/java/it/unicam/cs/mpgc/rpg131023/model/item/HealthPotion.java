@@ -1,11 +1,9 @@
 package it.unicam.cs.mpgc.rpg131023.model.item;
 
-import it.unicam.cs.mpgc.rpg131023.model.player.AbstractHero;
-
 /**
  * A consumable potion that restores missing health points.
  */
-public class HealthPotion implements Item {
+public class HealthPotion extends AbstractItem {
 
     @Override
     public String getId() {
@@ -18,26 +16,13 @@ public class HealthPotion implements Item {
     }
 
     /**
-     * Fully heals the hero. Throws an exception if the hero is already at maximum health.
+     * Fully heals the consumer. Throws an exception if the consumer is already at maximum health.
      */
     @Override
-    public void use(AbstractHero hero) {
-        if (hero.getHealth() == AbstractHero.MAX_HEALTH) {
+    public void use(ItemConsumer consumer) {
+        if (consumer.getHealth() == consumer.getMaxHealth()) {
             throw new IllegalStateException("Hero is not wounded.");
         }
-        hero.restoreHealth(AbstractHero.MAX_HEALTH - hero.getHealth());
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        HealthPotion that = (HealthPotion) o;
-        return getId().equals(that.getId());
-    }
-
-    @Override
-    public int hashCode() {
-        return getId().hashCode();
+        consumer.restoreHealth(consumer.getMaxHealth() - consumer.getHealth());
     }
 }

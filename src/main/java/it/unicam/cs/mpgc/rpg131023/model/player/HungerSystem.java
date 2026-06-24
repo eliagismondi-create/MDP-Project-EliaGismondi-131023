@@ -1,7 +1,6 @@
 package it.unicam.cs.mpgc.rpg131023.model.player;
 
 import java.beans.PropertyChangeSupport;
-import java.util.function.Consumer;
 
 /**
  * Tracks hunger and exploration fatigue, triggering starvation when maximum hunger is reached.

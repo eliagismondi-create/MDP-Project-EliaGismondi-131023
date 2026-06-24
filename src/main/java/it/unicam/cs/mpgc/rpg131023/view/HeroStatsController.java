@@ -3,7 +3,9 @@ package it.unicam.cs.mpgc.rpg131023.view;
 import it.unicam.cs.mpgc.rpg131023.controller.core.GameManager;
 import it.unicam.cs.mpgc.rpg131023.model.item.Item;
 import it.unicam.cs.mpgc.rpg131023.model.item.ItemRegistry;
+import it.unicam.cs.mpgc.rpg131023.model.item.Sword;
 import it.unicam.cs.mpgc.rpg131023.model.player.AbstractHero;
+import it.unicam.cs.mpgc.rpg131023.model.player.LevelSystem;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -39,10 +41,19 @@ public class HeroStatsController {
 
     private GameManager gameManager;
     private AbstractHero hero;
+    private ItemRegistry itemRegistry;
 
-    public void bindHero(AbstractHero hero, GameManager gameManager) {
+    /**
+     * Binds the hero and game manager to this controller.
+     *
+     * @param hero         The player character.
+     * @param gameManager  The game controller.
+     * @param itemRegistry The item registry for resolving items.
+     */
+    public void bindHero(AbstractHero hero, GameManager gameManager, ItemRegistry itemRegistry) {
         this.hero = hero;
         this.gameManager = gameManager;
+        this.itemRegistry = itemRegistry;
         
         this.hero.addPropertyChangeListener(evt -> Platform.runLater(this::updateHeroUI));
         updateHeroUI();
@@ -51,7 +62,7 @@ public class HeroStatsController {
     private void updateHeroUI() {
         if (this.hero == null) return;
         lblHeroLevel.setText(String.valueOf(hero.getLevel()));
-        lblHeroXp.setText(hero.getXp() + "/100");
+        lblHeroXp.setText(hero.getXp() + "/" + LevelSystem.XP_PER_LEVEL);
         lblHeroHealth.setText(hero.getHealth() + "/" + AbstractHero.MAX_HEALTH);
         lblHeroArmor.setText(String.valueOf(hero.getShield()));
         lblHeroHunger.setText(hero.getHunger() + "/100");
@@ -61,7 +72,7 @@ public class HeroStatsController {
         lblHeroSword.setText(swordEquipped ? "YES" : "NO");
         boxSword.setVisible(swordEquipped);
         if (swordEquipped) {
-            barSwordDurability.setProgress((double) hero.getSwordDurability() / AbstractHero.MAX_SWORD_DURABILITY);
+            barSwordDurability.setProgress((double) hero.getSwordDurability() / Sword.DEFAULT_DURABILITY);
         }
 
         updateInventoryUI();
@@ -85,16 +96,16 @@ public class HeroStatsController {
             });
         }
 
-        btnPotion.setDisable(inv.getOrDefault(ItemRegistry.get("HEALTH_POTION"), 0) == 0);
-        btnFood.setDisable(inv.getOrDefault(ItemRegistry.get("FOOD"), 0) == 0);
-        btnSword.setDisable(inv.getOrDefault(ItemRegistry.get("SWORD"), 0) == 0);
-        btnArmor.setDisable(inv.getOrDefault(ItemRegistry.get("ARMOR"), 0) == 0);
+        btnPotion.setDisable(inv.getOrDefault(itemRegistry.get("HEALTH_POTION"), 0) == 0);
+        btnFood.setDisable(inv.getOrDefault(itemRegistry.get("FOOD"), 0) == 0);
+        btnSword.setDisable(inv.getOrDefault(itemRegistry.get("SWORD"), 0) == 0);
+        btnArmor.setDisable(inv.getOrDefault(itemRegistry.get("ARMOR"), 0) == 0);
     }
 
     @FXML
     private void handlePotion(ActionEvent event) {
         try {
-            hero.useItem(ItemRegistry.get("HEALTH_POTION"));
+            hero.useItem(itemRegistry.get("HEALTH_POTION"));
             gameManager.logEvent("Hero drank a Health Potion.");
         } catch (Exception e) {
             gameManager.logEvent(e.getMessage());
@@ -104,7 +115,7 @@ public class HeroStatsController {
     @FXML
     private void handleFood(ActionEvent event) {
         try {
-            hero.useItem(ItemRegistry.get("FOOD"));
+            hero.useItem(itemRegistry.get("FOOD"));
             gameManager.logEvent("Hero ate some Food.");
         } catch (Exception e) {
             gameManager.logEvent(e.getMessage());
@@ -114,7 +125,7 @@ public class HeroStatsController {
     @FXML
     private void handleSword(ActionEvent event) {
         try {
-            hero.useItem(ItemRegistry.get("SWORD"));
+            hero.useItem(itemRegistry.get("SWORD"));
             gameManager.logEvent("Hero equipped a Sword.");
         } catch (Exception e) {
             gameManager.logEvent(e.getMessage());
@@ -124,7 +135,7 @@ public class HeroStatsController {
     @FXML
     private void handleArmor(ActionEvent event) {
         try {
-            hero.useItem(ItemRegistry.get("ARMOR"));
+            hero.useItem(itemRegistry.get("ARMOR"));
             gameManager.logEvent("Hero equipped Armor.");
         } catch (Exception e) {
             gameManager.logEvent(e.getMessage());

@@ -1,7 +1,5 @@
 package it.unicam.cs.mpgc.rpg131023.model.item;
 
-import it.unicam.cs.mpgc.rpg131023.model.player.AbstractHero;
-
 /**
  * Interface representing an item in the game.
  * Replaces the previous ResourceType enum using the Strategy pattern.
@@ -19,9 +17,9 @@ public interface Item {
     String getName();
 
     /**
-     * Applies the item's effects to the hero.
+     * Applies the item's effects to the consumer.
      *
-     * @param hero The hero using the item.
+     * @param consumer The entity using the item.
      */
-    void use(AbstractHero hero);
+    void use(ItemConsumer consumer);
 }

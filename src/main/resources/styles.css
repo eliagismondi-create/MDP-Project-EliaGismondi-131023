@@ -68,10 +68,10 @@
     -fx-font-style: italic;
     -fx-font-size: 14px;
     -fx-border-color: #2c2418;
-    -fx-border-width: 1.5px 0 0 0; /* Solo sopra per staccare dal body */
+    -fx-border-width: 1.5px 0 0 0; /* Top only to separate from the body */
 }
 
-/* Linea tratteggiata per separatori */
+/* Dashed line for separators */
 .ink-separator {
     -fx-border-color: #2c2418 transparent transparent transparent;
     -fx-border-width: 1.5px 0 0 0;

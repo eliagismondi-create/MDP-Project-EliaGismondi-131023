@@ -176,4 +176,44 @@ public class GameManager {
     public void logEvent(String message) {
         eventDispatcher.logEvent(message);
     }
+
+    /**
+     * Executes a full combat round: hero attacks, then enemy counterattacks.
+     * Logs damage dealt and resolves the combat if it ends.
+     * This method centralizes combat flow logic that was previously in the View.
+     */
+    public void executeCombatRound() {
+        CombatManager<AbstractHero, Enemy> cm = this.activeCombat;
+        if (cm == null || cm.isCombatOver()) {
+            return;
+        }
+
+        executeHeroTurn(cm);
+        if (!cm.isCombatOver()) {
+            executeEnemyTurn(cm);
+        }
+
+        if (cm.isCombatOver()) {
+            logCombatOutcome(cm);
+            resolveCombatEnd();
+        }
+    }
+
+    private void executeHeroTurn(CombatManager<AbstractHero, Enemy> cm) {
+        cm.executeNextTurn();
+        logEvent("You land a hit! Dealt " + cm.getLastDamageDealt() + " damage.");
+    }
+
+    private void executeEnemyTurn(CombatManager<AbstractHero, Enemy> cm) {
+        cm.executeNextTurn();
+        logEvent("The enemy counterattacks. Received " + cm.getLastDamageDealt() + " damage.");
+    }
+
+    private void logCombatOutcome(CombatManager<AbstractHero, Enemy> cm) {
+        if (cm.isHeroVictorious()) {
+            logEvent("VICTORY! Enemy defeated.");
+        } else {
+            logEvent("DEFEAT! You have fallen in battle.");
+        }
+    }
 }

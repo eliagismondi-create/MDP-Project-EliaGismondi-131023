@@ -9,22 +9,25 @@ import java.io.IOException;
 
 /**
  * Handles serializing and deserializing game state using JSON.
- * Delegates actual file I/O to a StorageService.
+ * Delegates actual file I/O to a StorageService and mapping to a HeroMapper.
  */
 public class SaveManager {
 
     private final StorageService storageService;
+    private final HeroMapper heroMapper;
     private final String saveFilePath;
     private final Gson gson;
 
     /**
-     * Constructs a SaveManager with the specified storage service and file path.
+     * Constructs a SaveManager with the specified dependencies.
      *
      * @param storageService The service responsible for read/write operations.
+     * @param heroMapper     The mapper for hero ↔ DTO conversions.
      * @param saveFilePath   The destination path for the save file.
      */
-    public SaveManager(StorageService storageService, String saveFilePath) {
+    public SaveManager(StorageService storageService, HeroMapper heroMapper, String saveFilePath) {
         this.storageService = storageService;
+        this.heroMapper = heroMapper;
         this.saveFilePath = saveFilePath;
         this.gson = new GsonBuilder().setPrettyPrinting().create();
     }
@@ -39,7 +42,7 @@ public class SaveManager {
             throw new IllegalArgumentException("Cannot save a null hero.");
         }
 
-        HeroSaveDTO dto = HeroMapper.toDTO(hero);
+        HeroSaveDTO dto = heroMapper.toDTO(hero);
         try {
             String json = gson.toJson(dto);
             storageService.write(saveFilePath, json);
@@ -64,5 +67,12 @@ public class SaveManager {
         } catch (IOException | com.google.gson.JsonSyntaxException e) {
             throw new IllegalStateException("Failed to load the game from " + saveFilePath, e);
         }
+    }
+
+    /**
+     * @return The hero mapper used for serialization.
+     */
+    public HeroMapper getHeroMapper() {
+        return this.heroMapper;
     }
 }

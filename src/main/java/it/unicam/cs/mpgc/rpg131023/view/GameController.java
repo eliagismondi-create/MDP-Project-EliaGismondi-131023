@@ -5,6 +5,7 @@ import it.unicam.cs.mpgc.rpg131023.controller.core.GameManager;
 import it.unicam.cs.mpgc.rpg131023.controller.state.StateType;
 import it.unicam.cs.mpgc.rpg131023.model.dungeon.Dungeon;
 import it.unicam.cs.mpgc.rpg131023.model.enemy.Enemy;
+import it.unicam.cs.mpgc.rpg131023.model.item.ItemRegistry;
 import it.unicam.cs.mpgc.rpg131023.model.player.AbstractHero;
 import it.unicam.cs.mpgc.rpg131023.persistence.HeroSaveDTO;
 import it.unicam.cs.mpgc.rpg131023.persistence.SaveManager;
@@ -15,7 +16,6 @@ import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -52,14 +52,23 @@ public class GameController {
     
     private GameManager gameManager;
     private SaveManager saveManager;
+    private ItemRegistry itemRegistry;
     private Runnable onRestart;
 
     public void setSaveManager(SaveManager saveManager) {
         this.saveManager = saveManager;
     }
 
-    public void setGameManager(GameManager gameManager, Runnable onRestart) {
+    /**
+     * Wires the game manager, item registry, and restart callback.
+     *
+     * @param gameManager  The core game controller.
+     * @param itemRegistry The item registry for resolving items.
+     * @param onRestart    Callback to restart the game.
+     */
+    public void setGameManager(GameManager gameManager, ItemRegistry itemRegistry, Runnable onRestart) {
         this.gameManager = gameManager;
+        this.itemRegistry = itemRegistry;
         this.onRestart = onRestart;
         
         setupBindings();
@@ -69,7 +78,7 @@ public class GameController {
 
     private void setupBindings() {
         AbstractHero hero = gameManager.getHero();
-        heroStatsController.bindHero(hero, gameManager);
+        heroStatsController.bindHero(hero, gameManager, itemRegistry);
         
         gameManager.getEventDispatcher().addPropertyChangeListener(evt -> Platform.runLater(() -> {
             String propName = evt.getPropertyName();
@@ -124,7 +133,6 @@ public class GameController {
         }
         enemyStatsPanel.setVisible(stateType == StateType.IN_COMBAT);
     }
-
 
     private void populateDungeons() {
         Map<String, Dungeon> worldMap = gameManager.getWorldMap();
@@ -190,44 +198,26 @@ public class GameController {
         });
     }
 
-
     @FXML
     private void handleRetreat(ActionEvent event) {
         gameManager.retreatFromDungeon();
         gameManager.logEvent("You fled the dungeon, but hunger still strikes.");
     }
 
+    /**
+     * Delegates the entire combat round to the GameManager.
+     * The View only updates button visibility — no business logic here.
+     */
     @FXML
     private void handleAttack(ActionEvent event) {
         try {
+            gameManager.executeCombatRound();
+
             CombatManager<AbstractHero, Enemy> cm = gameManager.getActiveCombat();
-            Enemy enemy = cm.getEnemy();
-            AbstractHero hero = cm.getHero();
-            
-            int enemyHpBefore = enemy.getHealth();
-            cm.executeNextTurn();
-            int dmg = enemyHpBefore - enemy.getHealth();
-            gameManager.logEvent("You land a hit! Dealt " + dmg + " damage.");
-
-            if (!cm.isCombatOver()) {
-                int heroHpBefore = hero.getHealth();
-                cm.executeNextTurn();
-                int dmgHero = heroHpBefore - hero.getHealth();
-                gameManager.logEvent("The enemy counterattacks. Received " + dmgHero + " damage.");
+            if (cm != null) {
+                btnCombatBack.setVisible(!cm.hasCombatStarted());
+                btnCombatBack.setManaged(!cm.hasCombatStarted());
             }
-
-            if (cm.isCombatOver()) {
-                if (cm.isHeroVictorious()) {
-                    gameManager.logEvent("VICTORY! Enemy defeated.");
-                } else {
-                    gameManager.logEvent("DEFEAT! You have fallen in battle.");
-                }
-                gameManager.resolveCombatEnd();
-            }
-            
-            btnCombatBack.setVisible(!cm.hasCombatStarted());
-            btnCombatBack.setManaged(!cm.hasCombatStarted());
-            
         } catch (Exception ex) {
             gameManager.logEvent("Combat error: " + ex.getMessage());
         }
@@ -260,7 +250,7 @@ public class GameController {
         try {
             if (saveManager != null) {
                 HeroSaveDTO dto = saveManager.loadGame();
-                it.unicam.cs.mpgc.rpg131023.persistence.HeroMapper.updateHeroFromDTO(gameManager.getHero(), dto);
+                saveManager.getHeroMapper().updateHeroFromDTO(gameManager.getHero(), dto);
                 gameManager.logEvent("Game loaded successfully.");
             } else {
                 gameManager.logEvent("Error: SaveManager not initialized.");

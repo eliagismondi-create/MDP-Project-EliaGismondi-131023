@@ -1,11 +1,14 @@
 package it.unicam.cs.mpgc.rpg131023.model.item;
 
-import it.unicam.cs.mpgc.rpg131023.model.player.AbstractHero;
+import it.unicam.cs.mpgc.rpg131023.model.player.BuffType;
 
 /**
  * A defensive item that provides a shield buff to mitigate incoming damage.
  */
-public class Armor implements Item {
+public class Armor extends AbstractItem {
+
+    /** Amount of damage the armor can absorb before breaking. */
+    public static final int SHIELD_VALUE = 50;
 
     @Override
     public String getId() {
@@ -18,23 +21,10 @@ public class Armor implements Item {
     }
 
     /**
-     * Equips the shield buff on the hero with a fixed durability value.
+     * Equips the shield buff on the consumer with a fixed durability value.
      */
     @Override
-    public void use(AbstractHero hero) {
-        hero.getEquipment().addBuff("SHIELD", 50); // ARMOR_SHIELD_VALUE
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Armor armor = (Armor) o;
-        return getId().equals(armor.getId());
-    }
-
-    @Override
-    public int hashCode() {
-        return getId().hashCode();
+    public void use(ItemConsumer consumer) {
+        consumer.getEquipment().addBuff(BuffType.SHIELD, SHIELD_VALUE);
     }
 }
