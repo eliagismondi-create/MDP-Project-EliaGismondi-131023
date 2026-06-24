@@ -1,20 +1,73 @@
-# Dungeon Crawler
+# 📌 Dungeon Crawler
 
-Dungeon Crawler è un  gioco di ruolo esplorativo e gestionale (RPG). Mettiti nei panni di un coraggioso eroe e addentrati nei meandri di oscuri dungeon, affronta temibili nemici come Banditi, Orchi e Draghi e rivendica preziosi tesori. Sopravvivi gestendo saggiamente le tue risorse: consuma cibo per evitare l'inedia, bevi pozioni per recuperare la salute, forgia equipaggiamenti migliori per non farti cogliere impreparato dalle insidie delle tenebre. La gloria ti attende, ma solo la tattica ti terrà in vita!
+Dungeon Crawler è un gioco di ruolo (RPG) esplorativo e gestionale realizzato in Java con interfaccia JavaFX.
+Il giocatore veste i panni di un eroe che si addentra in oscuri dungeon, affronta nemici (Banditi, Orchi, Draghi) e raccoglie tesori, dovendo al contempo gestire le proprie risorse: consumare cibo per non soccombere alla fatica, bere pozioni per recuperare salute ed equipaggiare spade e armature per sopravvivere. Lo stato di gioco può essere salvato e ripreso grazie alla persistenza su file in formato JSON.
 
-## Compilazione ed Esecuzione
-Il progetto utilizza **Gradle** per la gestione del ciclo di vita e delle dipendenze.
-Assicurati di possedere Java (versione 17 o superiore) installato sulla tua macchina.
+---
 
-Per compilare il progetto, apri il terminale nella root di progetto ed esegui:
+## 🚀 Come eseguire il progetto
+
+### Prerequisiti
+- Java 21 (LTS) o superiore
+- Gradle (è incluso il wrapper `./gradlew`, quindi non è necessaria un'installazione separata)
+
+### Istruzioni
+
+```bash
+git clone https://github.com/eliagismondi-create/MDP-Project-EliaGismondi-131023.git
+cd MDP-Project-EliaGismondi-131023
+```
+
+### Build del progetto
 ```bash
 ./gradlew build
 ```
 
-Per lanciare l'applicazione desktop, esegui:
+### Esecuzione
 ```bash
 ./gradlew run
 ```
 
-## Dichiarazione d'uso IA
-Si dichiara formalmente che questo progetto ha impiegato l'assistenza di strumenti basati sull'Intelligenza Artificiale (LLM) forniti da Google. L'IA è stata impiegata come strumento di supporto alla programmazione e pair-programming (generazione di codice di boilerplate, implementazione pattern Architetturali complessi, stesura di logica reattiva tramite JavaFX e PropertyChangeSupport, isolamento delle dipendenze MVC, e check sulle best practice SOLID, SRP e DRY). Ogni frammento suggerito è stato analizzato, rielaborato e supervisionato attivamente per garantire la conformità accademica ai princìpi del corso.
+---
+
+## 🏛️ Architettura
+
+Il progetto è organizzato secondo il pattern **MVC** e i principi **SOLID**, all'interno del package `it.unicam.cs.mpgc.rpg131023`:
+
+- **`model`** — le entità di dominio e la logica di gioco (eroe, nemici, item, dungeon, combattimento, risorse). Non conosce nulla della UI.
+- **`controller`** — orchestrazione del gioco (`GameManager`, `CombatManager`), gestione degli stati (`state`) e propagazione degli eventi (`events`).
+- **`view`** — i controller JavaFX (`GameController`, `HeroStatsController`) e l'avvio dell'applicazione, che si limitano a presentare i dati e delegare le azioni al controller.
+- **`persistence`** — salvataggio e caricamento dello stato di gioco tramite DTO e Gson.
+- **`utils`** — servizi di caricamento dei dati statici (statistiche e dungeon).
+
+La comunicazione fra modello e vista avviene in modo disaccoppiato tramite **Observer pattern** (`PropertyChangeSupport`), mentre il flusso di gioco è gestito da una macchina a stati. I dati statici (`stats.json`, `dungeons.json`) sono letti dalle *resources* via `getResourceAsStream`, mentre i salvataggi dinamici risiedono nella home dell'utente (`~/.dungeoncrawler`), senza alcun percorso assoluto cablato nel codice.
+
+> 📌 Per una descrizione dettagliata delle funzionalità, delle responsabilità delle classi, della persistenza e delle modalità di estensione futura, consultare la **Wiki del repository**.
+
+---
+
+## 🤖 Uso di strumenti di AI
+
+Per la realizzazione di questo progetto sono stati utilizzati strumenti di AI (LLM) **come supporto alla programmazione**, mai come sostituto della comprensione personale. Ogni frammento di codice suggerito è stato analizzato, rielaborato, adattato al contesto del progetto e verificato manualmente.
+
+Nello specifico, l'AI è stata impiegata per:
+
+* **Documentazione** — generazione e revisione dei commenti **Javadoc** delle classi e dei metodi.
+* **Debugging** — supporto nell'individuazione e nella risoluzione di errori di compilazione e di logica.
+* **Approfondimento didattico** — spiegazione di **come applicare al mio codice i concetti del corso**, partendo dai miei dubbi e adattando le risposte al caso concreto.
+* **Codice meccanico e ripetitivo** — stesura di metodi *boilerplate* (es. getter/setter, costruttori, `equals()`/`hashCode()`), poi rivisti e integrati personalmente.
+* **Studio e applicazione di pattern non trattati nel corso** — approfondimento personale e applicazione al progetto di pattern architetturali quali **Visitor**, **State**, **Factory**, **Observer** e dell'**architettura DTO** per la persistenza.
+
+In tutte queste attività il livello di intervento personale è stato **attivo e prevalente**: l'AI ha accelerato il lavoro e chiarito i concetti, ma le decisioni di progettazione, l'integrazione nel codice e la verifica del risultato sono state svolte da me.
+
+> 📌 Per una descrizione più dettagliata dell'uso dell'AI, consultare la **Wiki del repository**.
+
+---
+
+## 🛠️ Tecnologie utilizzate
+
+- **Java** — linguaggio principale
+- **JavaFX 21** — interfaccia grafica (FXML + CSS)
+- **Gradle** — build automation e gestione delle dipendenze
+- **Gson** — serializzazione/deserializzazione JSON per la persistenza
+- **JUnit 5** — framework di test
