@@ -26,6 +26,9 @@
     <!-- CENTER: Dynamic Views -->
     <center>
         <StackPane BorderPane.alignment="CENTER">
+            <BorderPane.margin>
+                <Insets left="30.0" />
+            </BorderPane.margin>
             <!-- HUB VIEW -->
             <VBox fx:id="hubView" alignment="CENTER" spacing="30.0">
                 <children>
