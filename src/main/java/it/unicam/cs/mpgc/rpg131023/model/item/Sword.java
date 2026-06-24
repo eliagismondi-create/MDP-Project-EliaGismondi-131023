@@ -2,6 +2,9 @@ package it.unicam.cs.mpgc.rpg131023.model.item;
 
 import it.unicam.cs.mpgc.rpg131023.model.player.AbstractHero;
 
+/**
+ * A weapon item that grants the hero an offensive buff when used.
+ */
 public class Sword implements Item {
 
     @Override
@@ -14,6 +17,9 @@ public class Sword implements Item {
         return "SWORD";
     }
 
+    /**
+     * Applies maximum durability buff to the hero's attack power.
+     */
     @Override
     public void use(AbstractHero hero) {
         hero.getEquipment().addBuff("SWORD", AbstractHero.MAX_SWORD_DURABILITY);

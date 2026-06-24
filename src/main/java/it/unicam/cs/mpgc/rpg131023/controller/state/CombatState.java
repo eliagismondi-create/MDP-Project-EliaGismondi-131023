@@ -2,6 +2,9 @@ package it.unicam.cs.mpgc.rpg131023.controller.state;
 
 import it.unicam.cs.mpgc.rpg131023.controller.core.GameManager;
 
+/**
+ * Active combat phase. Players can't run away once blows are exchanged.
+ */
 public class CombatState implements GameState {
 
     @Override

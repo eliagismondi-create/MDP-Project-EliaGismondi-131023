@@ -2,6 +2,9 @@ package it.unicam.cs.mpgc.rpg131023.model.item;
 
 import it.unicam.cs.mpgc.rpg131023.model.player.AbstractHero;
 
+/**
+ * A defensive item that provides a shield buff to mitigate incoming damage.
+ */
 public class Armor implements Item {
 
     @Override
@@ -14,6 +17,9 @@ public class Armor implements Item {
         return "ARMOR";
     }
 
+    /**
+     * Equips the shield buff on the hero with a fixed durability value.
+     */
     @Override
     public void use(AbstractHero hero) {
         hero.getEquipment().addBuff("SHIELD", 50); // ARMOR_SHIELD_VALUE

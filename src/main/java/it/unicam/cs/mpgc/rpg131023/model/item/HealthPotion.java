@@ -2,6 +2,9 @@ package it.unicam.cs.mpgc.rpg131023.model.item;
 
 import it.unicam.cs.mpgc.rpg131023.model.player.AbstractHero;
 
+/**
+ * A consumable potion that restores missing health points.
+ */
 public class HealthPotion implements Item {
 
     @Override
@@ -14,6 +17,9 @@ public class HealthPotion implements Item {
         return "HEALTH POTION";
     }
 
+    /**
+     * Fully heals the hero. Throws an exception if the hero is already at maximum health.
+     */
     @Override
     public void use(AbstractHero hero) {
         if (hero.getHealth() == AbstractHero.MAX_HEALTH) {

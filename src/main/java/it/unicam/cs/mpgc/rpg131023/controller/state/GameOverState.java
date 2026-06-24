@@ -2,6 +2,9 @@ package it.unicam.cs.mpgc.rpg131023.controller.state;
 
 import it.unicam.cs.mpgc.rpg131023.controller.core.GameManager;
 
+/**
+ * Terminal state when the hero dies. Blocks all further actions.
+ */
 public class GameOverState implements GameState {
 
     @Override

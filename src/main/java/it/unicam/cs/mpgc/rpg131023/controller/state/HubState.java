@@ -3,6 +3,9 @@ package it.unicam.cs.mpgc.rpg131023.controller.state;
 import it.unicam.cs.mpgc.rpg131023.controller.core.GameManager;
 import it.unicam.cs.mpgc.rpg131023.model.dungeon.Dungeon;
 
+/**
+ * The safe zone. From here, players can start their next dungeon run.
+ */
 public class HubState implements GameState {
 
     @Override

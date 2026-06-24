@@ -2,6 +2,9 @@ package it.unicam.cs.mpgc.rpg131023.model.item;
 
 import it.unicam.cs.mpgc.rpg131023.model.player.AbstractHero;
 
+/**
+ * A consumable item used to restore the hero's hunger levels.
+ */
 public class Food implements Item {
 
     @Override
@@ -14,6 +17,9 @@ public class Food implements Item {
         return "FOOD";
     }
 
+    /**
+     * Fully resets the hero's hunger to zero. Throws an exception if the hero is already full.
+     */
     @Override
     public void use(AbstractHero hero) {
         if (hero.getHunger() == 0) {

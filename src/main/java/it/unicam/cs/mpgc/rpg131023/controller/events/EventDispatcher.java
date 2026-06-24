@@ -6,6 +6,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Simple property change dispatcher that also keeps a history of game events.
+ */
 public class EventDispatcher {
     private final PropertyChangeSupport support = new PropertyChangeSupport(this);
     private final List<String> eventLog = new ArrayList<>();
@@ -22,12 +25,18 @@ public class EventDispatcher {
         support.firePropertyChange(propertyName, oldValue, newValue);
     }
 
+    /**
+     * Appends a message to the internal log and fires an event so the UI can update.
+     */
     public void logEvent(String message) {
         String log = "· " + message;
         this.eventLog.add(log);
         support.firePropertyChange("eventLogAdded", null, log);
     }
 
+    /**
+     * Returns a read-only view of the past events.
+     */
     public List<String> getEventLog() {
         return Collections.unmodifiableList(this.eventLog);
     }
